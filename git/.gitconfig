@@ -22,8 +22,8 @@
 [core]
     autocrlf = input
     editor = /usr/bin/vim
-    excludesfile = ~/.config/git/gitignore_global
     ignorecase = false
+    excludesFile = ~/.config/git/.gitignore
 [merge]
     # http://qiita.com/nog/items/c79469afbf3e632f10a1
     # ff = false
