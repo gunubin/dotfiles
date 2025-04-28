@@ -1,0 +1,92 @@
+set U FZF_LEGACY_KEYBINDINGS 0
+
+#######
+# path
+#######
+set -x PATH $HOME/.nodebrew/current/bin $PATH
+set -x PATH $HOME/.rbenv/bin $PATH
+set -x PATH /usr/local/bin $PATH
+set -x PATH $VOLTA_HOME/bin $PATH
+
+
+#######
+# path react-native
+#######
+set --export ANDROID $HOME/Library/Android;
+set --export ANDROID_HOME $ANDROID/sdk;
+set -gx PATH $ANDROID_HOME/tools $PATH;
+set -gx PATH $ANDROID_HOME/tools/bin $PATH;
+set -gx PATH $ANDROID_HOME/platform-tools $PATH;
+set -gx PATH $ANDROID_HOME/emulator $PATH
+
+######
+# Load rbenv automatically by appending
+# # the following to ~/.config/fish/config.fish:
+######
+status --is-interactive; and source (rbenv init -|psub)
+
+#######
+# alias
+#######
+alias dkc='docker-compose'
+alias ll='ls -la'
+alias y='yarn'
+
+#######
+# https://github.com/oh-my-fish/oh-my-fish/blob/master/docs/Themes.md#bobthefish
+#######
+set -g theme_powerline_fonts yes
+#set -g theme_nerd_fonts yes
+set -g theme_display_docker_machine yes
+#set -g theme_display_vi yes
+
+#######
+# fzf
+#######
+set FZF_DEFAULT_OPTS '--height 40% --reverse --select-1'
+
+#######
+# http://ka2n.hatenablog.com/entry/2017/01/09/fish_shell%E3%81%A7z%E3%81%AE%E7%B5%90%E6%9E%9C%E3%82%92peco%E3%81%A3%E3%81%A6%E7%88%86%E9%80%9F%E3%81%A7%E3%83%87%E3%82%A3%E3%83%AC%E3%82%AF%E3%83%88%E3%83%AA%E7%A7%BB%E5%8B%95%E3%81%99%E3%82%8B
+#######
+function fzf-z
+    set -l query (commandline)
+
+    if test -n $query
+    set fzf_flags --query "$query"
+    end
+
+    z -l | fzf --reverse --select-1 --height 40% $fzf_flags | awk '{ print $2 }' | read recent
+    if [ $recent ]
+        cd $recent
+        commandline -r ''
+        commandline -f repaint
+    end
+end
+bind \cj 'fzf-z'
+
+
+#######
+# dirh
+#######
+# option + [ でディレクトリを戻る
+# bind \e\[ prevd-or-backward-word
+# option + ] でディレクトリを進む
+# bind \e\] nextd-or-forward-word
+
+
+#######
+# tmux
+#######
+if status is-interactive
+and not set -q TMUX
+    exec tmux
+end
+
+
+#######
+# direnv
+#######
+set -x EDITOR vim
+eval (direnv hook fish)
+set -gx VOLTA_HOME "$HOME/.volta"
+set -gx PATH "$VOLTA_HOME/bin" $PATH
