@@ -1,0 +1,373 @@
+" common
+set scrolloff=10 "スクロールする前に画面に残す行
+set linenumber "行番号表示
+set showmode "モード表示
+set showcmd
+set visualbell "無効な入力時の音を無くす
+set clipboard+=unnamed
+set nowrapscan "検索をファイルの先頭へ循環しない
+set relativenumber " 相対行番号を表示（カーソル位置からの相対距離が表示されます）
+set cursorline " カーソル行を強調表示
+
+set ignorecase
+set smartcase
+set incsearch
+set hlsearch
+augroup hlsearch_on_search
+  autocmd!
+  autocmd CmdlineEnter / set hlsearch
+augroup END
+set wrapscan
+" 検索ハイライトを消す
+nnoremap <ESC><ESC> :nohlsearch<CR>
+nnoremap <C-[> <C-[>:nohlsearch<CR>
+
+" selection search
+vnoremap / y/\V<C-R>"<CR>
+
+" indent
+set smartindent          " コードのインデントを自動で調整
+set autoindent           " インデントを自動で合わせる
+set smarttab             " インデント時にタブが効率的に使われるように
+
+" space tab
+set list                 " 非表示文字（空白やタブ）を表示
+set listchars=tab:>-,trail:-,eol:$  " 空白、タブ、行末を表示
+
+"x キー削除でデフォルトレジスタに入れない
+nnoremap x "_x
+vnoremap x "_x
+
+" vv で行末まで選択
+"vnoremap v ^$h
+" vnoremap v <Esc>
+vmap w <Action>(EditorSelectWord)
+nnoremap vv V
+
+noremap M %
+
+" p でペースト時にコピーしない
+vnoremap p "_dP
+
+nnoremap <CR> i<CR><ESC>
+
+" esc
+" inoremap <silent> jk <ESC>
+" inoremap <silent> kj <ESC>
+inoremap <C-j> <Esc>
+vnoremap <C-j> <Esc>
+
+" 選択範囲のインデントを連続して変更
+vnoremap < <gv
+vnoremap > >gv
+
+" like emacs
+inoremap <C-a> <C-o>^
+inoremap <C-e> <C-o>$<Right>
+inoremap <C-b> <Left>
+inoremap <C-f> <Right>
+inoremap <C-h> <BS>
+inoremap <C-d> <Del>
+inoremap <C-k> <C-o>D<Right>
+
+" completion
+imap <C-p> <Action>(HippieBackwardCompletion)
+imap <C-n> <Action>(HippieCompletion)
+imap <C-space> <Action>(CodeCompletion)
+"imap <C-space> <Action>(SmartTypeCompletion)
+imap <C-l> <Action>(CallInlineCompletionAction)
+
+nnoremap + <C-A>
+nnoremap - <C-X>
+
+nnoremap <C-a> ^
+nnoremap <C-e> $
+nnoremap L $
+nnoremap H ^
+vnoremap <C-a> ^
+vnoremap <C-e> $
+vnoremap L $
+vnoremap H ^
+
+" jump
+nmap <C-o> <Action>(Back)
+nmap <C-i> <Action>(Forward)
+nmap [m <Action>(MethodUp)
+nmap ]m <Action>(MethodDown)
+nmap [c <Action>(JumpToLastChange)
+nmap ]c <Action>(JumpToNextChange)
+nmap [g <Action>(VcsShowPrevChangeMarker)
+nmap ]g <Action>(VcsShowNextChangeMarker)
+nmap [e <Action>(GotoPreviousError)
+nmap ]e <Action>(GotoNextError)
+nmap ]] <Action>(JumpToLastChange)
+nmap [[ <Action>(JumpToNextChange)
+
+" buffer
+nmap <C-n> <Action>(NextTab)
+nmap <C-p> <Action>(PreviousTab)
+nmap <C-w> <Action>(CloseContent)
+
+" git
+nmap gm <Action>(ActivateCommitToolWindow)
+nmap gb <Action>(Git.Branches)
+nmap gB <Action>(Vcs.Show.Blame)
+nmap gl <Action>(ActivateVersionControlToolWindow)
+nmap gP <Action>(Vcs.UpdateProject)
+nmap gt <Action>(Git.Stash)
+nmap gs <Action>(Git.Status)
+nmap gp <Action>(Vcs.Push)
+nmap gq <Action>(Vcs.QuickListPopupAction)
+nmap gr <Action>(Vcs.RefreshStatuses)
+nmap gd <Action>(Compare.LastVersion)
+nmap ga <Action>(Github.Create.Gist)
+
+
+" bookmark
+nmap mm <Action>(ToggleBookmark)
+nmap ms <Action>(ShowBookmarks)
+
+" leader key
+let mapleader = " "
+
+" comment 
+nmap <leader>/ <Action>(CommentByLineComment)
+vmap <leader>/ <Action>(CommentByBlockComment)<ESC>
+
+
+" ai
+nmap <leader>io <Action>(AIAssistant.ToolWindow.ShowOrFocus)
+nmap <leader>ii <Action>(AIAssistant.Editor.AskAiAssistantInEditor)
+nmap <leader>im <Action>(IntentionActionAsAction_com.intellij.ml.llm.intentions.chat.AIAssistantIntention)
+vmap <leader>im <Action>(IntentionActionAsAction_com.intellij.ml.llm.intentions.chat.AIAssistantIntention)
+imap <C-Backspace> <Action>(CallInlineCompletionAction)
+"imap <C-;> <Action>(CallInlineCompletionAction) " for build in keyboard
+
+" copilot
+nmap <leader>iq <Action>(copilot.chat.show)
+nmap <leader>ic <Action>(copilot.chat.inline)
+
+" save
+nnoremap <leader>w :w<cr>
+
+" カーソル下の単語を探し、その次に見つかったマッチを即座に変更可能な状態にします。
+nnoremap <leader>j *``cgn
+
+" ideavimrc
+nmap <leader>vr <Action>(IdeaVim.ReloadVimRc.reload)
+nmap <leader>vv :e ~/.ideavimrc<cr>
+
+" editor sync
+nmap <Leader>y <Action>(Synchronize)
+
+" show info
+nmap <Leader>k <Action>(ShowHoverInfo)
+
+" buffer
+nmap <leader>xx <Action>(CloseContent)
+nmap <leader>xa <Action>(CloseAllEditors)
+nmap <leader>xo <Action>(CloseAllEditorsButActive)
+nmap <leader>xp <Action>(CloseAllUnpinnedEditors)
+nmap <leader>xr <Action>(ReopenClosedTab)
+nmap <leader>xp <Action>(PinActiveEditorTab)
+nmap <leader>q <Action>(CloseContent)
+
+
+" todo task
+nmap <leader>to <Action>(ActivateTODOToolWindow)
+nmap <leader>ts <Action>(tasks.goto)
+
+" generate
+nmap <leader>cn <Action>(NewClass)
+nmap <leader>co <Action>(OverrideMethods)
+nmap <leader>cc <Action>(GenerateConstructor)
+nmap <leader>cg <Action>(GenerateGetter)
+nmap <leader>cs <Action>(GenerateSetter)
+nmap <leader>ca <Action>(GenerateGetterAndSetter)
+nmap <leader>ce <Action>(GenerateEquals)
+nmap <leader>ct <Action>(GenerateTestMethod)
+
+" Menu
+nmap <leader>mm <Action>(MainMenu)
+nmap <leader>me <Action>(NewElementMenu)
+nmap <leader>ma <Action>(AnalyzeActionsPopup)
+nmap <leader>mb <Action>(BuildMenu)
+nmap <leader>mc <Action>(CodeMenu)
+nmap <leader>mf <Action>(FindMenuGroup)
+nmap <leader>mg <Action>(GoToMenu)
+nmap <leader>ms <Action>(ScopeViewPopupMenu)
+nmap <leader>mt <Action>(EditorTabPopupMenu)
+nmap <leader>mw <Action>(ToolWindowsGroup)
+nmap <leader>ml <Action>(LayoutsGroup)
+nmap <leader>mv <Action>(VcsGroups)
+nmap <leader>m, <Action>(VimActions)
+nmap <leader>mi <Action>(ShowIntentionActions)
+
+" jump
+nmap <leader>s <Action>(AceAction)
+" nmap <leader>S <Action>(AceTargetAction)
+nmap <leader>o <Action>(FileStructurePopup)
+nmap <leader>n <Action>(GotoFile)
+nmap <leader>S <Action>(GotoSymbol)
+nmap <leader>a <Action>(SearchEverywhere)
+nmap <leader>b <Action>(Switcher)
+
+" file
+nmap <leader>e <Action>(ActivateProjectToolWindow)
+nmap <leader>fh <Action>(LocalHistory.ShowHistory)
+nmap <leader>fo <Action>(RecentChangedFiles)
+nmap <leader>fn <Action>(GotoFile)
+
+" hierarchy
+nmap <leader>hc <Action>(CallHierarchy)
+nmap <leader>hm <Action>(MethodHierarchy)
+nmap <leader>ht <Action>(TypeHierarchy)
+
+" layout
+nmap <leader>ll <Action>(RestoreDefaultLayout)
+
+" refactoring
+nmap R <Action>(RenameElement)
+nmap <leader>= <Action>(ReformatCode)
+nmap <leader>rf <Action>(ReformatCode)
+nmap <leader>rr <Action>(RenameElement)
+nmap <leader>rl <Action>(Javascript.Linters.EsLint.Fix)
+nmap <leader>rm <Action>(Move)
+nmap <leader>rc <Action>(InspectCode)
+nmap <leader>rg <Action>(Generate)
+nmap <leader>rI <Action>(OptimizeImports)
+nmap <leader>rs <Action>(ChangeSignature)
+nmap <leader>rt <Action>(ChangeTypeSignature)
+
+"" stringmanip
+nmap <leader>ss <Action>(osmedile.intellij.stringmanip.PopupChoiceAction)
+
+" surround
+nmap <leader>, <Action>(SurroundWith)
+
+" goto
+nmap <leader>gb <Action>(GotoDeclaration)
+nmap <leader>gk <Action>(GotoTypeDeclaration)
+nmap <leader>gi <Action>(GotoImplementation)
+nmap <leader>gs <Action>(GotoSuperMethod)
+nmap <leader>gt <Action>(GotoTest)
+nmap <leader>gu <Action>(FindUsages)
+
+
+" Folding
+map <leader>zc :action CollapseRegion<CR>
+map <leader>zM :action CollapseAllRegions<CR>
+map <leader>zo :action ExpandRegion<CR>
+map <leader>zR :action ExpandAllRegions<CR>
+nmap zC zM
+nmap zO zR
+
+" split window
+nnoremap s <Nop>
+nnoremap sj <C-w>j
+nnoremap sk <C-w>k
+nnoremap sl <C-w>l
+nnoremap sh <C-w>h
+nnoremap sJ <C-w>J
+nnoremap sK <C-w>K
+nnoremap sL <C-w>L
+nnoremap sH <C-w>H
+nnoremap sn gt
+nnoremap sp gT
+nnoremap sr <C-w>r
+nnoremap s= <C-w>=
+nnoremap sw <C-w>w
+"nnoremap so <C-w>_<C-w>|
+nnoremap sO <C-w>=
+nnoremap sN :<C-u>bn<cr>
+"nnoremap sP :<C-u>bp<cr>
+nnoremap st :<C-u>tabnew<cr>
+nnoremap ss :<C-u>sp<cr>
+nnoremap sv :<C-u>vs<cr>
+nnoremap sq :<C-u>q<cr>
+nnoremap sQ :<C-u>bd<cr>
+nnoremap sb :<C-u>Unite buffer_tab -buffer-name=file<cr>
+nnoremap sB :<C-u>Unite buffer -buffer-name=file<cr>
+
+nmap sx <Action>(CloseContent)
+nmap sa <Action>(CloseAllEditors)
+nmap so <Action>(CloseAllEditorsButActive)
+nmap sP <Action>(CloseAllUnpinnedEditors)
+nmap sr <Action>(ReopenClosedTab)
+nmap sp <Action>(PinActiveEditorTab)
+nmap s, <Action>(PreviousTab)
+nmap s. <Action>(NextTab)
+
+" plug
+packadd matchit
+Plug 'vim-scripts/argtextobj.vim'
+Plug 'machakann/vim-highlightedyank'
+Plug 'tpope/vim-paragraph-motion'
+Plug 'michaeljsmith/vim-indent-object'
+Plug 'tommcdo/vim-exchange'
+Plug 'unblevable/quick-scope'
+let g:qs_max_chars=80
+
+" ハイライトの持続時間を設定
+let g:highlightedyank_highlight_duration = "700"
+
+set ideajoin
+set ideamarks
+set surround
+set multiple-cursors
+set switch
+set commentary
+
+
+" プロジェクトペインをvim風に
+set NERDTree
+
+let NERDTreeMapActivateNode = 'l'
+let NERDTreeMapCloseDir = 'h'
+
+set sneak
+nmap e <Plug>Sneak_s
+let g:sneak#label = 1  " Sneakのラベルを表示（ハイライトを含む）
+let g:sneak#highlighter = 1  " ハイライトを有効にする
+
+set quickscope
+let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
+
+" キーバインドを表示
+set which-key
+let g:WhichKey_DefaultDelay = 200
+let g:WhichKeyDesc_generate = "<leader>c Generate"
+let g:WhichKeyDesc_git = "<leader>g Git"
+let g:WhichKeyDesc_hierarchy = "<leader>h Hierarchy"
+let g:WhichKeyDesc_intelligence = "<leader>i AI"
+let g:WhichKeyDesc_layout = "<leader>l Layout"
+let g:WhichKeyDesc_menu = "<leader>m Menu"
+let g:WhichKeyDesc_refactoring = "<leader>r Refactoring"
+let g:WhichKeyDesc_task = "<leader>t Task"
+let g:WhichKeyDesc_ideavimrc = "<leader>v ideavimrc"
+let g:WhichKeyDesc_tab = "<leader>x Tab"
+let g:WhichKeyDesc_fold = "<leader>z Folding"
+
+nnoremap ! :Switch<CR>
+nnoremap ` :SwitchReverse<CR>
+let g:switch_definitions = 'group:basic,group:markdown,group:javascript'
+let g:switch_custom_definitions = [
+    \ switchWords(['log', 'info', 'warn', 'error', 'debug']),
+    \ switchWords(['get', 'post', 'put', 'delete']),
+    \ switchWords(['GET', 'POST', 'PUT', 'DELETE']),
+    \ switchWords(['yes', 'no']),
+    \ switchWords(['start', 'stop']),
+    \ switchWords(['begin', 'end']),
+    \ switchWords(['in', 'out']),
+    \ switchWords(['open', 'close']),
+    \ switchWords(['enable', 'disable']),
+    \ switchWords(['add', 'remove']),
+    \ switchWords(['push', 'pop']),
+    \ switchWords(['show', 'hide']),
+    \ switchWords(['before', 'after']),
+    \ switchWords(['async', 'await']),
+    \ switchWords(['valid', 'invalid']),
+    \ switchWords(['visible', 'invisible']),
+    \ switchWords(['open', 'close']),
+    \ switchWords(['accept', 'reject']),
+\ ]
