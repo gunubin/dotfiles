@@ -8,6 +8,8 @@ set clipboard+=unnamed
 set nowrapscan "検索をファイルの先頭へ循環しない
 set relativenumber " 相対行番号を表示（カーソル位置からの相対距離が表示されます）
 set cursorline " カーソル行を強調表示
+" カーソルが行頭でさらに左に移動しようとすると、前の行の末尾に行く
+set whichwrap+=h,l,<,>,[,],~
 
 set ignorecase
 set smartcase
@@ -39,7 +41,7 @@ nnoremap x "_x
 vnoremap x "_x
 
 " vv で行末まで選択
-"vnoremap v ^$h
+vnoremap v V
 " vnoremap v <Esc>
 vmap w <Action>(EditorSelectWord)
 nnoremap vv V
@@ -54,8 +56,9 @@ nnoremap <CR> i<CR><ESC>
 " esc
 " inoremap <silent> jk <ESC>
 " inoremap <silent> kj <ESC>
-inoremap <C-j> <Esc>
-vnoremap <C-j> <Esc>
+
+"inoremap <C-j> <Esc>
+"vnoremap <C-j> <Esc>
 
 " 選択範囲のインデントを連続して変更
 vnoremap < <gv
@@ -204,8 +207,6 @@ nmap <leader>m, <Action>(VimActions)
 nmap <leader>mi <Action>(ShowIntentionActions)
 
 " jump
-nmap <leader>s <Action>(AceAction)
-" nmap <leader>S <Action>(AceTargetAction)
 nmap <leader>o <Action>(FileStructurePopup)
 nmap <leader>n <Action>(GotoFile)
 nmap <leader>S <Action>(GotoSymbol)
@@ -305,6 +306,8 @@ Plug 'machakann/vim-highlightedyank'
 Plug 'tpope/vim-paragraph-motion'
 Plug 'michaeljsmith/vim-indent-object'
 Plug 'tommcdo/vim-exchange'
+Plug 'easymotion/vim-easymotion'
+"Plug 'kana/vim-textobj-entire'
 Plug 'unblevable/quick-scope'
 let g:qs_max_chars=80
 
@@ -312,12 +315,17 @@ let g:qs_max_chars=80
 let g:highlightedyank_highlight_duration = "700"
 
 set ideajoin
+set matchit
 set ideamarks
 set surround
 set multiple-cursors
-set switch
 set commentary
 
+"easymotion-prefix easymotion
+set easymotion
+nmap e <Plug>(easymotion-bd-w)
+nmap E <Plug>(easymotion-bd-e)
+nmap f <Plug>(easymotion-s)
 
 " プロジェクトペインをvim風に
 set NERDTree
@@ -325,17 +333,16 @@ set NERDTree
 let NERDTreeMapActivateNode = 'l'
 let NERDTreeMapCloseDir = 'h'
 
-set sneak
-nmap e <Plug>Sneak_s
-let g:sneak#label = 1  " Sneakのラベルを表示（ハイライトを含む）
-let g:sneak#highlighter = 1  " ハイライトを有効にする
+"set sneak
+"nmap E <Plug>Sneak_s
 
 set quickscope
 let g:qs_highlight_on_keys = ['f', 'F', 't', 'T']
 
 " キーバインドを表示
 set which-key
-let g:WhichKey_DefaultDelay = 200
+set notimeout
+let g:WhichKey_DefaultDelay = 400
 let g:WhichKeyDesc_generate = "<leader>c Generate"
 let g:WhichKeyDesc_git = "<leader>g Git"
 let g:WhichKeyDesc_hierarchy = "<leader>h Hierarchy"
@@ -348,6 +355,7 @@ let g:WhichKeyDesc_ideavimrc = "<leader>v ideavimrc"
 let g:WhichKeyDesc_tab = "<leader>x Tab"
 let g:WhichKeyDesc_fold = "<leader>z Folding"
 
+set switch
 nnoremap ! :Switch<CR>
 nnoremap ` :SwitchReverse<CR>
 let g:switch_definitions = 'group:basic,group:markdown,group:javascript'
