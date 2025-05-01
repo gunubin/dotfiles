@@ -1,15 +1,17 @@
 " common
-set scrolloff=10 "スクロールする前に画面に残す行
+set scrolloff=20 "スクロールする前に画面に残す行
 set linenumber "行番号表示
 set showmode "モード表示
 set showcmd
 set visualbell "無効な入力時の音を無くす
 set clipboard+=unnamed
 set nowrapscan "検索をファイルの先頭へ循環しない
-set relativenumber " 相対行番号を表示（カーソル位置からの相対距離が表示されます）
+"set relativenumber " 相対行番号を表示（カーソル位置からの相対距離が表示されます）
 set cursorline " カーソル行を強調表示
 " カーソルが行頭でさらに左に移動しようとすると、前の行の末尾に行く
-set whichwrap+=h,l,<,>,[,],~
+"set whichwrap+=h,l,<,>,[,],~
+"set iskeyword-=,
+set iskeyword+=+,=,<,>,{,},(,),:,^,$,34,39,44
 
 set ignorecase
 set smartcase
@@ -51,7 +53,8 @@ noremap M %
 " p でペースト時にコピーしない
 vnoremap p "_dP
 
-nnoremap <CR> i<CR><ESC>
+"nnoremap <CR> i<CR><ESC>
+nnoremap <CR> n
 
 " esc
 " inoremap <silent> jk <ESC>
@@ -125,7 +128,6 @@ nmap gr <Action>(Vcs.RefreshStatuses)
 nmap gd <Action>(Compare.LastVersion)
 nmap ga <Action>(Github.Create.Gist)
 
-
 " bookmark
 nmap mm <Action>(ToggleBookmark)
 nmap ms <Action>(ShowBookmarks)
@@ -136,7 +138,6 @@ let mapleader = " "
 " comment 
 nmap <leader>/ <Action>(CommentByLineComment)
 vmap <leader>/ <Action>(CommentByBlockComment)<ESC>
-
 
 " ai
 nmap <leader>io <Action>(AIAssistant.ToolWindow.ShowOrFocus)
@@ -253,6 +254,7 @@ nmap <leader>gi <Action>(GotoImplementation)
 nmap <leader>gs <Action>(GotoSuperMethod)
 nmap <leader>gt <Action>(GotoTest)
 nmap <leader>gu <Action>(FindUsages)
+nmap <leader>gl <Action>(GotoLine)
 
 
 " Folding
@@ -303,7 +305,7 @@ nmap s. <Action>(NextTab)
 packadd matchit
 Plug 'vim-scripts/argtextobj.vim'
 Plug 'machakann/vim-highlightedyank'
-Plug 'tpope/vim-paragraph-motion'
+Plug 'dbakker/vim-paragraph-motion'
 Plug 'michaeljsmith/vim-indent-object'
 Plug 'tommcdo/vim-exchange'
 Plug 'easymotion/vim-easymotion'
@@ -314,6 +316,9 @@ let g:qs_max_chars=80
 " ハイライトの持続時間を設定
 let g:highlightedyank_highlight_duration = "700"
 
+set mini-ai
+set peekaboo " Ctrl+R
+set functiontextobj
 set ideajoin
 set matchit
 set ideamarks
@@ -323,9 +328,11 @@ set commentary
 
 "easymotion-prefix easymotion
 set easymotion
-nmap e <Plug>(easymotion-bd-w)
-nmap E <Plug>(easymotion-bd-e)
-nmap f <Plug>(easymotion-s)
+"nmap e <Action>(flash.search)
+"nmap E <Plug>(easymotion-bd-e)
+nmap e <Plug>(easymotion-s)
+nmap E <Plug>(easymotion-bd-w)
+"nmap E <Plug>(easymotion-iskeyword-w)
 
 " プロジェクトペインをvim風に
 set NERDTree
@@ -378,4 +385,13 @@ let g:switch_custom_definitions = [
     \ switchWords(['visible', 'invisible']),
     \ switchWords(['open', 'close']),
     \ switchWords(['accept', 'reject']),
+    \ switchWords(['toBe', 'toEqual', 'toStrictEqual', 'toBeCloseTo']),
+    \ switchWords(['not.toBe', 'not.toEqual', 'not.toStrictEqual', 'not.toBeCloseTo']),
+    \ switchWords(['toBeTruthy', 'toBeFalsy']),
+    \ switchWords(['not.toBeTruthy', 'not.toBeFalsy']),
+    \ switchWords(['toContain', 'toHaveLength', 'toHaveProperty']),
+    \ switchWords(['not.toContain', 'not.toHaveLength', 'not.toHaveProperty']),
+    \ switchWords(['toBeNull', 'toBeUndefined', 'toBeDefined']),
+    \ switchWords(['not.toBeNull', 'not.toBeUndefined', 'not.toBeDefined']),
+    \ switchWords(['resolves', 'rejects']),
 \ ]
