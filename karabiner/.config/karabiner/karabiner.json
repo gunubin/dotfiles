@@ -4822,6 +4822,22 @@
                     "key_code": "hyphen"
                   }
                 ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "semicolon",
+                  "modifiers": {
+                    "mandatory": [
+                      "option"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "semicolon"
+                  }
+                ]
               }
             ]
           },
@@ -4980,6 +4996,35 @@
                 "parameters": {
                   "basic.to_delayed_action_delay_milliseconds": 200
                 }
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "semicolon",
+                  "modifiers": {
+                    "mandatory": [
+                      "shift"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "return_or_enter",
+                    "modifiers": [
+                      "shift"
+                    ]
+                  }
+                ],
+                "conditions": [
+                  {
+                    "type": "device_if",
+                    "identifiers": [
+                      {
+                        "is_built_in_keyboard": true
+                      }
+                    ]
+                  }
+                ]
               },
               {
                 "type": "basic",

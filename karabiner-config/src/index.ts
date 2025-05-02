@@ -101,6 +101,7 @@ const ruleBuildInKeyboard = () => {
       map('spacebar').to('left_option').toIfAlone('spacebar'),
       map('right_command').to('right_option').toIfAlone('delete_or_backspace'),
       mapDoubleTap(',').to(toSymbol[':']),
+      map('semicolon', 'shift').to('return_or_enter', 'shift'),
       // mapDoubleTap('/').to(toSymbol['-']),
       // IME ON
       mapSimultaneous(['d', 'f']).to('japanese_kana'),
@@ -162,6 +163,7 @@ const ruleOptionSymbol = () => {
     map(',', '⌥').to(toSymbol['[']),
     map('.', '⌥').to(toSymbol[']']),
     map('/', '⌥').to(toSymbol['-']),
+    map(';', '⌥').to(toSymbol[';']),
   ])
 }
 

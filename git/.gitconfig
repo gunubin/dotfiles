@@ -1,8 +1,7 @@
+[include]
+    path = ~/.gitconfig.local
 [commit]
-#   template = ~/.config/git/.gitmessage 
-[user]
-    name = Koki Kato
-    email = kato@shanord.com
+#   template = ~/.config/git/.gitmessage
 [color]
     diff = auto
     ui = auto
