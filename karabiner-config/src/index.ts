@@ -58,8 +58,10 @@ const ruleBasic = () => {
     map('j', '⌘').to('↓'),
     map('k', '⌘').to('↑'),
     map('l', '⌘').to('→'),
-    map('h', ['⇧', '⌘']).to('a', '⌃'),
-    map('l', ['⇧', '⌘']).to('e', '⌃'),
+    map('i', ['⌘']).to('a', '⌃'),
+    map('o', ['⌘']).to('e', '⌃'),
+    // map('h', ['⇧', '⌘']).to('a', '⌃'),
+    // map('l', ['⇧', '⌘']).to('e', '⌃'),
     map(',', ['⌘', '⇧']).to(',', '⌘'),
     withCondition(ifApp(['^com.jetbrains.[\\w-]+$']).unless())([
       map('/', '⌘').to('l', '⌘'),
@@ -74,7 +76,6 @@ const ruleApp = () => {
     withCondition(ifApp(['^com.jetbrains.[\\w-]+$']))([
       map('.', '⌘').to(']', ['⌘', '⇧']),
       map(',', '⌘').to('[', ['⌘', '⇧']),
-      map(',', ['⌘', '⇧']).to(',', '⌘'),
     ]),
     // withCondition(ifApp(['^com\\.google\\.Chrome$', '^org\\.mozilla\\.firefox$']))([
     //   map('.', '⌘').to('tab', '⌃'),
@@ -100,7 +101,10 @@ const ruleBuildInKeyboard = () => {
       map('spacebar').to('left_option').toIfAlone('spacebar'),
       map('right_command').to('right_option').toIfAlone('delete_or_backspace'),
       mapDoubleTap(',').to(toSymbol[':']),
-      mapDoubleTap('/').to(toSymbol['-']),
+      // mapDoubleTap('/').to(toSymbol['-']),
+      // IME ON
+      mapSimultaneous(['d', 'f']).to('japanese_kana'),
+      mapSimultaneous(['f', 'j']).to('-'),
     ]);
 }
 
@@ -139,8 +143,8 @@ const ruleOptionSymbol = () => {
     map('p', '⌥').to(toSymbol['~']),
 
     map('a', '⌥').to(toSymbol['+']),
-    mapDoubleTap('s', '⌥').to(toSymbol['<']).singleTap(toKey('9', ['left_shift'])),
-    mapDoubleTap('d', '⌥').to(toSymbol['>']).singleTap(toKey('0', ['left_shift'])),
+    mapDoubleTap('s', '⌥').to(toSymbol['[']).singleTap(toKey('9', ['left_shift'])),
+    mapDoubleTap('d', '⌥').to(toSymbol[']']).singleTap(toKey('0', ['left_shift'])),
     map('f', '⌥').to(toSymbol['=']),
     map('g', '⌥').to(toSymbol[':']),
     map('h', '⌥').to('←'),
@@ -149,8 +153,8 @@ const ruleOptionSymbol = () => {
     map('l', '⌥').to('→'),
 
     map('z', '⌥').to(toSymbol['|']),
-    mapDoubleTap('x', '⌥').to(toSymbol['[']).singleTap(toKey('open_bracket', ['left_shift'])),
-    mapDoubleTap('c', '⌥').to(toSymbol[']']).singleTap(toKey('close_bracket', ['left_shift'])),
+    mapDoubleTap('x', '⌥').to(toSymbol['<']).singleTap(toKey('open_bracket', ['left_shift'])),
+    mapDoubleTap('c', '⌥').to(toSymbol['>']).singleTap(toKey('close_bracket', ['left_shift'])),
     map('v', '⌥').to(toSymbol['\'']),
     map('b', '⌥').to(toSymbol['\"']),
     map('n', '⌥').to(toSymbol['\\']),

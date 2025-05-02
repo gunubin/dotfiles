@@ -3706,10 +3706,9 @@
               {
                 "type": "basic",
                 "from": {
-                  "key_code": "h",
+                  "key_code": "i",
                   "modifiers": {
                     "mandatory": [
-                      "shift",
                       "command"
                     ]
                   }
@@ -3726,10 +3725,9 @@
               {
                 "type": "basic",
                 "from": {
-                  "key_code": "l",
+                  "key_code": "o",
                   "modifiers": {
                     "mandatory": [
-                      "shift",
                       "command"
                     ]
                   }
@@ -3894,34 +3892,6 @@
                     "modifiers": [
                       "command",
                       "shift"
-                    ]
-                  }
-                ],
-                "conditions": [
-                  {
-                    "type": "frontmost_application_if",
-                    "bundle_identifiers": [
-                      "^com.jetbrains.[\\w-]+$"
-                    ]
-                  }
-                ]
-              },
-              {
-                "type": "basic",
-                "from": {
-                  "key_code": "comma",
-                  "modifiers": {
-                    "mandatory": [
-                      "command",
-                      "shift"
-                    ]
-                  }
-                },
-                "to": [
-                  {
-                    "key_code": "comma",
-                    "modifiers": [
-                      "command"
                     ]
                   }
                 ],
@@ -4315,10 +4285,7 @@
                 },
                 "to": [
                   {
-                    "key_code": "comma",
-                    "modifiers": [
-                      "shift"
-                    ]
+                    "key_code": "open_bracket"
                   }
                 ],
                 "conditions": [
@@ -4395,10 +4362,7 @@
                 },
                 "to": [
                   {
-                    "key_code": "period",
-                    "modifiers": [
-                      "shift"
-                    ]
+                    "key_code": "close_bracket"
                   }
                 ],
                 "conditions": [
@@ -4593,7 +4557,10 @@
                 },
                 "to": [
                   {
-                    "key_code": "open_bracket"
+                    "key_code": "comma",
+                    "modifiers": [
+                      "shift"
+                    ]
                   }
                 ],
                 "conditions": [
@@ -4670,7 +4637,10 @@
                 },
                 "to": [
                   {
-                    "key_code": "close_bracket"
+                    "key_code": "period",
+                    "modifiers": [
+                      "shift"
+                    ]
                   }
                 ],
                 "conditions": [
@@ -5014,41 +4984,21 @@
               {
                 "type": "basic",
                 "from": {
-                  "key_code": "slash"
-                },
-                "to": [
-                  {
-                    "key_code": "hyphen"
-                  }
-                ],
-                "conditions": [
-                  {
-                    "type": "variable_if",
-                    "name": "double-tap-slash",
-                    "value": 1
-                  }
-                ],
-                "description": "__support__manipulator"
-              },
-              {
-                "type": "basic",
-                "from": {
-                  "key_code": "slash"
-                },
-                "to": [
-                  {
-                    "set_variable": {
-                      "name": "double-tap-slash",
-                      "value": 1
+                  "simultaneous": [
+                    {
+                      "key_code": "d"
+                    },
+                    {
+                      "key_code": "f"
                     }
+                  ]
+                },
+                "to": [
+                  {
+                    "key_code": "japanese_kana"
                   }
                 ],
                 "conditions": [
-                  {
-                    "type": "variable_unless",
-                    "name": "double-tap-slash",
-                    "value": 1
-                  },
                   {
                     "type": "device_if",
                     "identifiers": [
@@ -5057,31 +5007,35 @@
                       }
                     ]
                   }
-                ],
-                "to_delayed_action": {
-                  "to_if_invoked": [
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "simultaneous": [
                     {
-                      "key_code": "slash"
+                      "key_code": "f"
                     },
                     {
-                      "set_variable": {
-                        "name": "double-tap-slash",
-                        "value": 0
-                      }
-                    }
-                  ],
-                  "to_if_canceled": [
-                    {
-                      "set_variable": {
-                        "name": "double-tap-slash",
-                        "value": 0
-                      }
+                      "key_code": "j"
                     }
                   ]
                 },
-                "parameters": {
-                  "basic.to_delayed_action_delay_milliseconds": 200
-                }
+                "to": [
+                  {
+                    "key_code": "hyphen"
+                  }
+                ],
+                "conditions": [
+                  {
+                    "type": "device_if",
+                    "identifiers": [
+                      {
+                        "is_built_in_keyboard": true
+                      }
+                    ]
+                  }
+                ]
               }
             ]
           },
