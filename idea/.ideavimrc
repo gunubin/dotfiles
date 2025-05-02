@@ -10,7 +10,6 @@ set nowrapscan "検索をファイルの先頭へ循環しない
 set cursorline " カーソル行を強調表示
 " カーソルが行頭でさらに左に移動しようとすると、前の行の末尾に行く
 "set whichwrap+=h,l,<,>,[,],~
-"set iskeyword-=,
 set iskeyword+=+,=,<,>,{,},(,),:,^,$,34,39,44
 
 set ignorecase
@@ -25,6 +24,14 @@ set wrapscan
 " 検索ハイライトを消す
 nnoremap <ESC><ESC> :nohlsearch<CR>
 nnoremap <C-[> <C-[>:nohlsearch<CR>
+" ===== 検索と置換 =====
+" 検索結果が中央に来るようにする
+nnoremap n nzz
+nnoremap N Nzz
+nnoremap * *zz
+nnoremap # #zz
+nnoremap g* g*zz
+nnoremap g# g#zz
 
 " selection search
 vnoremap / y/\V<C-R>"<CR>
@@ -33,10 +40,6 @@ vnoremap / y/\V<C-R>"<CR>
 set smartindent          " コードのインデントを自動で調整
 set autoindent           " インデントを自動で合わせる
 set smarttab             " インデント時にタブが効率的に使われるように
-
-" space tab
-set list                 " 非表示文字（空白やタブ）を表示
-set listchars=tab:>-,trail:-,eol:$  " 空白、タブ、行末を表示
 
 "x キー削除でデフォルトレジスタに入れない
 nnoremap x "_x
@@ -100,12 +103,16 @@ nmap <C-o> <Action>(Back)
 nmap <C-i> <Action>(Forward)
 nmap [m <Action>(MethodUp)
 nmap ]m <Action>(MethodDown)
+nmap [b <Action>(GotoPreviousBreakpoint)
+nmap ]b <Action>(GotoNextBreakpoint)
 nmap [c <Action>(JumpToLastChange)
 nmap ]c <Action>(JumpToNextChange)
 nmap [g <Action>(VcsShowPrevChangeMarker)
 nmap ]g <Action>(VcsShowNextChangeMarker)
 nmap [e <Action>(GotoPreviousError)
 nmap ]e <Action>(GotoNextError)
+nmap [t <Action>(GotoPreviousTodoItem)
+nmap ]t <Action>(GotoNextTodoItem)
 nmap ]] <Action>(JumpToLastChange)
 nmap [[ <Action>(JumpToNextChange)
 
@@ -219,6 +226,12 @@ nmap <leader>e <Action>(ActivateProjectToolWindow)
 nmap <leader>fh <Action>(LocalHistory.ShowHistory)
 nmap <leader>fo <Action>(RecentChangedFiles)
 nmap <leader>fn <Action>(GotoFile)
+nmap <leader>fr <Action>(RecentFiles)
+nmap <leader>fa <Action>(GotoAction)
+nmap <leader>fp <Action>(FindInPath)
+nmap <leader>fc <Action>(GotoClass)
+nmap <leader>fs <Action>(GotoSymbol)
+nmap <leader>fl <Action>(RecentLocations)
 
 " hierarchy
 nmap <leader>hc <Action>(CallHierarchy)
@@ -245,7 +258,10 @@ nmap <leader>rt <Action>(ChangeTypeSignature)
 nmap <leader>ss <Action>(osmedile.intellij.stringmanip.PopupChoiceAction)
 
 " surround
-nmap <leader>, <Action>(SurroundWith)
+vmap <leader>ts <Action>(SurroundWith)
+
+"
+vmap <leader>tc <Action>(StringManipulation.Group.SwitchCase)
 
 " goto
 nmap <leader>gb <Action>(GotoDeclaration)
