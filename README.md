@@ -71,3 +71,16 @@ make clean
 ```bash
 make update
 ```
+
+
+### ~/.gitconfig.localの作成
+
+Gitを使用する際、ユーザー名とメールアドレスは必須の設定です。個人情報はリポジトリに含めず、`~/.gitconfig.local`ファイルで管理します。
+
+以下の内容で`~/.gitconfig.local`ファイルを作成してください：
+
+```text
+[user]
+    name = YOUR_NAME
+    email = YOUR_EMAIL
+```
