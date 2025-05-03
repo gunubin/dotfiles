@@ -32,8 +32,8 @@ function main() {
       ruleBuildInKeyboard(),
       ruleNotBuildInKeyboard(),
       ruleIme(),
-      ruleImeForJetBrains(),
-      ruleImeDuo(),
+      // ruleImeForJetBrains(),
+      // ruleImeDuo(),
       // ruleVimForJapanese(),
     ],
     {
@@ -77,10 +77,6 @@ const ruleApp = () => {
       map('.', '⌘').to(']', ['⌘', '⇧']),
       map(',', '⌘').to('[', ['⌘', '⇧']),
     ]),
-    // withCondition(ifApp(['^com\\.google\\.Chrome$', '^org\\.mozilla\\.firefox$']))([
-    //   map('.', '⌘').to('tab', '⌃'),
-    //   map(',', '⌘').to('tab', ['⌃', '⇧']),
-    // ]),
     withCondition(ifApp(['^com\\.apple\\.finder$', '^com\\.cocoatech\\.PathFinder$']))([
       map('j', '⌘').to('close_bracket', ['⌘', '⇧']),
       map('k', '⌘').to('open_bracket', ['⌘', '⇧']),
@@ -102,10 +98,15 @@ const ruleBuildInKeyboard = () => {
       map('right_command').to('right_option').toIfAlone('delete_or_backspace'),
       mapDoubleTap(',').to(toSymbol[':']),
       map('semicolon', 'shift').to('return_or_enter', 'shift'),
+      // map(',', 'option').to('return_or_enter', 'shift'),
       // mapDoubleTap('/').to(toSymbol['-']),
       // IME ON
       mapSimultaneous(['d', 'f']).to('japanese_kana'),
       mapSimultaneous(['f', 'j']).to('-'),
+      withCondition(ifApp(['^com.jetbrains.[\\w-]+$']))([
+        map('.', '⌥').to(']', ['⌘', '⇧']),
+        map(',', '⌥').to('[', ['⌘', '⇧']),
+      ]),
     ]);
 }
 
@@ -160,39 +161,69 @@ const ruleOptionSymbol = () => {
     map('b', '⌥').to(toSymbol['\"']),
     map('n', '⌥').to(toSymbol['\\']),
     map('m', '⌥').to(toSymbol['_']),
-    map(',', '⌥').to(toSymbol['[']),
-    map('.', '⌥').to(toSymbol[']']),
     map('/', '⌥').to(toSymbol['-']),
     map(';', '⌥').to(toSymbol[';']),
+    withCondition(ifApp(['^com.jetbrains.[\\w-]+$']).unless())([
+      map(',', '⌥').to(toSymbol['[']),
+      map('.', '⌥').to(toSymbol[']']),
+    ]),
   ])
 }
+
+const jkSimultaneous = () => mapSimultaneous(['j', 'k']).to('japanese_eisuu');
 
 const ruleIme = () => {
   return rule('Ime').manipulators([
     map('f16').to('japanese_kana').toVar(vimVisualMode).toVar(vimLayerKey, 0).toRemoveNotificationMessage(vimNoticeKey), // for QMK
-    map('escape').to('japanese_eisuu').toVar(vimVisualMode).toVar(vimLayerKey, 0).toRemoveNotificationMessage(vimNoticeKey), // for QMK
+    map('escape').to('escape').to('japanese_eisuu').toVar(vimVisualMode).toVar(vimLayerKey, 0).toRemoveNotificationMessage(vimNoticeKey), // for QMK
     withCondition(ifInputSource({language: 'ja'}))([
       map('slash').to('hyphen'),
       map('return_or_enter', '⌃').to('semicolon', '⌃'),
       // for iterm2
       map('u', ['⌃', '⌘']).to('u', ['⌃', '⌘']).to('japanese_eisuu'),
-    ])
+    ]),
+    // jk で日本語
+    withCondition(ifInputSource({language: 'ja'}))([
+      jkSimultaneous(),
+    ]),
+    // jk で IME:OFFだったらESCAPE
+    withCondition(ifInputSource({language: 'ja'}).unless())([
+      mapSimultaneous(['j', 'k']).to('escape')
+    ]),
+    // for jetbrains
+    withCondition(
+      ifApp(ignoreVimEmulation),
+      ifInputSource({language: 'ja'}),
+    )([
+      jkSimultaneous().to('open_bracket', 'left_control'),
+    ]),
+    withCondition(
+      ifApp(ignoreVimEmulation),
+      ifInputSource({language: 'ja'}).unless(),
+    )([
+      jkSimultaneous().to('escape'),
+    ]),
   ])
 }
 
-const ruleImeForJetBrains = () => {
-  return duoLayer('j', 'k').threshold(100)
-    .condition(ifApp(ignoreVimEmulation))
-    .toIfActivated(toKey("japanese_eisuu"))
-    .toIfActivated(toKey("open_bracket", 'left_control'))
-}
-
-const ruleImeDuo = () => {
-  return duoLayer('j', 'k').threshold(100)
-    .condition(ifApp(ignoreVimEmulation).unless())
-    .toIfActivated(toKey("japanese_eisuu"))
-    .toIfActivated(toSetVar(vimVisualMode, 0))
-}
+// const ruleImeForJetBrains = () => {
+//   return duoLayer('j', 'k').threshold(100)
+//     .condition(ifApp(ignoreVimEmulation))
+//     .toIfActivated(toKey("japanese_eisuu"))
+//     .toIfActivated(toKey("open_bracket", 'left_control'))
+// }
+//
+// const ruleImeDuo = () => {
+//   return duoLayer('j', 'k').threshold(100)
+//     .condition(ifApp(ignoreVimEmulation).unless())
+//     .toIfActivated(toKey("japanese_eisuu"))
+//     .toIfActivated(toSetVar(vimVisualMode, 0))
+//     .manipulators([
+//       withCondition(ifInputSource({language: 'ja'}).unless())([
+//         toKey('escape')
+//       ])
+//     ])
+// }
 
 const ruleVimForJapanese = () => {
   return duoLayer('j', 'k', vimLayerKey)

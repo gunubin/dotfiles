@@ -4778,38 +4778,6 @@
               {
                 "type": "basic",
                 "from": {
-                  "key_code": "comma",
-                  "modifiers": {
-                    "mandatory": [
-                      "option"
-                    ]
-                  }
-                },
-                "to": [
-                  {
-                    "key_code": "open_bracket"
-                  }
-                ]
-              },
-              {
-                "type": "basic",
-                "from": {
-                  "key_code": "period",
-                  "modifiers": {
-                    "mandatory": [
-                      "option"
-                    ]
-                  }
-                },
-                "to": [
-                  {
-                    "key_code": "close_bracket"
-                  }
-                ]
-              },
-              {
-                "type": "basic",
-                "from": {
                   "key_code": "slash",
                   "modifiers": {
                     "mandatory": [
@@ -4836,6 +4804,54 @@
                 "to": [
                   {
                     "key_code": "semicolon"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "comma",
+                  "modifiers": {
+                    "mandatory": [
+                      "option"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "open_bracket"
+                  }
+                ],
+                "conditions": [
+                  {
+                    "type": "frontmost_application_unless",
+                    "bundle_identifiers": [
+                      "^com.jetbrains.[\\w-]+$"
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "period",
+                  "modifiers": {
+                    "mandatory": [
+                      "option"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "close_bracket"
+                  }
+                ],
+                "conditions": [
+                  {
+                    "type": "frontmost_application_unless",
+                    "bundle_identifiers": [
+                      "^com.jetbrains.[\\w-]+$"
+                    ]
                   }
                 ]
               }
@@ -5081,6 +5097,78 @@
                     ]
                   }
                 ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "period",
+                  "modifiers": {
+                    "mandatory": [
+                      "option"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "close_bracket",
+                    "modifiers": [
+                      "command",
+                      "shift"
+                    ]
+                  }
+                ],
+                "conditions": [
+                  {
+                    "type": "frontmost_application_if",
+                    "bundle_identifiers": [
+                      "^com.jetbrains.[\\w-]+$"
+                    ]
+                  },
+                  {
+                    "type": "device_if",
+                    "identifiers": [
+                      {
+                        "is_built_in_keyboard": true
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "comma",
+                  "modifiers": {
+                    "mandatory": [
+                      "option"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "open_bracket",
+                    "modifiers": [
+                      "command",
+                      "shift"
+                    ]
+                  }
+                ],
+                "conditions": [
+                  {
+                    "type": "frontmost_application_if",
+                    "bundle_identifiers": [
+                      "^com.jetbrains.[\\w-]+$"
+                    ]
+                  },
+                  {
+                    "type": "device_if",
+                    "identifiers": [
+                      {
+                        "is_built_in_keyboard": true
+                      }
+                    ]
+                  }
+                ]
               }
             ]
           },
@@ -5229,6 +5317,9 @@
                 },
                 "to": [
                   {
+                    "key_code": "escape"
+                  },
+                  {
                     "key_code": "japanese_eisuu"
                   },
                   {
@@ -5334,12 +5425,7 @@
                     ]
                   }
                 ]
-              }
-            ]
-          },
-          {
-            "description": "DuoLayer j k",
-            "manipulators": [
+              },
               {
                 "type": "basic",
                 "from": {
@@ -5350,33 +5436,9 @@
                     {
                       "key_code": "k"
                     }
-                  ],
-                  "simultaneous_options": {
-                    "to_after_key_up": [
-                      {
-                        "set_variable": {
-                          "name": "duo-layer-j-k",
-                          "value": 0
-                        }
-                      }
-                    ]
-                  },
-                  "modifiers": {
-                    "optional": [
-                      "any"
-                    ]
-                  }
-                },
-                "parameters": {
-                  "basic.simultaneous_threshold_milliseconds": 100
+                  ]
                 },
                 "to": [
-                  {
-                    "set_variable": {
-                      "name": "duo-layer-j-k",
-                      "value": 1
-                    }
-                  },
                   {
                     "key_code": "japanese_eisuu"
                   },
@@ -5389,24 +5451,22 @@
                 ],
                 "conditions": [
                   {
-                    "type": "variable_unless",
-                    "name": "duo-layer-j-k",
-                    "value": 1
-                  },
-                  {
                     "type": "frontmost_application_if",
                     "bundle_identifiers": [
                       "^com.jetbrains.[\\w-]+$",
                       "^com.googlecode.iterm2$"
                     ]
+                  },
+                  {
+                    "type": "input_source_if",
+                    "input_sources": [
+                      {
+                        "language": "ja"
+                      }
+                    ]
                   }
                 ]
-              }
-            ]
-          },
-          {
-            "description": "DuoLayer j k",
-            "manipulators": [
+              },
               {
                 "type": "basic",
                 "from": {
@@ -5417,54 +5477,86 @@
                     {
                       "key_code": "k"
                     }
-                  ],
-                  "simultaneous_options": {
-                    "to_after_key_up": [
-                      {
-                        "set_variable": {
-                          "name": "duo-layer-j-k",
-                          "value": 0
-                        }
-                      }
-                    ]
-                  },
-                  "modifiers": {
-                    "optional": [
-                      "any"
-                    ]
-                  }
-                },
-                "parameters": {
-                  "basic.simultaneous_threshold_milliseconds": 100
+                  ]
                 },
                 "to": [
-                  {
-                    "set_variable": {
-                      "name": "duo-layer-j-k",
-                      "value": 1
-                    }
-                  },
                   {
                     "key_code": "japanese_eisuu"
                   },
                   {
-                    "set_variable": {
-                      "name": "VimLayerVisualMode",
-                      "value": 0
-                    }
+                    "key_code": "escape"
                   }
                 ],
                 "conditions": [
                   {
-                    "type": "variable_unless",
-                    "name": "duo-layer-j-k",
-                    "value": 1
-                  },
-                  {
-                    "type": "frontmost_application_unless",
+                    "type": "frontmost_application_if",
                     "bundle_identifiers": [
                       "^com.jetbrains.[\\w-]+$",
                       "^com.googlecode.iterm2$"
+                    ]
+                  },
+                  {
+                    "type": "input_source_unless",
+                    "input_sources": [
+                      {
+                        "language": "ja"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "simultaneous": [
+                    {
+                      "key_code": "j"
+                    },
+                    {
+                      "key_code": "k"
+                    }
+                  ]
+                },
+                "to": [
+                  {
+                    "key_code": "japanese_eisuu"
+                  }
+                ],
+                "conditions": [
+                  {
+                    "type": "input_source_if",
+                    "input_sources": [
+                      {
+                        "language": "ja"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "simultaneous": [
+                    {
+                      "key_code": "j"
+                    },
+                    {
+                      "key_code": "k"
+                    }
+                  ]
+                },
+                "to": [
+                  {
+                    "key_code": "escape"
+                  }
+                ],
+                "conditions": [
+                  {
+                    "type": "input_source_unless",
+                    "input_sources": [
+                      {
+                        "language": "ja"
+                      }
                     ]
                   }
                 ]
