@@ -95,11 +95,10 @@ const ruleBuildInKeyboard = () => {
     .manipulators([
       map('semicolon').to('left_control').toIfAlone('return_or_enter'),
       map('spacebar').to('left_option').toIfAlone('spacebar'),
+      map('left_command').to('left_command').toIfAlone('tab'),
       map('right_command').to('right_option').toIfAlone('delete_or_backspace'),
       mapDoubleTap(',').to(toSymbol[':']),
       map('semicolon', 'shift').to('return_or_enter', 'shift'),
-      // map(',', 'option').to('return_or_enter', 'shift'),
-      // mapDoubleTap('/').to(toSymbol['-']),
       // IME ON
       mapSimultaneous(['d', 'f']).to('japanese_kana'),
       mapSimultaneous(['f', 'j']).to('-'),
