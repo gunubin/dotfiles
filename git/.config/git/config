@@ -1,0 +1,46 @@
+[include]
+    path = ~/.gitconfig.local
+[commit]
+#   template = ~/.config/git/.gitmessage
+[color]
+    diff = auto
+    ui = auto
+[status]
+    diff = auto
+[branch]
+    diff = auto
+[alias]
+    co = checkout
+    ci = commit
+    st = status
+    br = branch
+    sb = show-branch
+    hist = log --graph --date=short
+    lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
+    lga = log --graph --all --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
+[core]
+    autocrlf = input
+    editor = /usr/bin/vim
+    ignorecase = false
+    excludesFile = ~/.config/git/.gitignore
+[merge]
+    # http://qiita.com/nog/items/c79469afbf3e632f10a1
+    # ff = false
+[difftool "sourcetree"]
+    cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+    path = 
+[mergetool "sourcetree"]
+    cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+    trustExitCode = true
+[credential]
+    UseHttpPath = true
+    helper = !aws –profile CodeCommitProfile codecommit credential-helper $@
+[filter "lfs"]
+    process = git-lfs filter-process
+    required = true
+    clean = git-lfs clean -- %f
+    smudge = git-lfs smudge -- %f
+[pull]
+    rebase = false
+
+    
