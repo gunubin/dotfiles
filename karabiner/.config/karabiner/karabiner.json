@@ -3725,19 +3725,16 @@
               {
                 "type": "basic",
                 "from": {
-                  "key_code": "o",
+                  "key_code": "delete_or_backspace",
                   "modifiers": {
                     "mandatory": [
-                      "command"
+                      "control"
                     ]
                   }
                 },
                 "to": [
                   {
-                    "key_code": "e",
-                    "modifiers": [
-                      "control"
-                    ]
+                    "key_code": "delete_forward"
                   }
                 ]
               },
@@ -5071,64 +5068,6 @@
               {
                 "type": "basic",
                 "from": {
-                  "key_code": "i",
-                  "modifiers": {
-                    "mandatory": [
-                      "left_option"
-                    ]
-                  }
-                },
-                "to": [
-                  {
-                    "key_code": "a",
-                    "modifiers": [
-                      "control"
-                    ]
-                  }
-                ],
-                "conditions": [
-                  {
-                    "type": "device_if",
-                    "identifiers": [
-                      {
-                        "is_built_in_keyboard": true
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                "type": "basic",
-                "from": {
-                  "key_code": "o",
-                  "modifiers": {
-                    "mandatory": [
-                      "left_option"
-                    ]
-                  }
-                },
-                "to": [
-                  {
-                    "key_code": "e",
-                    "modifiers": [
-                      "control"
-                    ]
-                  }
-                ],
-                "conditions": [
-                  {
-                    "type": "device_if",
-                    "identifiers": [
-                      {
-                        "is_built_in_keyboard": true
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                "type": "basic",
-                "from": {
                   "simultaneous": [
                     {
                       "key_code": "d"
@@ -5556,85 +5495,6 @@
                   }
                 ],
                 "conditions": [
-                  {
-                    "type": "input_source_unless",
-                    "input_sources": [
-                      {
-                        "language": "ja"
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                "type": "basic",
-                "from": {
-                  "simultaneous": [
-                    {
-                      "key_code": "j"
-                    },
-                    {
-                      "key_code": "k"
-                    }
-                  ]
-                },
-                "to": [
-                  {
-                    "key_code": "japanese_eisuu"
-                  },
-                  {
-                    "key_code": "open_bracket",
-                    "modifiers": [
-                      "left_control"
-                    ]
-                  }
-                ],
-                "conditions": [
-                  {
-                    "type": "frontmost_application_if",
-                    "bundle_identifiers": [
-                      "^com.jetbrains.[\\w-]+$",
-                      "^com.googlecode.iterm2$"
-                    ]
-                  },
-                  {
-                    "type": "input_source_if",
-                    "input_sources": [
-                      {
-                        "language": "ja"
-                      }
-                    ]
-                  }
-                ]
-              },
-              {
-                "type": "basic",
-                "from": {
-                  "simultaneous": [
-                    {
-                      "key_code": "j"
-                    },
-                    {
-                      "key_code": "k"
-                    }
-                  ]
-                },
-                "to": [
-                  {
-                    "key_code": "japanese_eisuu"
-                  },
-                  {
-                    "key_code": "escape"
-                  }
-                ],
-                "conditions": [
-                  {
-                    "type": "frontmost_application_if",
-                    "bundle_identifiers": [
-                      "^com.jetbrains.[\\w-]+$",
-                      "^com.googlecode.iterm2$"
-                    ]
-                  },
                   {
                     "type": "input_source_unless",
                     "input_sources": [
