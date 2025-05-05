@@ -15,7 +15,7 @@ import {
 } from 'karabiner.ts'
 import {toSymbol} from "./utils";
 
-// modskey '⌘' | '⌥' | '⌃' | '⇧'
+// modskey '⌘' | '⌥' | '⌃' | '⇧' | '⌫' |'⌦'
 
 const prefixDomLayer = 'duo-layer-';
 const vimLayerKey = 'vimLayerKey';
@@ -32,14 +32,9 @@ function main() {
       ruleBuildInKeyboard(),
       ruleNotBuildInKeyboard(),
       ruleIme(),
-      // ruleImeForJetBrains(),
-      // ruleImeDuo(),
-      // ruleVimForJapanese(),
     ],
     {
       'basic.simultaneous_threshold_milliseconds': 150,
-      'duo_layer.threshold_milliseconds': 150,
-      // 'duo_layer.notification': true,
     },
   )
 }
@@ -59,7 +54,7 @@ const ruleBasic = () => {
     map('k', '⌘').to('↑'),
     map('l', '⌘').to('→'),
     map('i', ['⌘']).to('a', '⌃'),
-    map('o', ['⌘']).to('e', '⌃'),
+    map('⌫', ['⌃']).to('⌦'),
     // map('h', ['⇧', '⌘']).to('a', '⌃'),
     // map('l', ['⇧', '⌘']).to('e', '⌃'),
     map(',', ['⌘', '⇧']).to(',', '⌘'),
@@ -182,95 +177,16 @@ const ruleIme = () => {
       map('u', ['⌃', '⌘']).to('u', ['⌃', '⌘']).to('japanese_eisuu'),
     ]),
     // jk で日本語
-    withCondition(ifInputSource({language: 'ja'}))([
+    withCondition(
+      ifInputSource({language: 'ja'}))([
       jkSimultaneous(),
     ]),
     // jk で IME:OFFだったらESCAPE
-    withCondition(ifInputSource({language: 'ja'}).unless())([
+    withCondition(
+      ifInputSource({language: 'ja'}).unless())([
       mapSimultaneous(['j', 'k']).to('escape')
     ]),
-    // for jetbrains
-    withCondition(
-      ifApp(ignoreVimEmulation),
-      ifInputSource({language: 'ja'}),
-    )([
-      jkSimultaneous().to('open_bracket', 'left_control'),
-    ]),
-    withCondition(
-      ifApp(ignoreVimEmulation),
-      ifInputSource({language: 'ja'}).unless(),
-    )([
-      jkSimultaneous().to('escape'),
-    ]),
   ])
-}
-
-// const ruleImeForJetBrains = () => {
-//   return duoLayer('j', 'k').threshold(100)
-//     .condition(ifApp(ignoreVimEmulation))
-//     .toIfActivated(toKey("japanese_eisuu"))
-//     .toIfActivated(toKey("open_bracket", 'left_control'))
-// }
-//
-// const ruleImeDuo = () => {
-//   return duoLayer('j', 'k').threshold(100)
-//     .condition(ifApp(ignoreVimEmulation).unless())
-//     .toIfActivated(toKey("japanese_eisuu"))
-//     .toIfActivated(toSetVar(vimVisualMode, 0))
-//     .manipulators([
-//       withCondition(ifInputSource({language: 'ja'}).unless())([
-//         toKey('escape')
-//       ])
-//     ])
-// }
-
-const ruleVimForJapanese = () => {
-  return duoLayer('j', 'k', vimLayerKey)
-    .condition(ifApp(ignoreVimEmulation).unless())
-    .toIfActivated(toKey("japanese_eisuu"))
-    .toIfActivated(toSetVar(vimVisualMode, 0))
-    .threshold(100)
-    .leaderMode({sticky: true})
-    .notification('Normal Mode (Vim Emulation)')
-    .manipulators([
-      map('a').to('→').toVar(vimLayerKey, 0).toRemoveNotificationMessage(vimNoticeKey),
-      map('i').toVar(vimLayerKey, 0).toRemoveNotificationMessage(vimNoticeKey),
-      map('o').to('e', 'left_control').to('return_or_enter').toVar(vimLayerKey, 0).toRemoveNotificationMessage(vimNoticeKey),
-      map('o', '⇧').to('a', 'left_control').to('return_or_enter').to('↑').toVar(vimLayerKey, 0).toRemoveNotificationMessage(vimNoticeKey),
-      map('u').to('z', '⌘'),
-      map('x').toVar(vimVisualMode, 0).to('⌦'),
-      map('x', '⇧').toVar(vimVisualMode, 0).to('⌫'),
-      map('p').to('v', '⌘').toVar(vimVisualMode, 0),
-      map('d', '⇧').to('e', '⌃⇧').to('c', 'left_command').to('delete_or_backspace').toVar(vimVisualMode, 0),
-      map("r", '⌃').to("z", ['⇧', '⌘']),
-      // map("u", '⌃').to('up_arrow', ['⌥']),
-      // map("d", '⌃').to('down_arrow', ['⌥']),
-      map("g", '⇧').to('up_arrow', ['⌘']),
-      mapDoubleTap('g').to('down_arrow', '⌘'),
-      withCondition(ifVar(vimVisualMode, 0))([
-        map('h').to('←'),
-        map('j').to('↓'),
-        map('k').to('↑'),
-        map('l').to('→'),
-        map("w").to('right_arrow', ['⌥']),
-        map("b").to('left_arrow', ['⌥']),
-        mapDoubleTap('v', 150).toVar(vimVisualMode, 1).to('a', '⌃').to('e', '⌃⇧').singleTap(toSetVar(vimVisualMode, 1)),
-        mapDoubleTap('y').to('a', '⌃').to('e', '⌃⇧').to('c', '⌘'),
-        mapDoubleTap('d').to('a', '⌃').to('e', '⌃⇧').to('c', 'left_command').to('delete_or_backspace').toVar(vimVisualMode, 0),
-      ]),
-      withCondition(ifVar(vimVisualMode, 1))([
-        mapSimultaneous(['k', 'j']).toVar(vimVisualMode, 0).to('←'),
-        map('v').toVar(vimVisualMode, 0).to('←'),
-        map('h').to('←', '⇧'),
-        map('j').to('↓', '⇧'),
-        map('k').to('↑', '⇧'),
-        map('l').to('→', '⇧'),
-        map('d').to('c', 'left_command').to('delete_or_backspace').toVar(vimVisualMode, 0),
-        map('y').to('c', 'left_command').toVar(vimVisualMode, 0),
-        map("w").to('right_arrow', ['⌥', '⇧']),
-        map("b").to('left_arrow', ['⌥', '⇧']),
-      ]),
-    ])
 }
 
 main();
