@@ -1,0 +1,27 @@
+theme = darkmatrix
+font-family = "JetBrainsMono Nerd Font"
+font-size = 16
+cursor-style-blink = true
+
+
+window-height = 50
+window-inherit-working-directory = true
+window-padding-balance = true
+macos-non-native-fullscreen = true
+fullscreen = true
+macos-titlebar-style = hidden
+resize-overlay = never
+
+
+quick-terminal-position = "top"
+quick-terminal-screen = "main"
+quick-terminal-animation-duration = 0.15
+#quick-terminal-size = 75%
+
+
+keybind = global:ctrl+cmd+y=toggle_visibility
+keybind = ctrl+tab=text:\x13\x0E
+keybind = shift+ctrl+tab=text:\x13\x10
+keybind = cmd+e=text:\x0e
+keybind = cmd+t=text:\x13\x03
+keybind = cmd+w=text:\x13\x0b
