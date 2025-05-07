@@ -1,11 +1,9 @@
-theme = darkmatrix
+theme = matrix
 font-family = "JetBrainsMono Nerd Font"
 font-size = 16
 cursor-style-blink = true
 
 
-window-height = 50
-window-inherit-working-directory = true
 window-padding-balance = true
 macos-non-native-fullscreen = true
 fullscreen = true
@@ -19,7 +17,7 @@ quick-terminal-animation-duration = 0.15
 #quick-terminal-size = 75%
 
 
-keybind = global:ctrl+cmd+y=toggle_visibility
+keybind = global:ctrl+cmd+u=toggle_visibility
 keybind = ctrl+tab=text:\x13\x0E
 keybind = shift+ctrl+tab=text:\x13\x10
 keybind = cmd+e=text:\x0e
