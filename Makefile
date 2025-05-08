@@ -80,3 +80,10 @@ brew-bundle: check-brew
 	@echo "Brewfileからパッケージをインストールしています..."
 	@brew bundle install --file=Brewfile
 	@echo "Brewfileのインストールが完了しました"
+
+# 現在インストールされているパッケージからBrewfileを作成
+.PHONY: brew-dump
+brew-dump: check-brew
+	@echo "現在のパッケージからBrewfileを作成しています..."
+	@brew bundle dump --force
+	@echo "Brewfileの作成が完了しました"

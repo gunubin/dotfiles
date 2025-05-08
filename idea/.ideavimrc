@@ -151,6 +151,7 @@ vmap <leader>/ <Action>(CommentByBlockComment)<ESC>
 
 " ai
 nmap <leader>io <Action>(AIAssistant.ToolWindow.ShowOrFocus)
+vmap <leader>io <Action>(AIAssistant.ToolWindow.ShowOrFocus)
 nmap <leader>ii <Action>(AIAssistant.Editor.AskAiAssistantInEditor)
 nmap <leader>im <Action>(IntentionActionAsAction_com.intellij.ml.llm.intentions.chat.AIAssistantIntention)
 vmap <leader>im <Action>(IntentionActionAsAction_com.intellij.ml.llm.intentions.chat.AIAssistantIntention)
