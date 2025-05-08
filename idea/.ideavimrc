@@ -59,6 +59,9 @@ vnoremap p "_dP
 "nnoremap <CR> i<CR><ESC>
 nnoremap <CR> n
 
+onoremap i<space> iW
+xnoremap i<space> iW
+
 " esc
 " inoremap <silent> jk <ESC>
 " inoremap <silent> kj <ESC>
