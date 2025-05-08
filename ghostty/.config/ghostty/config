@@ -1,8 +1,15 @@
 theme = matrix
-font-family = "JetBrainsMono Nerd Font"
-font-size = 16
-cursor-style-blink = true
+# theme = catppuccin-mocha
+# theme = AlienBlood
 
+font-family = "JetBrainsMono Nerd Font"
+font-feature = -dlig
+font-size = 16
+
+cursor-style = block
+cursor-style-blink = true
+cursor-invert-fg-bg = true
+cursor-opacity = 0.8
 
 window-padding-balance = true
 macos-non-native-fullscreen = true
