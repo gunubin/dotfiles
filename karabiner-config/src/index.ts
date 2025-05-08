@@ -41,7 +41,7 @@ function main() {
 
 const ruleBasic = () => {
   return rule('Basic').manipulators([
-    withCondition(ifApp(['^com.googlecode.iterm2$']).unless())([
+    withCondition(ifApp(['^com.googlecode.iterm2$', 'com.mitchellh.ghostty']).unless())([
       map('c', '⌃').to('escape').to('japanese_eisuu')
         // TODO: fix this
         .toVar(vimVisualMode).toVar(vimLayerKey, 0).toRemoveNotificationMessage(vimNoticeKey),

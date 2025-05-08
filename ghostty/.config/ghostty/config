@@ -1,6 +1,6 @@
-theme = matrix
+# theme = matrix
 # theme = catppuccin-mocha
-# theme = AlienBlood
+theme = ENCOM
 
 font-family = "JetBrainsMono Nerd Font"
 font-feature = -dlig
@@ -17,12 +17,9 @@ fullscreen = true
 macos-titlebar-style = hidden
 resize-overlay = never
 
-
 quick-terminal-position = "top"
 quick-terminal-screen = "main"
 quick-terminal-animation-duration = 0.15
-#quick-terminal-size = 75%
-
 
 keybind = global:ctrl+cmd+u=toggle_visibility
 keybind = ctrl+tab=text:\x13\x0E
