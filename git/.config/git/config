@@ -20,15 +20,18 @@
     lga = log --graph --all --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit --date=relative
 [core]
     autocrlf = input
-    editor = /usr/bin/vim
+    editor = nvim
     ignorecase = false
     excludesFile = ~/.config/git/.gitignore
+    pager = delta
+    preloadindex = true
+    quotepath = false
 [merge]
     # http://qiita.com/nog/items/c79469afbf3e632f10a1
     # ff = false
 [difftool "sourcetree"]
     cmd = opendiff \"$LOCAL\" \"$REMOTE\"
-    path = 
+    path =
 [mergetool "sourcetree"]
     cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
     trustExitCode = true
@@ -43,4 +46,8 @@
 [pull]
     rebase = false
 
-    
+[delta]
+    navigate = true
+    light = false
+    side-by-side = true
+    line-numbers = true

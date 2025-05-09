@@ -46,6 +46,7 @@ status --is-interactive; and source (rbenv init -|psub)
 #######
 alias dkc='docker-compose'
 alias y='yarn'
+alias p='pnpm'
 
 alias ei="eza --icons --git"
 alias ea="eza -a --icons --git"
@@ -121,7 +122,7 @@ function go_back_directory --description 'Go to previous directory'
   # cd -
   commandline -f repaint
 end
-    
+
 function go_next_directory --description 'Go to previous directory'
   # cd -
   nextd
