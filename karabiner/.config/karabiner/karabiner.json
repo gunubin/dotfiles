@@ -3726,6 +3726,25 @@
               {
                 "type": "basic",
                 "from": {
+                  "key_code": "o",
+                  "modifiers": {
+                    "mandatory": [
+                      "command"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "e",
+                    "modifiers": [
+                      "control"
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
                   "key_code": "comma",
                   "modifiers": {
                     "mandatory": [

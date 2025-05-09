@@ -260,6 +260,7 @@ nmap <leader>rt <Action>(ChangeTypeSignature)
 
 "" stringmanip
 nmap <leader>ss <Action>(osmedile.intellij.stringmanip.PopupChoiceAction)
+vmap <leader>ss <Action>(osmedile.intellij.stringmanip.PopupChoiceAction)
 
 " surround
 vmap <leader>ts <Action>(SurroundWith)
