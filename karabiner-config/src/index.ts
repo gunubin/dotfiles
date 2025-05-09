@@ -1,9 +1,7 @@
 import {
-  duoLayer,
   ifApp,
   ifDevice,
   ifInputSource,
-  ifVar,
   map,
   mapDoubleTap,
   mapSimultaneous,
@@ -54,6 +52,7 @@ const ruleBasic = () => {
     map('k', '⌘').to('↑'),
     map('l', '⌘').to('→'),
     map('i', ['⌘']).to('a', '⌃'),
+    map('o', ['⌘']).to('e', '⌃'),
     // map('⌫', ['⌃']).to('⌦'),
     // map('h', ['⇧', '⌘']).to('a', '⌃'),
     // map('l', ['⇧', '⌘']).to('e', '⌃'),
