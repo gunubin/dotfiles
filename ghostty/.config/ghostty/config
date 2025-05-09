@@ -1,6 +1,7 @@
 # theme = matrix
 # theme = catppuccin-mocha
-theme = ENCOM
+# theme = ENCOM
+theme = 0x96f 
 
 font-family = "JetBrainsMono Nerd Font"
 font-feature = -dlig
