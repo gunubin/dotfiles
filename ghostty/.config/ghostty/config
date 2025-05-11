@@ -12,8 +12,6 @@ font-feature = -calt, -liga, -dlig
 font-size = 16
 bold-is-bright = true
 
-foreground = red
-
 cursor-style = block
 cursor-style-blink = true
 #cursor-invert-fg-bg = true

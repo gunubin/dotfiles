@@ -1,9 +1,24 @@
+
+function fish_greeting
+  set_color cyan
+  echo '
+    ><((((º>'
+  set_color normal
+end
+
+#######
+# franciscolourenco/done
+#######
+set -U __done_min_cmd_duration 5000  # default: 5000 ms
+
 #######
 # starship
 #######
 starship init fish | source
 
 set U FZF_LEGACY_KEYBINDINGS 0
+
+set -gx EDITOR nvim
 
 #######
 # fish command color
@@ -75,9 +90,9 @@ alias vim="nvim"
 #######
 # https://github.com/oh-my-fish/oh-my-fish/blob/master/docs/Themes.md#bobthefish
 #######
-set -g theme_powerline_fonts yes
+# set -g theme_powerline_fonts yes
 #set -g theme_nerd_fonts yes
-set -g theme_display_docker_machine yes
+# set -g theme_display_docker_machine yes
 #set -g theme_display_vi yes
 
 #######
@@ -97,30 +112,6 @@ set -x FZF_DEFAULT_OPTS '
   --color=list-border:#669966,list-label:#99cc99
   --color=input-border:#996666,input-label:#ffcccc
 '
-
-#######
-# http://ka2n.hatenablog.com/entry/2017/01/09/fish_shell%E3%81%A7z%E3%81%AE%E7%B5%90%E6%9E%9C%E3%82%92peco%E3%81%A3%E3%81%A6%E7%88%86%E9%80%9F%E3%81%A7%E3%83%87%E3%82%A3%E3%83%AC%E3%82%AF%E3%83%88%E3%83%AA%E7%A7%BB%E5%8B%95%E3%81%99%E3%82%8B
-#######
-#function fzf-z
-#    set -l query (commandline)
-#
-#    if test -n $query
-#    set fzf_flags --query "$query"
-#    end
-#
-#    z -l | fzf --reverse --select-1 --height 40% $fzf_flags | awk '{ print $2 }' | read recent
-#    if [ $recent ]
-#        cd $recent
-#        commandline -r ''
-#        commandline -f repaint
-#    end
-#end
-#bind \cj 'zi'
-#function zoxid_i
-# zi
-#  commandline -f repaint
-#end
-#bind \cj 'zoxid_i'
 
 function go_parent_directory --description 'Go to parent directory'
   cd ..
@@ -169,7 +160,6 @@ end
 #######
 # direnv
 #######
-#set -x EDITOR vim
 #eval (direnv hook fish)
 
 # The next line updates PATH for the Google Cloud SDK.
@@ -196,6 +186,11 @@ function zf --description 'zoxide + fzf + eza preview'
   commandline -f repaint
 end
 
-
 bind \cj 'zf'
+
+# cdコマンドをzoxideで置き換え
+function cd
+  z $argv
+end
+
 
