@@ -1,10 +1,10 @@
 "$schema" = 'https://starship.rs/config-schema.json'
 
 format = """
-[](red)\
+[](dark)\
 $os\
 $username\
-[](bg:pink fg:red)\
+[](bg:pink fg:dark)\
 $directory\
 [](bg:yellow fg:pink)\
 $git_branch\
@@ -32,8 +32,8 @@ palette = 'catppuccin_mocha'
 
 [os]
 disabled = false
-style = "bg:red fg:crust"
-format = '[[$symbol ](bg:red fg:#dddddd)]($style)'
+style = "bg:dark fg:crust"
+format = '[[$symbol ](bg:dark fg:#dddddd)]($style)'
 
 [os.symbols]
 Windows = ""
@@ -169,12 +169,12 @@ show_notifications = true
 min_time_to_notify = 45000
 
 [palettes.catppuccin_mocha]
+dark = "#393939"
 rosewater = "#f5d8cf"
 flamingo = "#f5caca"
 pink = "#f5c6e5"
 mauve = "#d6b4fa"
-#red = "#f38ba8"
-red = "#393939"
+red = "#f38ba8"
 maroon = "#eda9b5"
 peach = "#faba98"
 yellow = "#f9dea0"
