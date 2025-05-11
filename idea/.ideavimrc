@@ -56,8 +56,8 @@ noremap M %
 " p でペースト時にコピーしない
 vnoremap p "_dP
 
-"nnoremap <CR> i<CR><ESC>
-nnoremap <CR> n
+nnoremap <CR> i<CR><ESC>
+"nnoremap <CR> n
 
 onoremap i<space> iW
 xnoremap i<space> iW

@@ -6,6 +6,12 @@ starship init fish | source
 set U FZF_LEGACY_KEYBINDINGS 0
 
 #######
+# fish command color
+#######
+set -U fish_color_command b8e5b4
+set -U fish_color_error a6727b
+
+#######
 # path
 #######
 set -x PATH $HOME/.nodebrew/current/bin $PATH
@@ -45,9 +51,13 @@ status --is-interactive; and source (rbenv init -|psub)
 # alias
 #######
 alias dkc='docker-compose'
-alias y='yarn'
+alias y='yazi'
 alias p='pnpm'
 
+#######
+# eza
+#######
+set -Ux EZA_CONFIG_DIR ~/.config/eza
 alias ei="eza --icons --git"
 alias ea="eza -a --icons --git"
 alias ee="eza -aahl --icons --git"

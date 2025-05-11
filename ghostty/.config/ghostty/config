@@ -1,16 +1,24 @@
 # theme = matrix
-# theme = catppuccin-mocha
+# theme = Alabaster
 # theme = ENCOM
-theme = 0x96f 
+#theme = catppuccin-macchiato
+theme = catppuccin-frappe.conf
 
-font-family = "JetBrainsMono Nerd Font"
-font-feature = -dlig
+#font-family = JetBrainsMonoNL Nerd Font Mono
+#font-family = Menlo
+#font-family = Hack Nerd Font Mono
+font-family = FiraCode Nerd Font Mono
+font-feature = -calt, -liga, -dlig
 font-size = 16
+bold-is-bright = true
+
+foreground = red
 
 cursor-style = block
 cursor-style-blink = true
-cursor-invert-fg-bg = true
-cursor-opacity = 0.8
+#cursor-invert-fg-bg = true
+cursor-color = #9adee8
+#cursor-opacity = 0.8
 
 copy-on-select = true
 
@@ -28,6 +36,7 @@ quick-terminal-position = "top"
 quick-terminal-screen = "main"
 quick-terminal-animation-duration = 0.15
 
+macos-option-as-alt = true
 keybind = global:ctrl+cmd+u=toggle_visibility
 keybind = ctrl+tab=text:\x13\x0E
 keybind = shift+ctrl+tab=text:\x13\x10
