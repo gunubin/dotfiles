@@ -7,14 +7,15 @@ function fish_greeting
 end
 
 #######
-# franciscolourenco/done
-#######
-set -U __done_min_cmd_duration 5000  # default: 5000 ms
-
-#######
 # starship
 #######
 starship init fish | source
+
+#######
+# franciscolourenco/done
+#######
+set -U __done_min_cmd_duration 3000
+set -U __done_notify_sound 1
 
 set U FZF_LEGACY_KEYBINDINGS 0
 
@@ -87,30 +88,26 @@ alias l="clear && ls"
 
 alias vim="nvim"
 
-#######
-# https://github.com/oh-my-fish/oh-my-fish/blob/master/docs/Themes.md#bobthefish
-#######
-# set -g theme_powerline_fonts yes
-#set -g theme_nerd_fonts yes
-# set -g theme_display_docker_machine yes
-#set -g theme_display_vi yes
 
 #######
 # fzf
 #######
-#set FZF_DEFAULT_OPTS '--height 40% --reverse --select-1'
-#set -x FZF_DEFAULT_OPTS '--style full --tmux 80%'
 set -x FZF_DEFAULT_OPTS '
   --style=full
   --tmux 80%
-  --border=none
-  --padding=1,2
+  --padding=0
   --input-label=" Input "
   --preview="fzf-preview.sh {}"
-  --color=border:#aaaaaa,label:#cccccc
+
+  --color=bg+:#414559,bg:#303446,spinner:#F2D5CF,hl:#E78284
+  --color=fg:#C6D0F5,header:#E78284,info:#CA9EE6,pointer:#F2D5CF
+  --color=marker:#BABBF1,fg+:#C6D0F5,prompt:#CA9EE6,hl+:#E78284
+  --color=selected-bg:#51576D
+  --color=border:#303446,label:#C6D0F5
+
   --color=preview-border:#9999cc,preview-label:#ccccff
-  --color=list-border:#669966,list-label:#99cc99
-  --color=input-border:#996666,input-label:#ffcccc
+  --color=list-border:#bfe7bb,list-label:#99cc99
+  --color=input-border:#f6cce7,input-label:#ffcccc
 '
 
 function go_parent_directory --description 'Go to parent directory'
