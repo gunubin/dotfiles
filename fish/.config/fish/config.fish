@@ -7,11 +7,6 @@ function fish_greeting
 end
 
 #######
-# starship
-#######
-starship init fish | source
-
-#######
 # franciscolourenco/done
 #######
 set -U __done_min_cmd_duration 3000
@@ -190,4 +185,9 @@ function cd
   z $argv
 end
 
+
+#######
+# starship
+#######
+starship init fish | source
 
