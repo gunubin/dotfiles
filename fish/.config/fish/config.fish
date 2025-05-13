@@ -90,7 +90,7 @@ alias vim="nvim"
 set -x FZF_DEFAULT_OPTS '
   --style=full
   --tmux 80%
-  --padding=0
+  --padding=0,1
   --input-label=" Input "
   --preview="fzf-preview.sh {}"
 
