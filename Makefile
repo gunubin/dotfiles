@@ -4,7 +4,7 @@
 DOTFILES := $(shell pwd)
 HOME_DIR := $(HOME)
 STOW := $(shell command -v stow 2>/dev/null)
-PACKAGES := bat eza fish git ghostty idea iterm2 karabiner nvim starship tmux yazi
+PACKAGES := bat eza fish git ghostty idea iterm2 karabiner kitty nvim starship tmux yazi
 
 # stowコマンド用の共通オプション
 STOW_VERBOSE := -v
