@@ -9,7 +9,7 @@ $directory\
 [](bg:lavender fg:pink)\
 $git_branch\
 $git_status\
-[](fg:lavender bg:green)\
+[](fg:lavender bg:sapphire)\
 $c\
 $rust\
 $golang\
@@ -19,15 +19,16 @@ $java\
 $kotlin\
 $haskell\
 $python\
-[](fg:green bg:sapphire)\
-$docker_context\
-$conda\
-[](fg:sapphire bg:yellow)\
+[](fg:sapphire bg:mauve)\
 $time\
-[ ](fg:yellow)\
+[ ](fg:mauve)\
+$jobs\
 $cmd_duration\
 $line_break\
 $character"""
+#[](fg:green bg:sapphire)\
+#$docker_context\
+#$conda\
 
 palette = 'catppuccin_mocha'
 
@@ -87,51 +88,61 @@ format = '[[ $symbol $branch ](fg:crust bg:lavender)]($style)'
 [git_status]
 style = "bg:lavender"
 format = '[[($all_status$ahead_behind )](fg:crust bg:lavender)]($style)'
+conflicted = " "  # nf-cod-error
+ahead = " "       # nf-cod-arrow_up
+behind = " "      # nf-cod-arrow_down
+diverged = " "    # nf-cod-git_branch
+untracked = " "   # nf-cod-file
+stashed = " "     # nf-cod-archive
+modified = " "    # nf-cod-pencil
+staged = " "      # nf-cod-check
+renamed = " "     # nf-cod-symbol_rename
+deleted = " "     # nf-cod-trash
 
 [nodejs]
 symbol = ""
-style = "bg:green"
-format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
+style = "bg:sapphire"
+format = '[[ $symbol( $version) ](fg:crust bg:sapphire)]($style)'
 
 [c]
 symbol = " "
-style = "bg:green"
-format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
+style = "bg:sapphire"
+format = '[[ $symbol( $version) ](fg:crust bg:sapphire)]($style)'
 
 [rust]
 symbol = ""
-style = "bg:green"
-format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
+style = "bg:sapphire"
+format = '[[ $symbol( $version) ](fg:crust bg:sapphire)]($style)'
 
 [golang]
 symbol = ""
-style = "bg:green"
-format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
+style = "bg:sapphire"
+format = '[[ $symbol( $version) ](fg:crust bg:sapphire)]($style)'
 
 [php]
 symbol = ""
-style = "bg:green"
-format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
+style = "bg:sapphire"
+format = '[[ $symbol( $version) ](fg:crust bg:sapphire)]($style)'
 
 [java]
 symbol = " "
-style = "bg:green"
-format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
+style = "bg:sapphire"
+format = '[[ $symbol( $version) ](fg:crust bg:sapphire)]($style)'
 
 [kotlin]
 symbol = ""
-style = "bg:green"
-format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
+style = "bg:sapphire"
+format = '[[ $symbol( $version) ](fg:crust bg:sapphire)]($style)'
 
 [haskell]
 symbol = ""
-style = "bg:green"
-format = '[[ $symbol( $version) ](fg:crust bg:green)]($style)'
+style = "bg:sapphire"
+format = '[[ $symbol( $version) ](fg:crust bg:sapphire)]($style)'
 
 [python]
 symbol = ""
-style = "bg:green"
-format = '[[ $symbol( $version)(\(#$virtualenv\)) ](fg:crust bg:green)]($style)'
+style = "bg:sapphire"
+format = '[[ $symbol( $version)(\(#$virtualenv\)) ](fg:crust bg:sapphire)]($style)'
 
 [docker_context]
 symbol = ""
@@ -144,11 +155,19 @@ style = "fg:crust bg:sapphire"
 format = '[$symbol$environment ]($style)'
 ignore_base = false
 
+[jobs]
+symbol = "󰒲 "
+threshold = 1
+symbol_threshold = 1
+number_threshold = 1
+#style = "bg:sapphire"
+#format = '[[ $symbol$number ](fg:crust bg:sapphire)]($style)'
+
 [time]
 disabled = false
 time_format = "%R"
-style = "bg:yellow"
-format = '[[  $time ](fg:crust bg:yellow)]($style)'
+style = "bg:mauve"
+format = '[[  $time ](fg:crust bg:mauve)]($style)'
 
 [line_break]
 disabled = false
@@ -165,7 +184,7 @@ vimcmd_visual_symbol = '[❮](bold fg:yellow)'
 
 [cmd_duration]
 show_milliseconds = true
-format = " in $duration "
+format = "󱦟 in $duration "
 style = "bg:lavender"
 disabled = false
 show_notifications = true
