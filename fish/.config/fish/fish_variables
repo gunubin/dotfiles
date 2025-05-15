@@ -17,6 +17,7 @@ SETUVAR __done_min_cmd_duration:3000
 SETUVAR __done_notify_sound:1
 SETUVAR __done_sway_ignore_visible:0
 SETUVAR __fish_initialized:3400
+SETUVAR --export _fifc_custom_fzf_opts:\x2d\x2dlayout\x3ddefault\x20\x2d\x2dno\x2dreverse
 SETUVAR _fisher_catppuccin_2F_fish_files:\x7e/\x2econfig/fish/themes/Catppuccin\x20Frappe\x2etheme\x1e\x7e/\x2econfig/fish/themes/Catppuccin\x20Latte\x2etheme\x1e\x7e/\x2econfig/fish/themes/Catppuccin\x20Macchiato\x2etheme\x1e\x7e/\x2econfig/fish/themes/Catppuccin\x20Mocha\x2etheme
 SETUVAR _fisher_decors_2F_fish_2D_ghq_files:\x7e/\x2econfig/fish/functions/__ghq_repository_search\x2efish\x1e\x7e/\x2econfig/fish/conf\x2ed/ghq_key_bindings\x2efish\x1e\x7e/\x2econfig/fish/completions/ghq\x2efish
 SETUVAR _fisher_franciscolourenco_2F_done_files:\x7e/\x2econfig/fish/conf\x2ed/done\x2efish
@@ -27,6 +28,12 @@ SETUVAR _fisher_jorgebucaran_2F_nvm_2E_fish_files:\x7e/\x2econfig/fish/functions
 SETUVAR _fisher_patrickf1_2F_fzf_2E_fish_files:\x7e/\x2econfig/fish/functions/_fzf_configure_bindings_help\x2efish\x1e\x7e/\x2econfig/fish/functions/_fzf_extract_var_info\x2efish\x1e\x7e/\x2econfig/fish/functions/_fzf_preview_changed_file\x2efish\x1e\x7e/\x2econfig/fish/functions/_fzf_preview_file\x2efish\x1e\x7e/\x2econfig/fish/functions/_fzf_report_diff_type\x2efish\x1e\x7e/\x2econfig/fish/functions/_fzf_report_file_type\x2efish\x1e\x7e/\x2econfig/fish/functions/_fzf_search_directory\x2efish\x1e\x7e/\x2econfig/fish/functions/_fzf_search_git_log\x2efish\x1e\x7e/\x2econfig/fish/functions/_fzf_search_git_status\x2efish\x1e\x7e/\x2econfig/fish/functions/_fzf_search_history\x2efish\x1e\x7e/\x2econfig/fish/functions/_fzf_search_processes\x2efish\x1e\x7e/\x2econfig/fish/functions/_fzf_search_variables\x2efish\x1e\x7e/\x2econfig/fish/functions/_fzf_wrapper\x2efish\x1e\x7e/\x2econfig/fish/functions/fzf_configure_bindings\x2efish\x1e\x7e/\x2econfig/fish/conf\x2ed/fzf\x2efish\x1e\x7e/\x2econfig/fish/completions/fzf_configure_bindings\x2efish
 SETUVAR _fisher_plugins:jorgebucaran/fisher\x1ejethrokuan/fzf\x1ejethrokuan/z\x1ejorgebucaran/nvm\x2efish\x1epatrickf1/fzf\x2efish\x1edecors/fish\x2dghq\x1ecatppuccin/fish\x1efranciscolourenco/done
 SETUVAR _fisher_upgraded_to_4_4:\x1d
+SETUVAR --export fifc_bat_opts:\x2d\x2dstyle\x3dnumbers
+SETUVAR --export fifc_custom_fzf_opts:\x2d\x2dreverse\x20\x2d\x2dlayout\x3ddefault\x20\x2d\x2dno\x2dreverse
+SETUVAR --export fifc_editor:nvim
+SETUVAR --export fifc_fd_opts:\x2d\x2dhidden
+SETUVAR fifc_keybinding:\x17
+SETUVAR fifc_open_keybinding:ctrl\x2dp
 SETUVAR fish_color_autosuggestion:6e738d
 SETUVAR fish_color_cancel:ed8796
 SETUVAR fish_color_command:b8e5b4
