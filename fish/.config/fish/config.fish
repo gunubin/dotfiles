@@ -150,6 +150,14 @@ end
 
 
 #######
+# tab for fzf
+#######
+# fzf補完をTABにバインドする（イベント駆動で）
+function __fzf_tab_complete --on-event fish_prompt
+    bind \t '__fzf_complete_token'
+end
+
+#######
 # direnv
 #######
 #eval (direnv hook fish)

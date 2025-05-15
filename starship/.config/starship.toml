@@ -22,9 +22,9 @@ $python\
 [](fg:sapphire bg:mauve)\
 $time\
 [ ](fg:mauve)\
-$jobs\
 $cmd_duration\
 $line_break\
+$jobs\
 $character"""
 #[](fg:green bg:sapphire)\
 #$docker_context\
@@ -196,7 +196,8 @@ rosewater = "#f6dbd3"
 flamingo = "#f6d0d0"
 #pink = "#f5c6e5"
 #pink = "#FEB7FF"
-pink = "#ffc8dd"
+#pink = "#ffc8dd"
+pink = "#F5C2E7"
 mauve = "#d9bcfa"
 red = "#f485ad"
 maroon = "#eeb0bd"
