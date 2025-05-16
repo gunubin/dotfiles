@@ -1,5 +1,7 @@
 # Dotfiles
 
+![screen.png](./assets/screen.png)
+
 このリポジトリには私の開発環境の設定ファイル（dotfiles）が含まれています。Makefileを使用して簡単にインストールと管理ができるように設計されています。
 
 ## 特徴

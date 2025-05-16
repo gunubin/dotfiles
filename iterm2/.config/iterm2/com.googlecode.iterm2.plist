@@ -4000,7 +4000,7 @@
 			<key>Ambiguous Double Width</key>
 			<false/>
 			<key>Animate Movement</key>
-			<false/>
+			<true/>
 			<key>Ansi 0 Color</key>
 			<dict>
 				<key>Alpha Component</key>
@@ -4667,7 +4667,9 @@
 				<real>0.14117647058823529</real>
 			</dict>
 			<key>Background Image Location</key>
-			<string></string>
+			<string>/Users/koki/Downloads/wallpaperflare.com_wallpaper (1).jpg</string>
+			<key>Background Image Mode</key>
+			<integer>0</integer>
 			<key>Badge Color</key>
 			<dict>
 				<key>Alpha Component</key>
@@ -4708,13 +4710,15 @@
 				<real>0.92929404973983765</real>
 			</dict>
 			<key>Blend</key>
-			<real>0.5</real>
+			<real>0.13800980839416058</real>
 			<key>Blink Allowed</key>
 			<true/>
 			<key>Blinking Cursor</key>
 			<true/>
 			<key>Blur</key>
-			<false/>
+			<true/>
+			<key>Blur Radius</key>
+			<real>10.103766741071428</real>
 			<key>Bold Color</key>
 			<dict>
 				<key>Alpha Component</key>
@@ -5126,6 +5130,8 @@
 			<true/>
 			<key>Normal Font</key>
 			<string>FiraCodeNF-Reg 16</string>
+			<key>Only The Default BG Color Uses Transparency</key>
+			<true/>
 			<key>Open Toolbelt</key>
 			<false/>
 			<key>Option Key Sends</key>
@@ -5137,7 +5143,7 @@
 			<key>Right Option Key Sends</key>
 			<integer>0</integer>
 			<key>Rows</key>
-			<integer>45</integer>
+			<integer>52</integer>
 			<key>Screen</key>
 			<integer>-1</integer>
 			<key>Scrollback Lines</key>
@@ -5225,6 +5231,8 @@
 			<key>Shortcut</key>
 			<string></string>
 			<key>Silence Bell</key>
+			<false/>
+			<key>Smart Cursor Color (Dark)</key>
 			<false/>
 			<key>Smart Cursor Color (Light)</key>
 			<false/>
@@ -7411,6 +7419,8 @@
 	<key>Print In Black And White</key>
 	<true/>
 	<key>SeparateStatusBarsPerPane</key>
+	<false/>
+	<key>ShowFullScreenTabBar</key>
 	<false/>
 	<key>ShowPaneTitles</key>
 	<true/>
