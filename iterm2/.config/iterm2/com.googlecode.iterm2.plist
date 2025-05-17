@@ -5129,7 +5129,7 @@
 			<key>Non-ASCII Anti Aliased</key>
 			<true/>
 			<key>Normal Font</key>
-			<string>FiraCodeNF-Reg 16</string>
+			<string>FiraCodeNFM-Reg 16</string>
 			<key>Only The Default BG Color Uses Transparency</key>
 			<true/>
 			<key>Open Toolbelt</key>
@@ -7429,7 +7429,7 @@
 	<key>TabStyleWithAutomaticOption</key>
 	<integer>4</integer>
 	<key>TerminalMargin</key>
-	<integer>4</integer>
+	<integer>6</integer>
 	<key>TerminalVMargin</key>
 	<integer>11</integer>
 	<key>UseBorder</key>
