@@ -46,7 +46,20 @@ SUSE = ""
 Raspbian = "󰐿"
 Mint = "󰣭"
 #Macos = "󰀵"
-Macos = "󰣭"
+#Macos = "👾"
+#Macos = ""
+#Macos = ""
+#Macos = ""
+#Macos = ""
+#Macos = "󰊠"
+#Macos = "󰏩"
+Macos = ""
+#Macos = ""
+#Macos = ""
+#Macos = ""
+#Macos = "󰇷"
+#Macos = "󱀆"
+
 Manjaro = ""
 Linux = "󰌽"
 Gentoo = "󰣨"
@@ -161,8 +174,7 @@ symbol = "󰒲 "
 threshold = 1
 symbol_threshold = 1
 number_threshold = 1
-style = "bg:lavender"
-format = '[[ $symbol$number ](fg:lavender)]($style)'
+format = '[[$symbol$number ](fg:yellow)]($style)'
 
 [time]
 disabled = false
@@ -179,7 +191,6 @@ disabled = false
 #success_symbol = '[✿∴∙](bold fg:green)'
 #success_symbol = "[∙](bold fg:yellow)[｡](bold fg:red)[°](bold fg:cyan)[●](bold fg:green)"
 success_symbol = "[∙](bold fg:red)[•](bold fg:cyan)[⚫︎](bold fg:green)"
-
 
 error_symbol = '[](bold fg:red)'
 vimcmd_symbol = '[❮](bold fg:green)'

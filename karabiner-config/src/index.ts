@@ -15,11 +15,6 @@ import {toSymbol} from "./utils";
 
 // modskey '⌘' | '⌥' | '⌃' | '⇧' | '⌫' |'⌦'
 
-const prefixDomLayer = 'duo-layer-';
-const vimLayerKey = 'vimLayerKey';
-const vimVisualMode = 'VimLayerVisualMode';
-const vimNoticeKey = `${prefixDomLayer}${vimLayerKey}`;
-
 const ignoreVimEmulation = ['^com.jetbrains.[\\w-]+$', '^com.googlecode.iterm2$']
 
 function main() {
@@ -41,8 +36,6 @@ const ruleBasic = () => {
   return rule('Basic').manipulators([
     withCondition(ifApp(['^com.googlecode.iterm2$', 'com.mitchellh.ghostty']).unless())([
       map('c', '⌃').to('escape').to('japanese_eisuu')
-        // TODO: fix this
-        .toVar(vimVisualMode).toVar(vimLayerKey, 0).toRemoveNotificationMessage(vimNoticeKey),
     ]),
     map('h', '⌃').to('⌫'),
     map('q', '⌘').toIfHeldDown('q', '⌘', {repeat: false}),
@@ -70,6 +63,7 @@ const ruleApp = () => {
     withCondition(ifApp(['^com.jetbrains.[\\w-]+$']))([
       map('.', '⌘').to(']', ['⌘', '⇧']),
       map(',', '⌘').to('[', ['⌘', '⇧']),
+      map('f16').to('d').to('f').to('japanese_kana'), // for QMK
     ]),
     withCondition(ifApp(['^com\\.apple\\.finder$', '^com\\.cocoatech\\.PathFinder$']))([
       map('j', '⌘').to('close_bracket', ['⌘', '⇧']),
@@ -167,8 +161,8 @@ const jkSimultaneous = () => mapSimultaneous(['j', 'k']).to('japanese_eisuu');
 
 const ruleIme = () => {
   return rule('Ime').manipulators([
-    map('f16').to('japanese_kana').toVar(vimVisualMode).toVar(vimLayerKey, 0).toRemoveNotificationMessage(vimNoticeKey), // for QMK
-    map('escape').to('escape').to('japanese_eisuu').toVar(vimVisualMode).toVar(vimLayerKey, 0).toRemoveNotificationMessage(vimNoticeKey), // for QMK
+    map('f16').to('japanese_kana'), // for QMK
+    map('escape').to('escape').to('japanese_eisuu'), // for QMK
     withCondition(ifInputSource({language: 'ja'}))([
       map('slash').to('hyphen'),
       map('return_or_enter', '⌃').to('semicolon', '⌃'),
