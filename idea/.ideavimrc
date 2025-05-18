@@ -33,10 +33,6 @@ nnoremap # #zz
 nnoremap g* g*zz
 nnoremap g# g#zz
 
-" IME ONで直接インサートモード
-nnoremap df i
-inoremap df <Nop>
-
 " selection search
 vnoremap / y/\V<C-R>"<CR>
 
