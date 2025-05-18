@@ -63,7 +63,6 @@ const ruleApp = () => {
     withCondition(ifApp(['^com.jetbrains.[\\w-]+$']))([
       map('.', '⌘').to(']', ['⌘', '⇧']),
       map(',', '⌘').to('[', ['⌘', '⇧']),
-      map('f16').to('d').to('f').to('japanese_kana'), // for QMK
     ]),
     withCondition(ifApp(['^com\\.apple\\.finder$', '^com\\.cocoatech\\.PathFinder$']))([
       map('j', '⌘').to('close_bracket', ['⌘', '⇧']),

@@ -3890,31 +3890,6 @@
               {
                 "type": "basic",
                 "from": {
-                  "key_code": "f16"
-                },
-                "to": [
-                  {
-                    "key_code": "d"
-                  },
-                  {
-                    "key_code": "f"
-                  },
-                  {
-                    "key_code": "japanese_kana"
-                  }
-                ],
-                "conditions": [
-                  {
-                    "type": "frontmost_application_if",
-                    "bundle_identifiers": [
-                      "^com.jetbrains.[\\w-]+$"
-                    ]
-                  }
-                ]
-              },
-              {
-                "type": "basic",
-                "from": {
                   "key_code": "j",
                   "modifiers": {
                     "mandatory": [
