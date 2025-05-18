@@ -1,0 +1,11 @@
+#!/bin/bash
+
+options=(
+	style=round
+	width=6.0
+	hidpi=on
+  active_color=0xff66ffff  # ネオン感の強い明るいブルー
+#	inactive_color=0xff414550
+)
+
+borders "${options[@]}"
