@@ -10,10 +10,17 @@ M.base46 = {
   theme = "sweetpastel",
   transparency = false,
 
-	-- hl_override = {
-	-- 	Comment = { italic = true },
-	-- 	["@comment"] = { italic = true },
-	-- },
+	 hl_override = {
+	 	--Comment = { italic = true, fg ="#7e8092" },
+	 	--["@comment"] = { italic = true, fg ="#7e8092" },
+        Visual = { bg = "#686a82" },
+        --- `LineNr` - 通常の行番号の色
+        --- `CursorLineNr` - カーソルがある行の行番号の色
+        --- `LineNrAbove` - カーソル行より上の行番号の色（オプション）
+        --- `LineNrBelow` - カーソル行より下の行番号の色（オプション）
+        --LineNr = { fg = "#686a82" },
+        --CursorLineNr = { bold = true },
+    },
 }
 
 -- M.nvdash = { load_on_startup = true }

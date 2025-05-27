@@ -82,13 +82,10 @@ const ruleBuildInKeyboard = () => {
     .manipulators([
       map('semicolon').to('left_control').toIfAlone('return_or_enter'),
       map('spacebar').to('left_option').toIfAlone('spacebar'),
-      map('left_command').to('left_command').toIfAlone('tab'),
-      map('right_command').to('right_option').toIfAlone('delete_or_backspace'),
+      // map('right_command').to('right_option').toIfAlone('delete_or_backspace'),
+      map('right_command').to('delete_or_backspace'),
       mapDoubleTap(',').to(toSymbol[':']),
       map('semicolon', 'shift').to('return_or_enter', 'shift'),
-      // IME ON
-      mapSimultaneous(['d', 'f']).to('japanese_kana'),
-      mapSimultaneous(['f', 'j']).to('-'),
       withCondition(ifApp(['^com.jetbrains.[\\w-]+$']))([
         map('.', '⌥').to(']', ['⌘', '⇧']),
         map(',', '⌥').to('[', ['⌘', '⇧']),
@@ -160,7 +157,7 @@ const jkSimultaneous = () => mapSimultaneous(['j', 'k']).to('japanese_eisuu');
 
 const ruleIme = () => {
   return rule('Ime').manipulators([
-    map('f16').to('japanese_kana'), // for QMK
+    // map('f16').to('japanese_kana'), // for QMK
     map('escape').to('escape').to('japanese_eisuu'), // for QMK
     withCondition(ifInputSource({language: 'ja'}))([
       map('slash').to('hyphen'),
@@ -168,7 +165,9 @@ const ruleIme = () => {
       // for iterm2
       map('u', ['⌃', '⌘']).to('u', ['⌃', '⌘']).to('japanese_eisuu'),
     ]),
-    // jk で日本語
+    // IME ON
+    mapSimultaneous(['d', 'f']).to('japanese_kana'),
+    // IME OFF
     withCondition(
       ifInputSource({language: 'ja'}))([
       jkSimultaneous(),
