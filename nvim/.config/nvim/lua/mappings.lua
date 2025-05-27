@@ -13,7 +13,6 @@ map({ "n", "v" }, "H", "^", { desc = "Move to line start" })
 map({ "n", "v" }, "L", "$", { desc = "Move to line end" })
 
 -- ノーマルモード
-map("n", ";", ":", { desc = "CMD enter command mode" })
 map("n", "vv", "V", { desc = "Select whole line" })
 map("n", "<CR>", "i<CR><ESC>", { desc = "Insert new line" })
 map("n", "+", "<C-a>", { desc = "Increment number" })
@@ -22,6 +21,13 @@ map("n", "x", '"_x', { desc = "Delete without yanking" })
 map("n", "<C-j>", ":bn<CR>", { desc = "Next buffer" })
 map("n", "<C-k>", ":bp<CR>", { desc = "Previous buffer" })
 map("n", "<C-l>", ":bd<CR>", { desc = "Close buffer" })
+
+map("n", "<C-d>", "<C-d>zz", { desc = "Scroll half-page down and center" })
+map("n", "<C-u>", "<C-u>zz", { desc = "Scroll half-page up and center" })
+map("n", "<C-f>", "<C-f>zz", { desc = "Scroll half-page down and center" })
+
+-- Escキー2回押しで検索ハイライトを消す
+map("n", "<Esc><Esc>", ":nohl<CR>", { desc = "Clear search highlight", silent = true })
 
 -- NvimTreeがロードされた後にグローバルEscマッピングも設定
 map("n", "<Esc>", function()
@@ -63,6 +69,7 @@ map("n", "sx", "<cmd>quit<CR>", { desc = "Quit split" })
 map("n", "<Leader>vr", function()
   vim.cmd("source ~/.config/nvim/init.lua")
   print("✅ config reloaded!")
+  require('base46').load_all_highlights()
 end, { noremap = true, silent = true, desc = "Reload config" })
 
 nomap("n", "<Leader>v") -- 既存の <Leader>v を削除

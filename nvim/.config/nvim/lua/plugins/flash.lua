@@ -10,27 +10,30 @@ return {
       after = true,       -- カーソル後のラベル位置
       style = "overlay",  -- ラベルのスタイル: overlay | inline
     },
-    search = {
+    --search = {
       -- 検索設定
-      wrap = true,        -- 検索時に折り返す
-      incremental = true, -- インクリメンタル検索を有効
-    },
+      --wrap = true,        -- 検索時に折り返す
+      --incremental = true, -- インクリメンタル検索を有効
+    --},
     jump = {
-      -- ジャンプ設定
       autojump = true,    -- 一意のマッチに自動ジャンプ
     },
     modes = {
       char = {
-        enabled = false,  -- デフォルトのfキー拡張を無効化
+        enabled = true,   -- デフォルトのfキー拡張を有効化
+        keys = { "f", "F" }, -- fとFのみを拡張対象にする
       },
     },
   },
   keys = {
-    { "f", mode = { "n", "x", "o" }, function() require("flash").jump({
+    -- { "e", mode = { "n", "x", "o" }, function() require("flash").jump({
+    { "e", mode = { "n" }, function() require("flash").jump({
       search = {
         multi_window = false,
       },
     }) end, desc = "Flash" },
+    { ";", mode = { "n" }, function() require("flash").jump({ continue = true }) end, desc = "Flash Continue" },
+    { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
     { "t", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
     { "T", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
 
