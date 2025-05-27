@@ -224,6 +224,7 @@ nmap <leader>n <Action>(GotoFile)
 nmap <leader>S <Action>(GotoSymbol)
 nmap <leader>a <Action>(SearchEverywhere)
 nmap <leader>b <Action>(Switcher)
+nmap <leader>A <Action>(RunAnything)
 
 " file
 nmap <leader>e <Action>(ActivateProjectToolWindow)
@@ -349,7 +350,7 @@ set commentary
 
 "easymotion-prefix easymotion
 set easymotion
-"nmap e <Action>(flash.search)
+nmap f <Action>(flash.search)
 "nmap E <Plug>(easymotion-bd-e)
 nmap e <Plug>(easymotion-s)
 nmap E <Plug>(easymotion-bd-w)
