@@ -3,7 +3,6 @@ return {
     event = { "UIEnter" },
     config = function()
         require("hlchunk").setup({
-            -- デフォルト設定を使用するか、お好みに合わせてカスタマイズ
             chunk = {
                 enable = true,
                 style = {
@@ -11,10 +10,16 @@ return {
                 },
             },
             indent = {
-                enable = false, -- 既存のインデントラインがある場合はfalseに設定
+                enable = true,
+                style = {
+                    { fg = "#47495B" },
+                },
             },
             line_num = {
                 enable = true,
+                style = {
+                    { fg = "#8DBCC7" },
+                },
             },
             blank = {
                 enable = false,
