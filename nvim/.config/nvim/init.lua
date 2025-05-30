@@ -64,6 +64,7 @@ end)
 vim.api.nvim_create_autocmd("VimEnter", {
   callback = function()
       --vim.cmd("highlight Normal guibg=NONE ctermbg=NONE")
+    vim.cmd "autocmd User TelescopePreviewerLoaded setlocal number"
   end
 })
 

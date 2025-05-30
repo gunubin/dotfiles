@@ -3,23 +3,22 @@
 -- Please read that file to know all available options :( 
 
 ---@type ChadrcConfig
- local M = {}
+local M = {}
 
 --   theme = "sweetpastel",
 M.base46 = {
-  theme = "sweetpastel",
-  transparency = false,
+    theme = "sweetpastel",
+    transparency = true,
 
-	 hl_override = {
-	 	--Comment = { italic = true, fg ="#7e8092" },
-	 	--["@comment"] = { italic = true, fg ="#7e8092" },
-        Visual = { bg = "#686a82" },
-        --- `LineNr` - 通常の行番号の色
-        --- `CursorLineNr` - カーソルがある行の行番号の色
-        --- `LineNrAbove` - カーソル行より上の行番号の色（オプション）
-        --- `LineNrBelow` - カーソル行より下の行番号の色（オプション）
-        --LineNr = { fg = "#686a82" },
-        --CursorLineNr = { bold = true },
+    hl_override = {
+        Visual = { bg = "#4F5168" },
+        Comment = { italic = true, fg = "#666775" },
+        ["@comment"] = { italic = true, fg = "#666775" },
+        NvimTreeWinSeparator = { fg = "#4B6076" },
+        WinSeparator = { fg = "#4B6076" },
+        LineNr = { fg = "#686a82" },
+        CursorLine = { bg = "#52546a" },
+        CursorLineNr = { fg = "#ffb7ff", bold = true },
     },
 }
 
