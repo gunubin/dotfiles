@@ -255,7 +255,7 @@ nmap <leader>rl <Action>(Javascript.Linters.EsLint.Fix)
 nmap <leader>rm <Action>(Move)
 nmap <leader>rc <Action>(InspectCode)
 nmap <leader>rg <Action>(Generate)
-nmap <leader>rI <Action>(OptimizeImports)
+nmap <leader>ri <Action>(OptimizeImports)
 nmap <leader>rs <Action>(ChangeSignature)
 nmap <leader>rt <Action>(ChangeTypeSignature)
 
