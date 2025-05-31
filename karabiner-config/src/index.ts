@@ -99,6 +99,8 @@ const ruleNotBuildInKeyboard = () => {
       ifDevice({is_built_in_keyboard: false}))
     .manipulators([
       map('delete_or_backspace', '⌃').to('spacebar', ['⌃']),
+      // cmd + del to ctrl + k
+      map('delete_forward', '⌘').to('k', ['⌃']),
       // for alfred
       map('delete_or_backspace', ['⌃', '⌘']).to('japanese_eisuu').to('spacebar', ['⌃', '⌘']),
       // 押しっぱなしで日本語
