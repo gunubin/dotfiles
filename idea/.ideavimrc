@@ -331,7 +331,7 @@ Plug 'dbakker/vim-paragraph-motion'
 Plug 'michaeljsmith/vim-indent-object'
 Plug 'tommcdo/vim-exchange'
 Plug 'easymotion/vim-easymotion'
-"Plug 'kana/vim-textobj-entire'
+Plug 'kana/vim-textobj-entire'
 Plug 'unblevable/quick-scope'
 let g:qs_max_chars=80
 
