@@ -56,14 +56,14 @@ map("n", "<Leader>x", function()
 end, { desc = "Buffer close" })
 
 -- スプリット操作
-map("n", "ss", "<cmd>split<CR>", { desc = "Horizontal split" })
-map("n", "sv", "<cmd>vsplit<CR>", { desc = "Vertical split" })
-map("n", "sh", "<cmd>wincmd h<CR>", { desc = "Move to left split" })
-map("n", "sl", "<cmd>wincmd l<CR>", { desc = "Move to right split" })
-map("n", "sk", "<cmd>wincmd k<CR>", { desc = "Move to upper split" })
-map("n", "sc", "<cmd>wincmd c<CR>", { desc = "Close current split" })
-map("n", "sq", "<cmd>quit<CR>", { desc = "Quit split" })
-map("n", "sx", "<cmd>quit<CR>", { desc = "Quit split" })
+map("n", "ts", "<cmd>split<CR>", { desc = "Horizontal split" })
+map("n", "tv", "<cmd>vsplit<CR>", { desc = "Vertical split" })
+map("n", "th", "<cmd>wincmd h<CR>", { desc = "Move to left split" })
+map("n", "tl", "<cmd>wincmd l<CR>", { desc = "Move to right split" })
+map("n", "tk", "<cmd>wincmd k<CR>", { desc = "Move to upper split" })
+map("n", "tc", "<cmd>wincmd c<CR>", { desc = "Close current split" })
+map("n", "tq", "<cmd>quit<CR>", { desc = "Quit split" })
+map("n", "tx", "<cmd>quit<CR>", { desc = "Quit split" })
 
 -- コンフィグ操作
 map("n", "<Leader>vr", function()
