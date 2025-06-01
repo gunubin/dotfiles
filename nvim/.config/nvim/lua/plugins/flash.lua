@@ -4,17 +4,11 @@ return {
 
   opts = {
     label = {
-      -- ラベルの外観設定
-      current = true,     -- 現在位置のラベルを表示
-      before = false,     -- カーソル前のラベル位置
-      after = true,       -- カーソル後のラベル位置
-      style = "overlay",  -- ラベルのスタイル: overlay | inline
+      rainbow = {
+        enabled = true,
+        shade = 3,
+      }
     },
-    --search = {
-      -- 検索設定
-      --wrap = true,        -- 検索時に折り返す
-      --incremental = true, -- インクリメンタル検索を有効
-    --},
     jump = {
       autojump = true,    -- 一意のマッチに自動ジャンプ
     },
@@ -27,15 +21,19 @@ return {
   },
   keys = {
     -- { "e", mode = { "n", "x", "o" }, function() require("flash").jump({
-    { "e", mode = { "n" }, function() require("flash").jump({
+    { "s", mode = { "n" }, function() require("flash").jump({
       search = {
         multi_window = false,
       },
     }) end, desc = "Flash" },
-    { ";", mode = { "n" }, function() require("flash").jump({ continue = true }) end, desc = "Flash Continue" },
+    { "S", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
     { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
-    { "t", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
-    { "T", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
+    { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
+    { "<c-r>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
+    { ";", mode = { "n" }, function() require("flash").jump({ continue = true }) end, desc = "Flash Continue" },
 
+    --{ "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
+    --{ "t", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
+    --{ "T", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
   }
 }

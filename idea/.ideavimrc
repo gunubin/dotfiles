@@ -288,40 +288,40 @@ nmap zC zM
 nmap zO zR
 
 " split window
-nnoremap s <Nop>
-nnoremap sj <C-w>j
-nnoremap sk <C-w>k
-nnoremap sl <C-w>l
-nnoremap sh <C-w>h
-nnoremap sJ <C-w>J
-nnoremap sK <C-w>K
-nnoremap sL <C-w>L
-nnoremap sH <C-w>H
-nnoremap sn gt
-nnoremap sp gT
-nnoremap sr <C-w>r
-nnoremap s= <C-w>=
-nnoremap sw <C-w>w
+nnoremap t <Nop>
+nnoremap tj <C-w>j
+nnoremap tk <C-w>k
+nnoremap tl <C-w>l
+nnoremap th <C-w>h
+nnoremap tJ <C-w>J
+nnoremap tK <C-w>K
+nnoremap tL <C-w>L
+nnoremap tH <C-w>H
+nnoremap tn gt
+nnoremap tp gT
+nnoremap tr <C-w>r
+nnoremap t= <C-w>=
+nnoremap tw <C-w>w
 "nnoremap so <C-w>_<C-w>|
-nnoremap sO <C-w>=
-nnoremap sN :<C-u>bn<cr>
+nnoremap tO <C-w>=
+nnoremap tN :<C-u>bn<cr>
 "nnoremap sP :<C-u>bp<cr>
-nnoremap st :<C-u>tabnew<cr>
-nnoremap ss :<C-u>sp<cr>
-nnoremap sv :<C-u>vs<cr>
-nnoremap sq :<C-u>q<cr>
-nnoremap sQ :<C-u>bd<cr>
-nnoremap sb :<C-u>Unite buffer_tab -buffer-name=file<cr>
-nnoremap sB :<C-u>Unite buffer -buffer-name=file<cr>
+nnoremap tt :<C-u>tabnew<cr>
+nnoremap ts :<C-u>sp<cr>
+nnoremap tv :<C-u>vs<cr>
+nnoremap tq :<C-u>q<cr>
+nnoremap tQ :<C-u>bd<cr>
+nnoremap tb :<C-u>Unite buffer_tab -buffer-name=file<cr>
+nnoremap tB :<C-u>Unite buffer -buffer-name=file<cr>
 
-nmap sx <Action>(CloseContent)
-nmap sa <Action>(CloseAllEditors)
-nmap so <Action>(CloseAllEditorsButActive)
-nmap sP <Action>(CloseAllUnpinnedEditors)
-nmap sr <Action>(ReopenClosedTab)
-nmap sp <Action>(PinActiveEditorTab)
-nmap s, <Action>(PreviousTab)
-nmap s. <Action>(NextTab)
+nmap tx <Action>(CloseContent)
+nmap ta <Action>(CloseAllEditors)
+nmap to <Action>(CloseAllEditorsButActive)
+nmap tP <Action>(CloseAllUnpinnedEditors)
+nmap tr <Action>(ReopenClosedTab)
+nmap tp <Action>(PinActiveEditorTab)
+nmap t, <Action>(PreviousTab)
+nmap t. <Action>(NextTab)
 
 " plug
 packadd matchit
@@ -350,10 +350,10 @@ set commentary
 
 "easymotion-prefix easymotion
 set easymotion
-nmap f <Action>(flash.search)
-"nmap E <Plug>(easymotion-bd-e)
-nmap e <Plug>(easymotion-s)
-nmap E <Plug>(easymotion-bd-w)
+nmap s <Action>(flash.search)
+"nmap S <Plug>(easymotion-jumptoanywhere)
+"nmap e <Plug>(easymotion-s)
+"nmap E <Plug>(easymotion-bd-w)
 "nmap E <Plug>(easymotion-iskeyword-w)
 
 " プロジェクトペインをvim風に
