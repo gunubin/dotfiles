@@ -5,9 +5,9 @@
 ---@type ChadrcConfig
 local M = {}
 
---   theme = "sweetpastel",
+--   theme = "catppuccin",
 M.base46 = {
-    theme = "sweetpastel",
+    theme = "catppuccin",
     transparency = true,
 
     hl_override = {
@@ -19,6 +19,18 @@ M.base46 = {
         LineNr = { fg = "#686a82" },
         CursorLine = { bg = "#52546a" },
         CursorLineNr = { fg = "#ffb7ff", bold = true },
+
+        -- nvim-comp
+        CmpBorder = { fg = "#6ADFEE" },
+        CmpDocBorder = { fg = "#6ADFEE" },
+
+        -- Ctrl+N/Ctrl+Pの組み込み補完メニューのborder
+        Pmenu = { bg = "#2a2a2a", fg = "#ffffff" },  -- メニューの背景と文字色
+        PmenuSel = { bg = "#4F5168", fg = "#ffffff" },  -- 選択項目の背景と文字色
+        PmenuSbar = { bg = "#3a3a3a" },  -- スクロールバーの背景
+        PmenuThumb = { bg = "#6ADFEE" },  -- スクロールバーのつまみ
+        FloatBorder = { fg = "#6ADFEE" },  -- フローティングウィンドウのborder（組み込み補完用）
+
     },
 }
 

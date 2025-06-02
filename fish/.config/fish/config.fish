@@ -148,6 +148,8 @@ bind \ci complete
 #######
 if status is-interactive
 and not set -q TMUX
+and not set -q TERMINAL_EMULATOR
+and not set -q TERM_PROGRAM
   tmux attach || tmux new-session
 end
 

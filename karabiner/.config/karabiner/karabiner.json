@@ -4268,7 +4268,10 @@
                 },
                 "to": [
                   {
-                    "key_code": "open_bracket"
+                    "key_code": "0",
+                    "modifiers": [
+                      "left_shift"
+                    ]
                   }
                 ],
                 "conditions": [
@@ -4385,10 +4388,7 @@
                 "to_delayed_action": {
                   "to_if_invoked": [
                     {
-                      "key_code": "0",
-                      "modifiers": [
-                        "left_shift"
-                      ]
+                      "key_code": "open_bracket"
                     },
                     {
                       "set_variable": {
@@ -4422,7 +4422,7 @@
                 },
                 "to": [
                   {
-                    "key_code": "equal_sign"
+                    "key_code": "hyphen"
                   }
                 ]
               },
@@ -4438,10 +4438,7 @@
                 },
                 "to": [
                   {
-                    "key_code": "semicolon",
-                    "modifiers": [
-                      "shift"
-                    ]
+                    "key_code": "equal_sign"
                   }
                 ]
               },
@@ -4521,7 +4518,7 @@
                 },
                 "to": [
                   {
-                    "key_code": "backslash",
+                    "key_code": "quote",
                     "modifiers": [
                       "shift"
                     ]
@@ -4540,9 +4537,9 @@
                 },
                 "to": [
                   {
-                    "key_code": "comma",
+                    "key_code": "close_bracket",
                     "modifiers": [
-                      "shift"
+                      "left_shift"
                     ]
                   }
                 ],
@@ -4663,7 +4660,7 @@
                 "to_delayed_action": {
                   "to_if_invoked": [
                     {
-                      "key_code": "close_bracket",
+                      "key_code": "comma",
                       "modifiers": [
                         "left_shift"
                       ]
@@ -4735,7 +4732,10 @@
                 },
                 "to": [
                   {
-                    "key_code": "backslash"
+                    "key_code": "backslash",
+                    "modifiers": [
+                      "shift"
+                    ]
                   }
                 ]
               },
@@ -4770,7 +4770,7 @@
                 },
                 "to": [
                   {
-                    "key_code": "hyphen"
+                    "key_code": "backslash"
                   }
                 ]
               },
@@ -4882,6 +4882,32 @@
                 "to_if_alone": [
                   {
                     "key_code": "spacebar"
+                  }
+                ],
+                "conditions": [
+                  {
+                    "type": "device_if",
+                    "identifiers": [
+                      {
+                        "is_built_in_keyboard": true
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "left_command"
+                },
+                "to": [
+                  {
+                    "key_code": "left_command"
+                  }
+                ],
+                "to_if_alone": [
+                  {
+                    "key_code": "tab"
                   }
                 ],
                 "conditions": [
