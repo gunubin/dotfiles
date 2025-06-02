@@ -38,6 +38,20 @@ require("lazy").setup({
         },
       }
       conf.mapping = vim.tbl_deep_extend("force", conf.mapping, mymappings)
+
+      -- borderに丸みを追加
+      conf.window = {
+        completion = {
+          border = "rounded",
+          winhighlight = "Normal:CmpPmenu,FloatBorder:CmpBorder,CursorLine:PmenuSel,Search:None",
+          scrollbar = true,
+        },
+        documentation = {
+          border = "rounded",
+          winhighlight = "Normal:CmpPmenu,FloatBorder:CmpDocBorder",
+        },
+      }
+
       return conf
     end,
   },
