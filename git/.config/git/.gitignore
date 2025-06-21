@@ -2,3 +2,12 @@
 node_modules/
 
 .DS_Store
+
+tsconfig.tsbuildinfo
+
+**/.claude
+
+**/.claude/settings.local.json
+
+#**/.claude/settings.local.json
+#**/.claude/settings.json

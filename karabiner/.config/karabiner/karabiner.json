@@ -3890,6 +3890,39 @@
               {
                 "type": "basic",
                 "from": {
+                  "key_code": "s",
+                  "modifiers": {
+                    "mandatory": [
+                      "command"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "s",
+                    "modifiers": [
+                      "command"
+                    ]
+                  },
+                  {
+                    "key_code": "open_bracket",
+                    "modifiers": [
+                      "control"
+                    ]
+                  }
+                ],
+                "conditions": [
+                  {
+                    "type": "frontmost_application_if",
+                    "bundle_identifiers": [
+                      "^com.jetbrains.[\\w-]+$"
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
                   "key_code": "j",
                   "modifiers": {
                     "mandatory": [

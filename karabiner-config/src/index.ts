@@ -63,6 +63,7 @@ const ruleApp = () => {
     withCondition(ifApp(['^com.jetbrains.[\\w-]+$']))([
       map('.', '⌘').to(']', ['⌘', '⇧']),
       map(',', '⌘').to('[', ['⌘', '⇧']),
+      map('s', '⌘').to('s', ['⌘']).to('[', ['⌃']),
     ]),
     withCondition(ifApp(['^com\\.apple\\.finder$', '^com\\.cocoatech\\.PathFinder$']))([
       map('j', '⌘').to('close_bracket', ['⌘', '⇧']),
