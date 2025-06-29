@@ -1,163 +1,150 @@
-# Claude Command: Commit
+# 🧠 グローバルメモリ設定（CLAUDE.md）
 
-This command helps you create well-formatted commits with conventional commit messages and emoji.
+このファイルは、すべてのClaude Codeセッションに適用される個人の設定やルールを記述します。
 
-## Usage
+---
 
-To create a commit, just type:
+## 🌐 言語と出力形式
+
+- すべての回答は日本語で行うこと。
+- コードの説明や出力は、マークダウン形式で提供すること。
+
+---
+
+## 🧑‍💻 コーディングスタイル
+
+- 関数やクラスには適切なコメントを付けること。
+
+---
+
+## ⚠️ 注意事項
+
+- セキュリティ上の理由から、機密情報（APIキーやパスワードなど）はコードにハードコーディングしないこと。
+- 外部ライブラリを追加する際は、ライセンスを確認し、必要に応じてチームに共有すること。
+
+---
+
+## 📝 コミットメッセージ生成ルール
+
+以下のルールに従って、日本語のコミットメッセージを生成してください。
+
+### コミット前のlint実行
+
+**重要**: コミットする前に必ず以下の手順でlintを実行してください。
+
+1. **利用可能なlintコマンドの確認**:
+   ```bash
+   npm run
+   ```
+   または package.json の scripts セクションを確認
+
+2. **lintの実行**:
+   ```bash
+   npm run lint
+   ```
+   プロジェクトによっては以下のコマンドも確認：
+   - `npm run typecheck` (TypeScriptの型チェック)
+   - `npm run format` (コードフォーマット)
+   - `npm run test` (テスト実行)
+
+3. **lintエラーの修正**:
+   - エラーが出た場合は、コミット前に必ず修正
+   - 自動修正可能な場合: `npm run lint -- --fix`
+   - 手動修正が必要な場合: エラーメッセージに従って修正
+
+4. **修正後の再確認**:
+   ```bash
+   npm run lint
+   ```
+   エラーがなくなるまで繰り返す
+
+### 基本ルール
+
+- **メッセージは日本語で書いてください。**
+- **コミットメッセージの先頭に、変更の種類に応じた絵文字とプレフィックス（分類）を必ず付けてください。**
+- **主語は「変更されたコンポーネントや機能」を意識してください。**
+- **1行目で変更内容を要約してください（サマリー行）。**
+- **絵文字とプレフィックスは、サマリー行にのみ付けてください。**
+- **詳細な説明が必要な場合は、空行を挟んで2行目以降に記述してください。**
+- **詳細説明では箇条書きや複数行の説明を許可しますが、冗長な説明は禁止です。**
+
+### 絵文字とプレフィックス一覧（変更種別）
+
+| 絵文字 | プレフィックス | 内容 | 例 |
+|--------|----------------|------|-----|
+| :+1:   | feat           | **機能・要素の追加、新しい振る舞い、改善** | :+1: feat: ユーザー登録ページを追加 |
+| :bug:  | fix            | バグ修正、不具合対応 | :bug: fix: ログイン時に発生するバリデーションエラーを修正 |
+| :books:| docs           | ドキュメントの追加・修正 | :books: docs: API仕様の記述をREADMEに追加 |
+| :sparkles: | style      | スタイルやフォーマットの調整（動作に影響しない） | :sparkles: style: コード整形と不要な空行を削除 |
+| :hammer: | refactor     | **既存機能を変更せず内部構造のみ改善** | :hammer: refactor: 重複コードを共通関数に抽出 |
+| :rocket: | perf         | パフォーマンス改善 | :rocket: perf: リスト表示のレンダリング速度を向上 |
+| :test_tube: | test      | テストの追加・修正 | :test_tube: test: バリデーションユーティリティのテストを追加 |
+| :construction_worker: | build | ビルド構成・依存関係の調整 | :construction_worker: build: webpackの設定を変更 |
+| :robot: | ci            | CI/CD構成の変更 | :robot: ci: CircleCIのジョブを修正 |
+| :wrench: | chore        | 雑務的な作業（設定・依存更新など） | :wrench: chore: TypeScriptのバージョンを更新 |
+| :rewind: | revert       | 以前のコミットを元に戻す | :rewind: revert: 不具合のあったレイアウト変更を取り消し |
+
+### 判断基準の明確化
+
+**feat（機能追加）に該当するケース：**
+- 新しいコンポーネント・関数・クラスの追加
+- 既存UIに新しいボタン・フィールド・機能を追加
+- 新しいAPI呼び出しやデータ取得機能
+- ユーザーが直接体験する新しい動作・操作
+- 新しいバリデーション・計算ロジック
+- 新しい表示項目やレイアウト要素
+- エラーハンドリングの追加・向上
+
+**refactor（リファクタリング）に該当するケース：**
+- 既存機能の動作を変えず、コード構造のみ改善
+- 重複コードの共通化
+- 変数名・関数名の変更（動作変更なし）
+- ファイル分割・統合（機能変更なし）
+
+### 判断に迷うケースの例
+
+| 変更内容 | 分類 | 理由 |
+|----------|------|------|
+| 新しいボタンを追加 | :+1: feat | ユーザーが体験する新機能 |
+| 既存ボタンのスタイル変更 | :+1: feat | 見た目の改善もユーザー価値 |
+| フォームにバリデーション追加 | :+1: feat | 新しいユーザー体験 |
+| useState → useReducer変更 | :hammer: refactor | 動作変更なし、内部実装のみ |
+| エラーメッセージを追加 | :+1: feat | ユーザー体験の向上 |
+| console.log削除 | :sparkles: style | コード整理 |
+| 型定義を追加 | :+1: feat | 開発体験の向上 |
+| APIレスポンス形式変更対応 | :+1: feat | 新しいデータ対応 |
+
+### 書き方の指針
+
+**サマリー行（1行目）の指針：**
+- **50文字以内で記述してください。**
+- **変更は「コンポーネント単位」または「機能単位」で記述してください。**
+  - ✅ OK: 「ユーザーカード表示機能を追加」
+  - ❌ NG: 「ユーザーカードコンポーネントのレイアウトを修正し、表示ロジックを改善して使いやすさを向上」
+- **動詞は最後に配置してください。**
+  - ✅ OK: 「翻訳機能を追加」
+  - ❌ NG: 「追加した翻訳機能」
+- **曖昧な言葉（例：とりあえず、ちょっと、いくつか）は禁止です。**
+
+**詳細説明（2行目以降）の指針：**
+- **複数の変更点がある場合は箇条書きで記述可能です。**
+- **変更の背景や理由を簡潔に説明できます。**
+- **1つの変更点につき1行程度を目安とし、冗長な説明は避けてください。**
+
+### 運用例
+
+#### 良い例（推奨）
+```text
+:+1: feat: 翻訳機能を追加
+:bug: fix: ログインエラーを修正
+:hammer: refactor: 共通関数を抽出
+:sparkles: style: コードを整形
 ```
-/commit
+
+#### 悪い例（冗長・複雑）
+```text
+❌ :+1: feat: カスタムメッセージの翻訳機能と元に戻す機能を実装し、ユーザー体験を向上
+❌ :bug: fix: ユーザーがログインする際に発生していたバリデーションエラーの問題を解決
+❌ :hammer: refactor: コードの可読性を向上させるために共通関数に抽出し、重複を削除
 ```
 
-Or with options:
-```
-/commit --no-verify
-```
-
-## What This Command Does
-
-1. Unless specified with `--no-verify`, automatically runs pre-commit checks:
-    - `pnpm test` to ensure tests pass
-    - `pnpm lint` to ensure code quality
-2. Checks which files are staged with `git status`
-3. If 0 files are staged, automatically adds all modified and new files with `git add`
-4. Performs a `git diff` to understand what changes are being committed
-5. Analyzes the diff to determine if multiple distinct logical changes are present
-6. If multiple distinct changes are detected, suggests breaking the commit into multiple smaller commits
-7. For each commit (or the single commit if not split), creates a commit message using emoji conventional commit format
-
-## Best Practices for Commits
-
-- **Verify before committing**: Ensure code is linted, builds correctly, and documentation is updated
-- **Atomic commits**: Each commit should contain related changes that serve a single purpose
-- **Split large changes**: If changes touch multiple concerns, split them into separate commits
-- **Conventional commit format**: Use the format `<type>: <description>` where type is one of:
-    - `feat`: A new feature
-    - `fix`: A bug fix
-    - `docs`: Documentation changes
-    - `style`: Code style changes (formatting, etc)
-    - `refactor`: Code changes that neither fix bugs nor add features
-    - `perf`: Performance improvements
-    - `test`: Adding or fixing tests
-    - `chore`: Changes to the build process, tools, etc.
-- **Present tense, imperative mood**: Write commit messages as commands (e.g., "add feature" not "added feature")
-- **Concise first line**: Keep the first line under 72 characters
-- **Emoji**: Each commit type is paired with an appropriate emoji:
-    - ✨ `feat`: New feature
-    - 🐛 `fix`: Bug fix
-    - 📝 `docs`: Documentation
-    - 💄 `style`: Formatting/style
-    - ♻️ `refactor`: Code refactoring
-    - ⚡️ `perf`: Performance improvements
-    - ✅ `test`: Tests
-    - 🔧 `chore`: Tooling, configuration
-    - 🚀 `ci`: CI/CD improvements
-    - 🗑️ `revert`: Reverting changes
-    - 🧪 `test`: Add a failing test
-    - 🚨 `fix`: Fix compiler/linter warnings
-    - 🔒️ `fix`: Fix security issues
-    - 👥 `chore`: Add or update contributors
-    - 🚚 `refactor`: Move or rename resources
-    - 🏗️ `refactor`: Make architectural changes
-    - 🔀 `chore`: Merge branches
-    - 📦️ `chore`: Add or update compiled files or packages
-    - ➕ `chore`: Add a dependency
-    - ➖ `chore`: Remove a dependency
-    - 🌱 `chore`: Add or update seed files
-    - 🧑‍💻 `chore`: Improve developer experience
-    - 🧵 `feat`: Add or update code related to multithreading or concurrency
-    - 🔍️ `feat`: Improve SEO
-    - 🏷️ `feat`: Add or update types
-    - 💬 `feat`: Add or update text and literals
-    - 🌐 `feat`: Internationalization and localization
-    - 👔 `feat`: Add or update business logic
-    - 📱 `feat`: Work on responsive design
-    - 🚸 `feat`: Improve user experience / usability
-    - 🩹 `fix`: Simple fix for a non-critical issue
-    - 🥅 `fix`: Catch errors
-    - 👽️ `fix`: Update code due to external API changes
-    - 🔥 `fix`: Remove code or files
-    - 🎨 `style`: Improve structure/format of the code
-    - 🚑️ `fix`: Critical hotfix
-    - 🎉 `chore`: Begin a project
-    - 🔖 `chore`: Release/Version tags
-    - 🚧 `wip`: Work in progress
-    - 💚 `fix`: Fix CI build
-    - 📌 `chore`: Pin dependencies to specific versions
-    - 👷 `ci`: Add or update CI build system
-    - 📈 `feat`: Add or update analytics or tracking code
-    - ✏️ `fix`: Fix typos
-    - ⏪️ `revert`: Revert changes
-    - 📄 `chore`: Add or update license
-    - 💥 `feat`: Introduce breaking changes
-    - 🍱 `assets`: Add or update assets
-    - ♿️ `feat`: Improve accessibility
-    - 💡 `docs`: Add or update comments in source code
-    - 🗃️ `db`: Perform database related changes
-    - 🔊 `feat`: Add or update logs
-    - 🔇 `fix`: Remove logs
-    - 🤡 `test`: Mock things
-    - 🥚 `feat`: Add or update an easter egg
-    - 🙈 `chore`: Add or update .gitignore file
-    - 📸 `test`: Add or update snapshots
-    - ⚗️ `experiment`: Perform experiments
-    - 🚩 `feat`: Add, update, or remove feature flags
-    - 💫 `ui`: Add or update animations and transitions
-    - ⚰️ `refactor`: Remove dead code
-    - 🦺 `feat`: Add or update code related to validation
-    - ✈️ `feat`: Improve offline support
-
-## Guidelines for Splitting Commits
-
-When analyzing the diff, consider splitting commits based on these criteria:
-
-1. **Different concerns**: Changes to unrelated parts of the codebase
-2. **Different types of changes**: Mixing features, fixes, refactoring, etc.
-3. **File patterns**: Changes to different types of files (e.g., source code vs documentation)
-4. **Logical grouping**: Changes that would be easier to understand or review separately
-5. **Size**: Very large changes that would be clearer if broken down
-
-## Examples
-
-Good commit messages:
-- ✨ feat: add user authentication system
-- 🐛 fix: resolve memory leak in rendering process
-- 📝 docs: update API documentation with new endpoints
-- ♻️ refactor: simplify error handling logic in parser
-- 🚨 fix: resolve linter warnings in component files
-- 🧑‍💻 chore: improve developer tooling setup process
-- 👔 feat: implement business logic for transaction validation
-- 🩹 fix: address minor styling inconsistency in header
-- 🚑️ fix: patch critical security vulnerability in auth flow
-- 🎨 style: reorganize component structure for better readability
-- 🔥 fix: remove deprecated legacy code
-- 🦺 feat: add input validation for user registration form
-- 💚 fix: resolve failing CI pipeline tests
-- 📈 feat: implement analytics tracking for user engagement
-- 🔒️ fix: strengthen authentication password requirements
-- ♿️ feat: improve form accessibility for screen readers
-
-Example of splitting commits:
-- First commit: ✨ feat: add new solc version type definitions
-- Second commit: 📝 docs: update documentation for new solc versions
-- Third commit: 🔧 chore: update package.json dependencies
-- Fourth commit: 🏷️ feat: add type definitions for new API endpoints
-- Fifth commit: 🧵 feat: improve concurrency handling in worker threads
-- Sixth commit: 🚨 fix: resolve linting issues in new code
-- Seventh commit: ✅ test: add unit tests for new solc version features
-- Eighth commit: 🔒️ fix: update dependencies with security vulnerabilities
-
-## Command Options
-
-- `--no-verify`: Skip running the pre-commit checks (lint, build, generate:docs)
-
-## Important Notes
-
-- By default, pre-commit checks (`pnpm lint`, `pnpm build`, `pnpm generate:docs`) will run to ensure code quality
-- If these checks fail, you'll be asked if you want to proceed with the commit anyway or fix the issues first
-- If specific files are already staged, the command will only commit those files
-- If no files are staged, it will automatically stage all modified and new files
-- The commit message will be constructed based on the changes detected
-- Before committing, the command will review the diff to identify if multiple commits would be more appropriate
-- If suggesting multiple commits, it will help you stage and commit the changes separately
-- Always reviews the commit diff to ensure the message matches the changes
