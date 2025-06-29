@@ -10,7 +10,7 @@ set nowrapscan "検索をファイルの先頭へ循環しない
 set cursorline " カーソル行を強調表示
 " カーソルが行頭でさらに左に移動しようとすると、前の行の末尾に行く
 "set whichwrap+=h,l,<,>,[,],~
-set iskeyword+=+,=,<,>,{,},(,),:,^,$,34,39,44
+"set iskeyword+=+,=,<,>,{,},(,),:,^,$,34,39,44
 
 set ignorecase
 set smartcase
