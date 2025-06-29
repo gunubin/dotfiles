@@ -9,5 +9,7 @@ tsconfig.tsbuildinfo
 
 **/.claude/settings.local.json
 
+**/*.local.md
+
 #**/.claude/settings.local.json
 #**/.claude/settings.json
