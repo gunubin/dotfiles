@@ -1,18 +1,4 @@
 {
-  "mcpServers": {
-    "puppeteer": {
-      "command": "/Users/koki/.local/share/nvm/v22.14.0/bin/node",
-      "args": [
-        "/Users/koki/.local/share/nvm/v22.14.0/bin/npx",
-        "-y",
-        "@modelcontextprotocol/server-puppeteer"
-      ]
-    },
-    "mobile-mcp": {
-      "command": "/Users/koki/.local/share/nvm/v22.14.0/bin/npx",
-      "args": ["-y", "@mobilenext/mobile-mcp@latest"]
-    }
-  },
   "permissions": {
     "allow": [
       "Bash(npx tsc:*)",
@@ -98,5 +84,21 @@
       "Write(/etc/shadow)",
       "Write(/etc/sudoers)"
     ]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "osascript -e 'display notification \"Finished!!!\" with title \"Claude Code\"' & afplay /System/Library/Sounds/Purr.aiff"
+          }
+        ]
+      }
+    ]
+  },
+  "feedbackSurveyState": {
+    "lastShownTime": 1753975827090
   }
 }
