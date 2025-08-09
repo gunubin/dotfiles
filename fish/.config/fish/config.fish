@@ -83,6 +83,12 @@ alias l="clear && ls"
 
 alias vim="nvim"
 
+# tmux関連のエイリアス
+alias tls='tmux ls'
+alias ta='tmux attach-session -t'
+alias tk='tmux kill-session -t'
+alias tka='tmux kill-server'  # 全セッション削除（注意して使用）
+
 
 #######
 # fzf
@@ -148,9 +154,17 @@ bind \ci complete
 #######
 if status is-interactive
 and not set -q TMUX
-and not set -q TERMINAL_EMULATOR
-and not set -q TERM_PROGRAM
-  tmux attach || tmux new-session
+  # JetBrains IDEのターミナルでは起動しない
+  if not set -q TERMINAL_EMULATOR
+    # 既存のセッションがあれば最初のセッションにアタッチ、なければ新規作成
+    if tmux has-session 2>/dev/null
+      # 最初のセッション番号を取得してアタッチ
+      set first_session (tmux ls -F "#{session_name}" | head -n1)
+      exec tmux attach-session -t $first_session
+    else
+      exec tmux new-session
+    end
+  end
 end
 
 

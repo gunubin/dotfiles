@@ -4,10 +4,10 @@
 #theme = catppuccin-macchiato
 theme = catppuccin-frappe.conf
 
-#font-family = JetBrainsMonoNL Nerd Font Mono
+font-family = JetBrainsMonoNL Nerd Font Mono
 #font-family = Menlo
 #font-family = Hack Nerd Font Mono
-font-family = FiraCode Nerd Font Mono
+#font-family = FiraCode Nerd Font Mono
 font-feature = -calt, -liga, -dlig
 font-size = 16
 bold-is-bright = true
