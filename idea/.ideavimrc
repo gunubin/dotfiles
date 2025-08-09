@@ -202,6 +202,8 @@ nmap <leader>ca <Action>(GenerateGetterAndSetter)
 nmap <leader>ce <Action>(GenerateEquals)
 nmap <leader>ct <Action>(GenerateTestMethod)
 
+" exe
+
 " Menu
 nmap <leader>mm <Action>(MainMenu)
 nmap <leader>me <Action>(NewElementMenu)
@@ -217,6 +219,7 @@ nmap <leader>ml <Action>(LayoutsGroup)
 nmap <leader>mv <Action>(VcsGroups)
 nmap <leader>m, <Action>(VimActions)
 nmap <leader>mi <Action>(ShowIntentionActions)
+nmap <leader>mr <Action>(ChooseRunConfiguration)
 
 " jump
 nmap <leader>o <Action>(FileStructurePopup)
@@ -251,7 +254,8 @@ nmap R <Action>(RenameElement)
 nmap <leader>= <Action>(ReformatCode)
 nmap <leader>rl <Action>(ReformatCode)
 nmap <leader>rr <Action>(RenameElement)
-nmap <leader>rf <Action>(Javascript.Linters.EsLint.Fix)
+"nmap <leader>rf <Action>(Javascript.Linters.EsLint.Fix)
+nmap <leader>rf <Action>(BiomeSortImportAction)<Action>(BiomeApplySafeFixesAction)
 nmap <leader>rm <Action>(Move)
 nmap <leader>rc <Action>(InspectCode)
 nmap <leader>rg <Action>(Generate)

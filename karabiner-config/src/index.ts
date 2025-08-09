@@ -81,11 +81,15 @@ const ruleBuildInKeyboard = () => {
     .condition(
       ifDevice({is_built_in_keyboard: true}))
     .manipulators([
-      map('semicolon').to('left_control').toIfAlone('return_or_enter'),
-      map('spacebar').to('left_option').toIfAlone('spacebar'),
-      // map('right_command').to('right_option').toIfAlone('delete_or_backspace'),
-      map('left_command').to('left_command').toIfAlone('tab'),
-      map('right_command').to('delete_or_backspace'),
+      // map('semicolon').to('left_control').toIfAlone('return_or_enter'),
+      map('return_or_enter').to('left_control').toIfAlone('return_or_enter'),
+      map('left_command').to('left_command').toIfAlone('spacebar'),
+      // map('left_option').to('left_option').toIfAlone('tab'),
+      // map('tab').to('left_option').toIfAlone('tab'),
+      map('left_option').to('left_option').toIfAlone('tab'),
+      map('left_option', 'shift').to('tab', 'shift'),
+      map('right_command').to("right_option").toIfAlone('delete_or_backspace'),
+      map('delete_or_backspace').to("right_option").toIfAlone('delete_or_backspace'),
       mapDoubleTap(',').to(toSymbol[':']),
       map('semicolon', 'shift').to('return_or_enter', 'shift'),
       withCondition(ifApp(['^com.jetbrains.[\\w-]+$']))([
@@ -104,7 +108,7 @@ const ruleNotBuildInKeyboard = () => {
       // cmd + del to ctrl + k
       map('delete_forward', '⌘').to('k', ['⌃']),
       // for alfred
-      map('delete_or_backspace', ['⌃', '⌘']).to('japanese_eisuu').to('spacebar', ['⌃', '⌘']),
+      map('delete_or_backspace', ['⌃', '⌘']).to('japanese_eisuu').to('delete_or_backspace', ['⌃', '⌘']),
       // 押しっぱなしで日本語
       map('right_shift')
         .to([
@@ -149,6 +153,7 @@ const ruleOptionSymbol = () => {
     map('m', '⌥').to(toSymbol['_']),
     map('/', '⌥').to(toSymbol['\\']),
     map(';', '⌥').to(toSymbol[';']),
+    map('return_or_enter', '⌥').to(toSymbol[';']),
     withCondition(ifApp(['^com.jetbrains.[\\w-]+$']).unless())([
       map(',', '⌥').to(toSymbol['[']),
       map('.', '⌥').to(toSymbol[']']),
