@@ -87,7 +87,7 @@ const ruleBuildInKeyboard = () => {
       // map('left_option').to('left_option').toIfAlone('tab'),
       // map('tab').to('left_option').toIfAlone('tab'),
       map('left_option').to('left_option').toIfAlone('tab'),
-      map('left_option', 'shift').to('tab', 'shift'),
+      map('left_option', 'right_shift').to('tab', 'shift'),
       map('right_command').to("right_option").toIfAlone('delete_or_backspace'),
       map('delete_or_backspace').to("right_option").toIfAlone('delete_or_backspace'),
       mapDoubleTap(',').to(toSymbol[':']),
