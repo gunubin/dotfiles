@@ -3766,7 +3766,8 @@
                   {
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
-                      "^com.jetbrains.[\\w-]+$"
+                      "^com.jetbrains.[\\w-]+$",
+                      "^com\\.tinyapp\\.TablePlus$"
                     ]
                   }
                 ]
@@ -3793,7 +3794,8 @@
                   {
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
-                      "^com.jetbrains.[\\w-]+$"
+                      "^com.jetbrains.[\\w-]+$",
+                      "^com\\.tinyapp\\.TablePlus$"
                     ]
                   }
                 ]
@@ -3821,7 +3823,8 @@
                   {
                     "type": "frontmost_application_unless",
                     "bundle_identifiers": [
-                      "^com.jetbrains.[\\w-]+$"
+                      "^com.jetbrains.[\\w-]+$",
+                      "^com\\.tinyapp\\.TablePlus$"
                     ]
                   }
                 ]
@@ -4074,6 +4077,60 @@
                     "bundle_identifiers": [
                       "^com\\.apple\\.finder$",
                       "^com\\.cocoatech\\.PathFinder$"
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "period",
+                  "modifiers": {
+                    "mandatory": [
+                      "command"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "close_bracket",
+                    "modifiers": [
+                      "command"
+                    ]
+                  }
+                ],
+                "conditions": [
+                  {
+                    "type": "frontmost_application_if",
+                    "bundle_identifiers": [
+                      "^com\\.tinyapp\\.TablePlus$"
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "comma",
+                  "modifiers": {
+                    "mandatory": [
+                      "command"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "open_bracket",
+                    "modifiers": [
+                      "command"
+                    ]
+                  }
+                ],
+                "conditions": [
+                  {
+                    "type": "frontmost_application_if",
+                    "bundle_identifiers": [
+                      "^com\\.tinyapp\\.TablePlus$"
                     ]
                   }
                 ]
