@@ -50,7 +50,7 @@ const ruleBasic = () => {
     // map('h', ['⇧', '⌘']).to('a', '⌃'),
     // map('l', ['⇧', '⌘']).to('e', '⌃'),
     map(',', ['⌘', '⇧']).to(',', '⌘'),
-    withCondition(ifApp(['^com.jetbrains.[\\w-]+$']).unless())([
+    withCondition(ifApp(['^com.jetbrains.[\\w-]+$', '^com\\.tinyapp\\.TablePlus$']).unless())([
       map('/', '⌘').to('l', '⌘'),
       map('.', '⌘').to('tab', ['⌃']),
       map(',', '⌘').to('tab', ['⌃', '⇧']),
@@ -72,6 +72,12 @@ const ruleApp = () => {
       map('p', '⌃').to('up_arrow'),
       map('b', '⌃').to('left_arrow'),
       map('f', '⌃').to('right_arrow'),
+    ]),
+    withCondition(ifApp(['^com\\.tinyapp\\.TablePlus$']))([
+      // map('.', '⌘').to('close_bracket', ['⌘']),
+      // map(',', '⌘').to('open_bracket', ['⌘']),
+      map('.', '⌘').to(']', ['⌘']),
+      map(',', '⌘').to('[', ['⌘']),
     ]),
   ])
 }
