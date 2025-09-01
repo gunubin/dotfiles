@@ -218,3 +218,6 @@ end
 #######
 starship init fish | source
 
+
+
+alias claude="/Users/koki/.claude/local/claude"
