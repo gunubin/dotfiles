@@ -3592,10 +3592,10 @@
                     ]
                   }
                 },
-                "to_if_held_down": [
+                "to": [
                   {
                     "repeat": false,
-                    "key_code": "q",
+                    "key_code": "tab",
                     "modifiers": [
                       "command"
                     ]
@@ -5504,6 +5504,38 @@
                     "key_code": "u",
                     "modifiers": [
                       "control",
+                      "command"
+                    ]
+                  },
+                  {
+                    "key_code": "japanese_eisuu"
+                  }
+                ],
+                "conditions": [
+                  {
+                    "type": "input_source_if",
+                    "input_sources": [
+                      {
+                        "language": "ja"
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
+                  "key_code": "n",
+                  "modifiers": {
+                    "mandatory": [
+                      "command"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "n",
+                    "modifiers": [
                       "command"
                     ]
                   },
