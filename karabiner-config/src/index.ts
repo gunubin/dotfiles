@@ -38,7 +38,8 @@ const ruleBasic = () => {
       map('c', '⌃').to('escape').to('japanese_eisuu')
     ]),
     map('h', '⌃').to('⌫'),
-    map('q', '⌘').toIfHeldDown('q', '⌘', {repeat: false}),
+    // map('q', '⌘').toIfHeldDown('q', '⌘', {repeat: false}),
+    map('q', '⌘').to('tab', '⌘', {repeat: false}),
     map('m', '⌘').toIfHeldDown('m', '⌘', {repeat: false}),
     map('h', '⌘').to('←'),
     map('j', '⌘').to('↓'),
@@ -178,6 +179,7 @@ const ruleIme = () => {
       map('return_or_enter', '⌃').to('semicolon', '⌃'),
       // for iterm2
       map('u', ['⌃', '⌘']).to('u', ['⌃', '⌘']).to('japanese_eisuu'),
+      map('n', ['⌘']).to('n', ['⌘']).to('japanese_eisuu'),
     ]),
     // IME ON
     mapSimultaneous(['d', 'f']).to('japanese_kana'),

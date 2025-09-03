@@ -30,6 +30,9 @@ window-position-y = 0
 window-save-state = always
 macos-window-shadow = false
 
+background-opacity = 0.75
+background-blur-radius = 40
+
 quick-terminal-position = "top"
 quick-terminal-screen = "main"
 quick-terminal-animation-duration = 0.15
