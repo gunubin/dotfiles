@@ -4,7 +4,7 @@
 #theme = catppuccin-macchiato
 theme = catppuccin-frappe.conf
 
-font-family = JetBrainsMonoNL Nerd Font Mono
+#font-family = JetBrainsMonoNL Nerd Font
 #font-family = Menlo
 #font-family = Hack Nerd Font Mono
 #font-family = FiraCode Nerd Font Mono
@@ -20,7 +20,7 @@ cursor-color = #9adee8
 
 copy-on-select = true
 
-fullscreen = false
+fullscreen = true
 macos-non-native-fullscreen = true
 macos-titlebar-style = hidden
 
@@ -31,7 +31,7 @@ window-save-state = always
 macos-window-shadow = false
 
 background-opacity = 0.75
-background-blur-radius = 40
+background-blur-radius = 20
 
 quick-terminal-position = "top"
 quick-terminal-screen = "main"
