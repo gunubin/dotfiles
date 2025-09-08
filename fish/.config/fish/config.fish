@@ -12,7 +12,7 @@ end
 set -g __done_enabled 1
 set -g __done_notify_sound 1
 set -g __done_min_cmd_duration 3000
-set -g __done_notification_command 'echo "$message" | terminal-notifier -title "$title" -sound Pop -contentImage "/Users/koki/Documents/ghostty-catppuccin-mocha.icns"'
+set -g __done_notification_command 'echo "$message" | terminal-notifier -title "$title" -sound Pop -contentImage /Users/koki/Documents/ghostty-catppuccin-mocha.icns'
 
 ###
 set U FZF_LEGACY_KEYBINDINGS 0
