@@ -2,12 +2,14 @@
 # theme = Alabaster
 # theme = ENCOM
 #theme = catppuccin-macchiato
+#theme = catppuccin-mocha
 theme = catppuccin-frappe.conf
 
-#font-family = JetBrainsMonoNL Nerd Font
-#font-family = Menlo
 #font-family = Hack Nerd Font Mono
-#font-family = FiraCode Nerd Font Mono
+#font-family = "FiraCode Nerd Font"
+
+font-family = "JetBrainsMonoNL Nerd Font"
+font-family = "Hiragino Kaku Gothic ProN"
 font-feature = -calt, -liga, -dlig
 font-size = 16
 bold-is-bright = true
@@ -30,8 +32,12 @@ window-position-y = 0
 window-save-state = always
 macos-window-shadow = false
 
-background-opacity = 0.75
-background-blur-radius = 20
+background-image = /Users/koki/Pictures/ghostty-wallpaper.jpg
+background-image-opacity = 0.2
+background-image-fit = cover
+
+#background-opacity = 0.75
+#background-blur-radius = 20
 
 quick-terminal-position = "top"
 quick-terminal-screen = "main"
@@ -44,3 +50,8 @@ keybind = shift+ctrl+tab=text:\x13\x10
 keybind = cmd+e=text:\x0e
 keybind = cmd+t=text:\x13\x03
 keybind = cmd+w=text:\x13\x0b
+
+
+custom-shader = /Users/koki/.config/ghostty/shaders/cursor_blaze.glsl
+#custom-shader = /Users/koki/.config/ghostty/shaders/galaxy.glsl
+#custom-shader = /Users/koki/.config/ghostty/shaders/bloom.glsl
