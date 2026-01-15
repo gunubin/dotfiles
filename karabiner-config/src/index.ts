@@ -176,6 +176,7 @@ const ruleIme = () => {
     map('escape').to('escape').to('japanese_eisuu'), // for QMK
     withCondition(ifInputSource({language: 'ja'}))([
       map('slash').to('hyphen'),
+      map('hyphen').to('slash'),
       map('return_or_enter', '⌃').to('semicolon', '⌃'),
       // for iterm2
       map('u', ['⌃', '⌘']).to('u', ['⌃', '⌘']).to('japanese_eisuu'),
@@ -192,6 +193,7 @@ const ruleIme = () => {
     withCondition(
       ifInputSource({language: 'ja'}).unless())([
       mapSimultaneous(['j', 'k']).to('escape')
+      // mapSimultaneous(['j', 'k']).to('open_bracket', '⌃')
     ]),
   ])
 }
