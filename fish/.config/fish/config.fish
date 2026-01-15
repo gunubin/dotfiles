@@ -68,6 +68,9 @@ alias dkc='docker-compose'
 alias y='yazi'
 alias p='pnpm'
 
+alias cc='claude --dangerously-skip-permissions'
+alias ccc='claude -c --dangerously-skip-permissions'
+
 #######
 # eza
 #######
