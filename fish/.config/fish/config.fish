@@ -68,8 +68,8 @@ alias dkc='docker-compose'
 alias y='yazi'
 alias p='pnpm'
 
-alias cc='claude --dangerously-skip-permissions'
-alias ccc='claude -c --dangerously-skip-permissions'
+alias cc='~/.local/bin/claude --dangerously-skip-permissions'
+alias ccc='~/.local/bin/claude -c --dangerously-skip-permissions'
 
 #######
 # eza
@@ -226,4 +226,3 @@ starship init fish | source
 
 
 
-alias claude="/Users/koki/.claude/local/claude"

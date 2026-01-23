@@ -121,8 +121,8 @@
         "analytics-mcp"
       ],
       "env": {
-        "GOOGLE_APPLICATION_CREDENTIALS": "/Users/koki/.config/ga4-mcp-key.json",
-        "GOOGLE_CLOUD_PROJECT": "snappy-frame-471909-p1"
+        "GOOGLE_APPLICATION_CREDENTIALS": "${HOME}/.config/ga4-mcp-key.json",
+        "GOOGLE_CLOUD_PROJECT": "${GOOGLE_CLOUD_PROJECT}"
       }
     }
   }
