@@ -51,6 +51,16 @@ keybind = cmd+e=text:\x0e
 keybind = cmd+t=text:\x13\x03
 keybind = cmd+w=text:\x13\x0b
 
+# tmux window switching (ctrl+s + number)
+keybind = cmd+digit_1=text:\x13\x31
+keybind = cmd+digit_2=text:\x13\x32
+keybind = cmd+digit_3=text:\x13\x33
+keybind = cmd+digit_4=text:\x13\x34
+keybind = cmd+digit_5=text:\x13\x35
+keybind = cmd+digit_6=text:\x13\x36
+keybind = cmd+digit_7=text:\x13\x37
+keybind = cmd+digit_8=text:\x13\x38
+keybind = cmd+digit_9=text:\x13\x39
 
 custom-shader = /Users/koki/.config/ghostty/shaders/cursor_blaze.glsl
 #custom-shader = /Users/koki/.config/ghostty/shaders/galaxy.glsl
