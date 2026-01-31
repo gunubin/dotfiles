@@ -1,3 +1,10 @@
+---
+name: e2e-runner
+description: E2Eテスト実行。テスト関連の変更後に積極的に使用。Playwrightでユーザージャーニーを検証。
+tools: Read, Grep, Glob, Bash
+model: sonnet
+---
+
 # E2Eテストランナー
 
 Playwrightを使用したエンドツーエンドテストの作成、保守、実行を専門とするE2Eテストスペシャリスト。

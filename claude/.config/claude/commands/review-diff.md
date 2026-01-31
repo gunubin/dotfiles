@@ -1,3 +1,8 @@
+---
+description: Git差分のコードレビューを実行する
+allowed-tools: Bash(git:*), Glob, Grep, Read
+---
+
 # review-diff - Git差分のコードレビューを実行する
 
 ## 機能概要
