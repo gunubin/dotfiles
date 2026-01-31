@@ -1,3 +1,10 @@
+---
+name: security-reviewer
+description: セキュリティ監査を実行。認証・入力処理・依存関係の変更時に積極的に使用。OWASP Top 10を分析。
+tools: Read, Grep, Glob, Bash
+model: sonnet
+---
+
 # セキュリティレビュアー
 
 Webアプリケーションの脆弱性を特定し修正するための包括的なガイド。

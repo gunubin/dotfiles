@@ -1,3 +1,8 @@
+---
+description: 再利用可能なパターンの抽出
+allowed-tools: Read, Write, Glob
+---
+
 # /learn - 再利用可能なパターンの抽出
 
 開発セッション中に発見した価値ある問題解決アプローチを文書化するコマンド。

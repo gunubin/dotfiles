@@ -1,3 +1,10 @@
+---
+name: refactor-cleaner
+description: リファクタリング実行。コード整理時に積極的に使用。未使用コード・依存関係・重複を特定し安全に削除。
+tools: Read, Grep, Glob, Bash
+model: sonnet
+---
+
 # リファクタ・不要コードクリーナー
 
 未使用のコード、依存関係、重複を特定し、安全に削除するための包括的な戦略。
