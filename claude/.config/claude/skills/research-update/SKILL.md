@@ -1,10 +1,10 @@
 ---
 name: research-update
 description: 特定トピックの最新情報をウェブ検索で収集し、知識として統合・構造化する。「〜について最新情報を知りたい」「〜の知識をアップデートしたい」時に使用。
-allowed-tools: WebSearch, WebFetch, Read, Write, Bash(mkdir *)
+allowed-tools: WebSearch, WebFetch, Read, Write, Bash(mkdir *), Bash(find ~/.claude/research *)
 context: fork
 agent: general-purpose
-argument-hint: "<topic> [quick|standard|deep]"
+argument-hint: "<topic> [quick|standard|deep] [force]"
 ---
 
 # リサーチ＆知識アップデート
@@ -19,6 +19,23 @@ argument-hint: "<topic> [quick|standard|deep]"
 - それ以外 → `standard`（5-7検索）
 
 ## 実行手順
+
+### Step 0: キャッシュチェック（最初に必ず実行）
+
+同じトピックの既存ファイルを検索:
+
+```bash
+find ~/.claude/research -name "*.md" -mtime -7 2>/dev/null | xargs grep -l -i "[topic-keyword]" 2>/dev/null
+```
+
+**1週間以内のファイルが見つかった場合:**
+1. そのファイルを読み込む
+2. 内容をサマリーとして返却
+3. 「既存のリサーチ結果を参照しました（YYYY-MM-DD作成）」と明示
+4. **新規検索はスキップ**
+
+**見つからない場合 or `force` / `強制` オプション指定時:**
+→ Step 1以降を実行
 
 ### Step 1: 検索戦略設計
 
