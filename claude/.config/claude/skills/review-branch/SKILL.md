@@ -1,11 +1,14 @@
 ---
+name: review-branch
 description: 現在のブランチ全体（コミット済み+未コミット）をmain/masterと比較してコードレビュー。PR作成前の品質確認に使用。
 allowed-tools: Bash(git:*), Glob, Grep, Read
+context: fork
+agent: general-purpose
 ---
 
-# review-branch
+# ブランチコードレビュー
 
-現在のブランチの全変更をレビューする。
+現在のブランチの全変更（main/masterからの差分）をレビューする。
 
 ## 対象範囲
 
@@ -19,34 +22,34 @@ main ────┬────────────────────
 
 ## 実行手順
 
-### 1. 変更の全体像を把握
+### Step 1: 変更の全体像を把握
 
 ```bash
 # ベースブランチ検出
 BASE=$(git rev-parse --verify main 2>/dev/null && echo main || echo master)
 
-# コミット済み変更
+# コミット履歴
+git log --oneline $BASE..HEAD
+
+# 変更ファイル一覧
 git diff --name-status $BASE...HEAD
 
 # 未コミット変更
 git status --short
-
-# コミット履歴
-git log --oneline $BASE..HEAD
 ```
 
-### 2. 差分取得
+### Step 2: 差分取得
 
 ```bash
 # mainからの全差分（コミット済み + 未コミット）
 git diff $BASE
 ```
 
-### 3. プロジェクトルール確認
+### Step 3: プロジェクトルール確認
 
 `.claude/rules/` があれば読み、プロジェクト固有の規約を把握。
 
-### 4. 優先順位付きレビュー
+### Step 4: 優先順位付きレビュー
 
 **レビュー順序**:
 1. セキュリティ（認証、入力検証、機密情報）
@@ -55,6 +58,7 @@ git diff $BASE
 4. コード品質（可読性、命名）
 
 **ファイル種別の観点**:
+
 | 種別 | 重点観点 |
 |------|----------|
 | API/認証 | セキュリティ最優先 |
@@ -63,9 +67,9 @@ git diff $BASE
 | テスト | カバレッジ、境界値 |
 | 設定 | 機密情報漏洩 |
 
-### 5. 差分が大きい場合
+### Step 5: 大規模変更の場合
 
-10ファイル超: 変更の中心を特定し重要度順にレビュー。
+10ファイル超: 変更の中心を特定し、重要度順にレビュー。
 
 ## 出力形式
 
