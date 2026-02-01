@@ -113,17 +113,5 @@
   "feedbackSurveyState": {
     "lastShownTime": 1753975827090
   },
-  "mcpServers": {
-    "analytics-mcp": {
-      "command": "/opt/homebrew/bin/pipx",
-      "args": [
-        "run",
-        "analytics-mcp"
-      ],
-      "env": {
-        "GOOGLE_APPLICATION_CREDENTIALS": "${HOME}/.config/ga4-mcp-key.json",
-        "GOOGLE_CLOUD_PROJECT": "${GOOGLE_CLOUD_PROJECT}"
-      }
-    }
-  }
+  "mcpServers": {}
 }
