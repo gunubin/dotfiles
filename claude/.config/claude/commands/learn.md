@@ -24,7 +24,7 @@ allowed-tools: Read, Write, Glob
 
 ## ドキュメント構造
 
-スキルは `~/.claude/skills/learned/[pattern-name].md` にMarkdownファイルとして保存：
+スキルは `.claude/learned/[pattern-name].md`（プロジェクトルート）にMarkdownファイルとして保存：
 
 ```markdown
 # [パターン名]
