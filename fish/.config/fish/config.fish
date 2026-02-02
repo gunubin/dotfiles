@@ -94,6 +94,7 @@ alias tls='tmux ls'
 alias ta='tmux attach-session -t'
 alias tk='tmux kill-session -t'
 alias tka='tmux kill-server'  # 全セッション削除（注意して使用）
+alias wm='workmux'
 
 
 #######
@@ -211,7 +212,9 @@ function zf --description 'zoxide + fzf + eza preview'
   commandline -f repaint
 end
 
-bind \cj 'zf'
+# Ctrl+J は改行と同じキーコードのため、別のキーに変更
+# bind \cj 'zf'
+bind \ej 'zf'  # Alt+J に変更
 
 # cdコマンドをzoxideで置き換え
 function cd
