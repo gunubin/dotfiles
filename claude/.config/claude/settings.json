@@ -81,19 +81,6 @@
       "Write(/etc/sudoers)"
     ]
   },
-  "hooks": {
-    "Stop": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.config/claude/scripts/notify-complete.sh"
-          }
-        ]
-      }
-    ]
-  },
   "enabledPlugins": {
     "frontend-design@claude-plugins-official": true,
     "supabase@claude-plugins-official": true,
@@ -110,6 +97,19 @@
     "playwright@claude-plugins-official": true,
     "pr-review-toolkit@claude-plugins-official": true,
     "figma@claude-plugins-official": true
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "afplay /System/Library/Sounds/Purr.aiff &"
+          }
+        ]
+      }
+    ]
   },
   "alwaysThinkingEnabled": true,
   "feedbackSurveyState": {
