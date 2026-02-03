@@ -71,6 +71,10 @@ alias p='pnpm'
 alias cc='~/.local/bin/claude --dangerously-skip-permissions'
 alias ccc='~/.local/bin/claude -c --dangerously-skip-permissions'
 
+function ccpr --description 'Claude Code: Resume from PR'
+  ~/.local/bin/claude --from-pr $argv --dangerously-skip-permissions
+end
+
 #######
 # eza
 #######
@@ -141,8 +145,8 @@ end
 # キーバインド設定
 #bind --erase \cu
 bind \cu 'go_parent_directory'   # Ctrl+U
-bind \co 'go_back_directory'     # Ctrl+O
-bind \e\ci 'go_next_directory'     # Ctrl+I
+bind \eh 'go_back_directory'     # Alt+H
+bind \el 'go_next_directory'     # Alt+L
 
 bind \ci complete
 
@@ -212,9 +216,8 @@ function zf --description 'zoxide + fzf + eza preview'
   commandline -f repaint
 end
 
-# Ctrl+J は改行と同じキーコードのため、別のキーに変更
-# bind \cj 'zf'
-bind \ej 'zf'  # Alt+J に変更
+# zoxide + fzf でディレクトリジャンプ
+bind \co 'zf'  # Ctrl+O
 
 # cdコマンドをzoxideで置き換え
 function cd
