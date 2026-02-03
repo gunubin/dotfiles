@@ -1,1 +1,3 @@
-claude/.config/claude/research/
+.DS_Store
+.stow-local-ignore
+.idea
