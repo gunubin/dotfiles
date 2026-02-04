@@ -62,6 +62,8 @@ keybind = cmd+digit_7=text:\x13\x37
 keybind = cmd+digit_8=text:\x13\x38
 keybind = cmd+digit_9=text:\x13\x39
 
-custom-shader = /Users/koki/.config/ghostty/shaders/cursor_blaze.glsl
+custom-shader = /Users/koki/.config/ghostty/shaders/mode-glow.glsl
+custom-shader-animation = true
+#custom-shader = /Users/koki/.config/ghostty/shaders/cursor_blaze.glsl
 #custom-shader = /Users/koki/.config/ghostty/shaders/galaxy.glsl
 #custom-shader = /Users/koki/.config/ghostty/shaders/bloom.glsl
