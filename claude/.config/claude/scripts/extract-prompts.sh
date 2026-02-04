@@ -2,10 +2,13 @@
 # Claude Code プロンプト抽出スクリプト
 #
 # 使い方:
-#   ~/.claude/scripts/extract-prompts.sh           # 前回実行からの差分
+#   ~/.claude/scripts/extract-prompts.sh           # 前回実行からの差分（追記）
+#   ~/.claude/scripts/extract-prompts.sh --week    # 今週の全データを再抽出（上書き）
+#   ~/.claude/scripts/extract-prompts.sh --week 2026-02-01  # 指定日の週を再抽出（上書き）
 #   ~/.claude/scripts/extract-prompts.sh --all     # 全期間（初回用）
 #   ~/.claude/scripts/extract-prompts.sh --since 2026-01-01   # 指定日以降
 #   ~/.claude/scripts/extract-prompts.sh --days 7  # 過去N日間
+#   ~/.claude/scripts/extract-prompts.sh --raw     # 生プロンプトも出力（デバッグ用）
 #
 # 前回実行からの差分を取得し、AIで課題や発見を抽出してObsidianに保存
 # 保存形式: 週ごと（月曜始まり）、年ディレクトリ
@@ -20,9 +23,28 @@ TMP_DIR="/tmp/claude-prompts-$$"
 
 # === 引数処理 ===
 SINCE_DATE=""
+UNTIL_DATE=""
+WEEK_MODE=false
+RAW_MODE=false
+TARGET_WEEK_FILE=""
 
 while [[ $# -gt 0 ]]; do
   case $1 in
+    --week)
+      WEEK_MODE=true
+      # 次の引数が日付かどうか確認
+      if [[ "${2:-}" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]]; then
+        TARGET_DATE="$2"
+        shift 2
+      else
+        TARGET_DATE="$(date +%Y-%m-%d)"
+        shift
+      fi
+      ;;
+    --raw)
+      RAW_MODE=true
+      shift
+      ;;
     --all)
       # 全期間: 2020年1月1日から（十分古い日付）
       SINCE_DATE="2020-01-01T00:00:00"
@@ -44,10 +66,13 @@ while [[ $# -gt 0 ]]; do
       ;;
     -h|--help)
       echo "使い方:"
-      echo "  $0           # 前回実行からの差分"
+      echo "  $0           # 前回実行からの差分（追記）"
+      echo "  $0 --week    # 今週の全データを再抽出（上書き）"
+      echo "  $0 --week 2026-02-01  # 指定日の週を再抽出（上書き）"
       echo "  $0 --all     # 全期間（初回用）"
       echo "  $0 --since 2026-01-01   # 指定日以降"
       echo "  $0 --days 7  # 過去N日間"
+      echo "  $0 --raw     # 生プロンプトも出力（デバッグ用、他オプションと併用可）"
       exit 0
       ;;
     *)
@@ -86,6 +111,22 @@ get_week_file() {
   echo "${monday_year}/W${week_num}_${monday}_to_${sunday}.md"
 }
 
+# === 関数: 日付から週の月曜日を取得 ===
+get_week_monday() {
+  local date_str="$1"
+  local day_of_week=$(date -j -f "%Y-%m-%d" "$date_str" "+%u" 2>/dev/null)
+  local days_to_monday=$((day_of_week - 1))
+  date -j -v-${days_to_monday}d -f "%Y-%m-%d" "$date_str" "+%Y-%m-%d" 2>/dev/null
+}
+
+# === 関数: 日付から週の日曜日を取得 ===
+get_week_sunday() {
+  local date_str="$1"
+  local day_of_week=$(date -j -f "%Y-%m-%d" "$date_str" "+%u" 2>/dev/null)
+  local days_to_sunday=$((7 - day_of_week))
+  date -j -v+${days_to_sunday}d -f "%Y-%m-%d" "$date_str" "+%Y-%m-%d" 2>/dev/null
+}
+
 # === クリーンアップ ===
 cleanup() {
   rm -rf "$TMP_DIR"
@@ -96,11 +137,27 @@ trap cleanup EXIT
 mkdir -p "$OBSIDIAN_BASE"
 mkdir -p "$TMP_DIR"
 
+# === --week モードの処理 ===
+if [ "$WEEK_MODE" = true ]; then
+  WEEK_MONDAY=$(get_week_monday "$TARGET_DATE")
+  WEEK_SUNDAY=$(get_week_sunday "$TARGET_DATE")
+  TARGET_WEEK_FILE=$(get_week_file "$TARGET_DATE")
+
+  SINCE_DATE="${WEEK_MONDAY}T00:00:00"
+  UNTIL_DATE="${WEEK_SUNDAY}T23:59:59"
+
+  echo "週モード: $TARGET_WEEK_FILE"
+  echo "対象期間: $WEEK_MONDAY 〜 $WEEK_SUNDAY"
+  echo "（既存ファイルは上書きされます）"
+fi
+
 # 開始日時を決定
 if [ -n "$SINCE_DATE" ]; then
   # 引数で指定された場合
   LAST_RUN="$SINCE_DATE"
-  echo "指定期間: $LAST_RUN 以降"
+  if [ "$WEEK_MODE" = false ]; then
+    echo "指定期間: $LAST_RUN 以降"
+  fi
 elif [ -f "$LAST_RUN_FILE" ]; then
   # 前回実行時刻がある場合
   LAST_RUN=$(cat "$LAST_RUN_FILE")
@@ -124,8 +181,18 @@ while read logfile; do
     # ユーザープロンプトを抽出（ノイズ除去）- 日付付きで出力
     # Note: timestampは "2026-02-02T22:56:03.048Z" 形式（UTC）
     # JSTに変換するため +9時間（32400秒）を加算
+
+    # UNTIL_DATEがある場合はその範囲内のみ抽出
+    if [ -n "$UNTIL_DATE" ]; then
+      UNTIL_ARG="--arg until $UNTIL_DATE"
+      UNTIL_FILTER='select($clean_ts <= $until) |'
+    else
+      UNTIL_ARG=""
+      UNTIL_FILTER=""
+    fi
+
     # 1. 通常のプロンプト
-    jq -r --arg last "$LAST_RUN" '
+    jq -r --arg last "$LAST_RUN" --arg until "${UNTIL_DATE:-2099-12-31T23:59:59}" '
       select(.type == "user") |
       select(.isMeta != true) |
       select(.message.content | type == "string") |
@@ -133,16 +200,18 @@ while read logfile; do
       select(.message.content | length > 15) |
       (.timestamp | split(".")[0]) as $clean_ts |
       select($clean_ts > $last) |
+      select($clean_ts <= $until) |
       (.timestamp | split(".")[0] | strptime("%Y-%m-%dT%H:%M:%S") | mktime + 32400 | strftime("%Y-%m-%d")) as $local_date |
       "\($local_date)|\(.message.content | gsub("\n"; " ") | .[0:300])"
     ' "$logfile" 2>/dev/null >> "$TMP_DIR/raw.txt"
 
     # 2. AskUserQuestionの回答（質問と回答のペアを抽出）
-    jq -r --arg last "$LAST_RUN" '
+    jq -r --arg last "$LAST_RUN" --arg until "${UNTIL_DATE:-2099-12-31T23:59:59}" '
       select(.type == "user") |
       select(.message.content | type == "array") |
       (.timestamp | split(".")[0]) as $clean_ts |
       select($clean_ts > $last) |
+      select($clean_ts <= $until) |
       (.timestamp | split(".")[0] | strptime("%Y-%m-%dT%H:%M:%S") | mktime + 32400 | strftime("%Y-%m-%d")) as $local_date |
       .message.content[] |
       select(.type == "tool_result") |
@@ -163,9 +232,28 @@ echo "抽出されたプロンプト数: $PROMPT_COUNT"
 
 if [ "$PROMPT_COUNT" -eq 0 ]; then
   echo "新しいプロンプトはありません"
-  # 現在時刻を記録
-  date +%Y-%m-%dT%H:%M:%S > "$LAST_RUN_FILE"
+  # 現在時刻を記録（--weekモードでない場合のみ）
+  if [ "$WEEK_MODE" = false ]; then
+    date +%Y-%m-%dT%H:%M:%S > "$LAST_RUN_FILE"
+  fi
   exit 0
+fi
+
+# === --raw モードの処理 ===
+if [ "$RAW_MODE" = true ]; then
+  RAW_OUTPUT_DIR="$OBSIDIAN_BASE/raw"
+  mkdir -p "$RAW_OUTPUT_DIR"
+  RAW_OUTPUT_FILE="$RAW_OUTPUT_DIR/$(date +%Y-%m-%d_%H%M%S).md"
+  # Markdown形式で保存
+  {
+    echo "# 生プロンプト $(date +%Y-%m-%d' '%H:%M)"
+    echo ""
+    echo "---"
+    echo ""
+    cat "$TMP_DIR/unique.txt"
+  } > "$RAW_OUTPUT_FILE"
+  echo ""
+  echo "生プロンプト保存先: $RAW_OUTPUT_FILE"
 fi
 
 # === 週ごとにファイルを振り分け（bash 3.2互換: 一時ファイルベース） ===
@@ -197,6 +285,11 @@ while read week_file; do
     continue
   fi
 
+  # --weekモードで対象週以外はスキップ
+  if [ "$WEEK_MODE" = true ] && [ "$week_file" != "$TARGET_WEEK_FILE" ]; then
+    continue
+  fi
+
   prompts_for_week=$(cat "$prompts_file")
 
   # ディレクトリ作成
@@ -208,7 +301,7 @@ while read week_file; do
   echo "=== 処理中: $week_file ==="
 
   # AI判定
-  AI_RESULT=$(cat <<EOF | claude --print --model haiku
+  AI_RESULT=$(cat <<EOF | claude --print --model sonnet
 以下はClaude Codeへのプロンプト一覧です。
 課題や発見（困りごと、感情、要望、質問、試行錯誤）を抽出してください。
 単なる指示（「修正して」「続けて」等）は除外してください。
@@ -228,8 +321,9 @@ EOF
 )
 
   # 保存
-  if [ -f "$output_path" ]; then
-    # 既存ファイルに追記
+  week_info=$(basename "$week_file" .md)
+  if [ -f "$output_path" ] && [ "$WEEK_MODE" = false ]; then
+    # 既存ファイルに追記（通常モード）
     echo "" >> "$output_path"
     echo "---" >> "$output_path"
     echo "" >> "$output_path"
@@ -237,9 +331,7 @@ EOF
     echo "" >> "$output_path"
     echo "$AI_RESULT" >> "$output_path"
   else
-    # 新規作成
-    # ファイル名からWeek情報を抽出
-    week_info=$(basename "$week_file" .md)
+    # 新規作成または上書き（--weekモード）
     cat > "$output_path" << EOF
 # Claude Code プロンプト $week_info
 
@@ -253,8 +345,10 @@ EOF
   echo "$AI_RESULT"
 done < "$TMP_DIR/week_files_unique.txt"
 
-# 現在時刻を記録
-date +%Y-%m-%dT%H:%M:%S > "$LAST_RUN_FILE"
+# 現在時刻を記録（--weekモードでない場合のみ）
+if [ "$WEEK_MODE" = false ]; then
+  date +%Y-%m-%dT%H:%M:%S > "$LAST_RUN_FILE"
+fi
 
 echo ""
 echo "=== 完了 ==="
