@@ -62,7 +62,7 @@ return {
                     -- 拡張子に基づいてデフォルトのアイコンを設定
                     local ext = vim.fn.fnamemodify(filename, ":e")
                     if ext and ext ~= "" then
-                        ft_icon, ft_color = devicons.get_icon_color_by_extension(ext)
+                        ft_icon, ft_color = devicons.get_icon_color(filename, ext)
                     end
 
                     -- それでも見つからない場合はデフォルトアイコンを設定
