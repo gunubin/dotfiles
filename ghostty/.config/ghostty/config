@@ -32,7 +32,7 @@ window-position-y = 0
 window-save-state = always
 macos-window-shadow = false
 
-background-image = /Users/koki/Pictures/ghostty-wallpaper.jpg
+background-image = ~/Pictures/ghostty-wallpaper.jpg
 background-image-opacity = 0.2
 background-image-fit = cover
 
