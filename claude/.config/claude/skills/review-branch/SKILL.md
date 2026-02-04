@@ -68,7 +68,7 @@ git diff $BASE > /tmp/review-diff.txt
 | 1 | rules-auditor | sonnet | `./agents/rules-auditor.md` の手順に従い、`rules_files` と `diff` を入力として CLAUDE.md/rules 違反を検出 |
 | 2 | bug-hunter | **opus** | `./agents/bug-hunter.md` の手順に従い、`diff` を入力として明らかなバグを検出 |
 | 3 | git-context-analyzer | sonnet | `./agents/git-context-analyzer.md` の手順に従い、git 履歴から回帰を検出 |
-| 4 | security-reviewer | sonnet | `/Users/koki/dotfiles/claude/.config/claude/agents/security-reviewer.md` を参照し、セキュリティ問題を検出 |
+| 4 | security-reviewer | sonnet | `$HOME/dotfiles/claude/.config/claude/agents/security-reviewer.md` を参照し、セキュリティ問題を検出 |
 | 5 | code-comment-checker | sonnet | `./agents/code-comment-checker.md` の手順に従い、コメント指示への準拠を検証 |
 
 **重要**: 5つのエージェントは必ず **同一メッセージ内で並列起動** すること。
@@ -185,7 +185,7 @@ git diff $BASE > /tmp/review-diff.txt
 ### 4. security-reviewer（sonnet）
 - OWASP Top 10 を分析
 - 認証・入力検証・機密情報を重点チェック
-- グローバルエージェント `/Users/koki/dotfiles/claude/.config/claude/agents/security-reviewer.md` を参照
+- グローバルエージェント `$HOME/dotfiles/claude/.config/claude/agents/security-reviewer.md` を参照
 
 ### 5. code-comment-checker（sonnet）
 - コード内コメントの指示に準拠しているか

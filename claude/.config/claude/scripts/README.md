@@ -47,11 +47,11 @@
         "hooks": [
           {
             "type": "command",
-            "command": "/Users/koki/dotfiles/claude/.config/claude/scripts/format-edited-file.sh"
+            "command": "$HOME/dotfiles/claude/.config/claude/scripts/format-edited-file.sh"
           },
           {
             "type": "command",
-            "command": "/Users/koki/dotfiles/claude/.config/claude/scripts/lint-edited-file.sh"
+            "command": "$HOME/dotfiles/claude/.config/claude/scripts/lint-edited-file.sh"
           }
         ]
       }
@@ -85,7 +85,7 @@ export CLAUDE_HOOK_LOGGING=true
 
 1. 実行権限を確認：
    ```bash
-   chmod +x /Users/koki/dotfiles/claude/.config/claude/scripts/*.sh
+   chmod +x $HOME/dotfiles/claude/.config/claude/scripts/*.sh
    ```
 
 2. jqコマンドがインストールされているか確認：
