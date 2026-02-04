@@ -109,7 +109,22 @@
           }
         ]
       }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "mkdir -p ~/.claude/prompts && jq -r '{session: .session_id, prompt: .prompt} | \"\\(.session)\\t\\(.prompt)\"' >> ~/.claude/prompts/history.tsv"
+          }
+        ]
+      }
     ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh"
   },
   "alwaysThinkingEnabled": true,
   "feedbackSurveyState": {

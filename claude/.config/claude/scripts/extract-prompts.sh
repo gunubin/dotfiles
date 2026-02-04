@@ -124,6 +124,7 @@ while read logfile; do
     # ユーザープロンプトを抽出（ノイズ除去）- 日付付きで出力
     # Note: timestampは "2026-02-02T22:56:03.048Z" 形式（UTC）
     # JSTに変換するため +9時間（32400秒）を加算
+    # 1. 通常のプロンプト
     jq -r --arg last "$LAST_RUN" '
       select(.type == "user") |
       select(.isMeta != true) |
@@ -134,6 +135,22 @@ while read logfile; do
       select($clean_ts > $last) |
       (.timestamp | split(".")[0] | strptime("%Y-%m-%dT%H:%M:%S") | mktime + 32400 | strftime("%Y-%m-%d")) as $local_date |
       "\($local_date)|\(.message.content | gsub("\n"; " ") | .[0:300])"
+    ' "$logfile" 2>/dev/null >> "$TMP_DIR/raw.txt"
+
+    # 2. AskUserQuestionの回答（質問と回答のペアを抽出）
+    jq -r --arg last "$LAST_RUN" '
+      select(.type == "user") |
+      select(.message.content | type == "array") |
+      (.timestamp | split(".")[0]) as $clean_ts |
+      select($clean_ts > $last) |
+      (.timestamp | split(".")[0] | strptime("%Y-%m-%dT%H:%M:%S") | mktime + 32400 | strftime("%Y-%m-%d")) as $local_date |
+      .message.content[] |
+      select(.type == "tool_result") |
+      select(.content | type == "string") |
+      select(.content | startswith("User has answered your questions:")) |
+      (.content | gsub("User has answered your questions: "; "") | gsub("\\. You can now continue.*"; "")) as $qa_content |
+      select($qa_content | length > 5) |
+      "\($local_date)|[Q&A] \($qa_content)"
     ' "$logfile" 2>/dev/null >> "$TMP_DIR/raw.txt"
   fi
 done < "$TMP_DIR/logfiles.txt"
