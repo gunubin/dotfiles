@@ -11,7 +11,7 @@ allowed-tools: mcp__obsidian-mcp-tools__*, Read
 ## Vault構造
 
 ```
-/Users/koki/Documents/notes/
+$HOME/Documents/notes/
 ├── 000_Inbox/       # 未整理・一時保存
 ├── 010_Daily/       # デイリーノート
 ├── 020_Ideas/       # アイデア・思いつき

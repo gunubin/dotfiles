@@ -12,7 +12,7 @@ end
 set -g __done_enabled 1
 set -g __done_notify_sound 1
 set -g __done_min_cmd_duration 3000
-set -g __done_notification_command 'echo "$message" | terminal-notifier -title "$title" -sound Pop -contentImage /Users/koki/Documents/ghostty-catppuccin-mocha.icns'
+set -g __done_notification_command 'echo "$message" | terminal-notifier -title "$title" -sound Pop -contentImage $HOME/Documents/ghostty-catppuccin-mocha.icns'
 
 ###
 set U FZF_LEGACY_KEYBINDINGS 0
@@ -35,7 +35,7 @@ set -x JAVA_HOME /Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home
 # set -x NVM_DIR $HOME/.nvm
 
 # pnpm
-set -gx PNPM_HOME "/Users/koki/Library/pnpm"
+set -gx PNPM_HOME "$HOME/Library/pnpm"
 if not string match -q -- $PNPM_HOME $PATH
   set -gx PATH "$PNPM_HOME" $PATH
 end
@@ -192,8 +192,6 @@ end
 #######
 #eval (direnv hook fish)
 
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/koki/Downloads/google-cloud-sdk/path.fish.inc' ]; . '/Users/koki/Downloads/google-cloud-sdk/path.fish.inc'; end
 
 # set -gx VOLTA_HOME "$HOME/.volta"
 # set -gx PATH "$VOLTA_HOME/bin" $PATH
