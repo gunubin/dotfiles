@@ -1,46 +1,29 @@
 /*
- * mode-glow.glsl - カーソル形状に応じてグロー色が変わるシェーダー
+ * mode-glow.glsl - カーソル移動で火花が飛び散るシェーダー
  *
- * Vimのモードをカーソル形状から推測:
- *   - ブロック (w/h > 0.5) → Normal → 青
- *   - 縦線 (w/h < 0.2)     → Insert → 緑
- *   - その他               → Replace/Visual → オレンジ
- *
- * Vim検出:
- *   カーソル形状が変化してから一定時間のみエフェクトを表示。
- *   通常のシェルでは形状変化が少ないため、実質Vim使用時のみ発動。
- *
- * インストール:
- *   1. ~/.config/ghostty/shaders/ にコピー
- *   2. ghostty設定に追加: custom-shader = ~/.config/ghostty/shaders/mode-glow.glsl
+ * 機能:
+ *   - カーソル移動時にパステルカラーの火花が放射状に飛散
+ *   - 毎回異なる方向・距離でランダムに飛ぶ
  */
 
 // ========== 設定 ==========
-const float GLOW_RADIUS = 80.0;      // グローの広がり（ピクセル）
-const float GLOW_INTENSITY = 0.4;    // グローの強さ (0.0-1.0)
-const float PULSE_SPEED = 2.0;       // 脈動速度
-const float PULSE_AMOUNT = 0.15;     // 脈動の強さ
+const int PARTICLE_COUNT = 12;
+const float EXPLOSION_DURATION = 0.8;
+const float SPARK_DISTANCE = 50.0;      // 火花の飛距離（基本）
+const float SPARK_DISTANCE_RAND = 150.0; // 火花の飛距離（ランダム幅）
 
-// Vim検出設定
-const float ACTIVE_DURATION = 3.0;   // エフェクト持続時間（秒）- カーソル変化後この時間表示
-const float FADE_DURATION = 1.0;     // フェードアウト時間（秒）
-
-// モード別の色
-const vec3 COLOR_NORMAL  = vec3(0.3, 0.5, 1.0);   // 青
-const vec3 COLOR_INSERT  = vec3(0.3, 0.9, 0.4);   // 緑
-const vec3 COLOR_REPLACE = vec3(1.0, 0.6, 0.2);   // オレンジ
+// Cupertinoパステルカラー
+const vec3 PASTEL_PINK = vec3(1.0, 0.6, 0.7);
+const vec3 PASTEL_BLUE = vec3(0.6, 0.8, 1.0);
+const vec3 PASTEL_GREEN = vec3(0.6, 1.0, 0.7);
+const vec3 PASTEL_PURPLE = vec3(0.8, 0.6, 1.0);
+const vec3 PASTEL_ORANGE = vec3(1.0, 0.75, 0.5);
+const vec3 PASTEL_YELLOW = vec3(1.0, 1.0, 0.6);
 // ==========================
 
-vec3 getModeColor(vec4 cursor) {
-    float ratio = cursor.z / cursor.w;
-
-    if (ratio > 0.5) {
-        return COLOR_NORMAL;
-    } else if (ratio < 0.2) {
-        return COLOR_INSERT;
-    } else {
-        return COLOR_REPLACE;
-    }
+// 疑似乱数
+float hash(float n) {
+    return fract(sin(n) * 43758.5453);
 }
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
@@ -50,39 +33,75 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     // カーソル変化からの経過時間
     float timeSinceChange = iTime - iTimeCursorChange;
 
-    // エフェクトの可視性を計算（フェードアウト）
-    float visibility = 1.0 - smoothstep(ACTIVE_DURATION, ACTIVE_DURATION + FADE_DURATION, timeSinceChange);
-
-    // 可視性がほぼ0ならエフェクトをスキップ
-    if (visibility < 0.01) {
-        fragColor = termColor;
-        return;
-    }
-
-    // カーソル中心を計算
+    // カーソル中心
     vec2 cursorCenter = iCurrentCursor.xy + vec2(iCurrentCursor.z * 0.5, -iCurrentCursor.w * 0.5);
 
-    // カーソルからの距離
-    float dist = distance(fragCoord, cursorCenter);
+    // ========== 火花パーティクル ==========
+    if (timeSinceChange < EXPLOSION_DURATION) {
+        float explosionProgress = timeSinceChange / EXPLOSION_DURATION;
 
-    // モードに応じた色を取得
-    vec3 glowColor = getModeColor(iCurrentCursor);
+        // iTimeCursorChange をシードに使って毎回違うパターンに
+        float timeSeed = fract(iTimeCursorChange * 0.123) * 1000.0;
 
-    // 脈動エフェクト
-    float pulse = 1.0 + sin(iTime * PULSE_SPEED) * PULSE_AMOUNT;
+        for (int i = 0; i < PARTICLE_COUNT; i++) {
+            float fi = float(i);
 
-    // グローの強さを計算（距離に応じて減衰）
-    float glow = smoothstep(GLOW_RADIUS * pulse, 0.0, dist) * GLOW_INTENSITY;
+            // 毎回変わるランダムシード
+            float seed = fi * 73.156 + timeSeed;
 
-    // カーソル移動直後は強く光る
-    float moveFlash = exp(-timeSinceChange * 5.0) * 0.3;
-    glow += moveFlash * smoothstep(GLOW_RADIUS * 2.0, 0.0, dist);
+            // ランダムな角度
+            float angle = hash(seed * 1.234) * 6.28318;
 
-    // 可視性を適用
-    glow *= visibility;
+            // ランダムな速度
+            float speed = SPARK_DISTANCE + hash(seed * 2.345) * SPARK_DISTANCE_RAND;
 
-    // 合成
-    vec3 finalColor = mix(termColor.rgb, glowColor, glow);
+            // ランダムなサイズ
+            float size = 4.0 + hash(seed * 3.456) * 6.0;
 
-    fragColor = vec4(finalColor, termColor.a);
+            // パーティクルの位置
+            vec2 particleDir = vec2(cos(angle), sin(angle));
+            vec2 particlePos = cursorCenter + particleDir * speed * explosionProgress;
+
+            // 重力効果
+            float gravity = 40.0 + hash(seed * 4.567) * 80.0;
+            particlePos.y -= gravity * explosionProgress * explosionProgress;
+
+            // パーティクルとの距離
+            float particleDist = distance(fragCoord, particlePos);
+
+            // フェードアウト
+            float fade = 1.0 - explosionProgress;
+            fade *= fade;
+
+            // パーティクルを描画
+            if (particleDist < size * fade) {
+                // パステルカラーをランダムに選択
+                float colorChoice = hash(seed * 5.678);
+                vec3 sparkColor;
+                if (colorChoice < 0.166) {
+                    sparkColor = PASTEL_PINK;
+                } else if (colorChoice < 0.333) {
+                    sparkColor = PASTEL_BLUE;
+                } else if (colorChoice < 0.5) {
+                    sparkColor = PASTEL_GREEN;
+                } else if (colorChoice < 0.666) {
+                    sparkColor = PASTEL_PURPLE;
+                } else if (colorChoice < 0.833) {
+                    sparkColor = PASTEL_ORANGE;
+                } else {
+                    sparkColor = PASTEL_YELLOW;
+                }
+
+                // 中心ほど明るい
+                float brightness = 1.0 - (particleDist / (size * fade));
+                sparkColor *= brightness * fade * 2.0;
+
+                fragColor = vec4(termColor.rgb + sparkColor, termColor.a);
+                return;
+            }
+        }
+    }
+
+    // 火花がない場合はそのまま
+    fragColor = termColor;
 }
