@@ -68,12 +68,6 @@ alias dkc='docker-compose'
 alias y='yazi'
 alias p='pnpm'
 
-alias cc='~/.local/bin/claude --dangerously-skip-permissions'
-alias ccc='~/.local/bin/claude -c --dangerously-skip-permissions'
-
-function ccpr --description 'Claude Code: Resume from PR'
-  ~/.local/bin/claude --from-pr $argv --dangerously-skip-permissions
-end
 
 #######
 # eza
