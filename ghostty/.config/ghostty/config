@@ -66,3 +66,7 @@ custom-shader-animation = true
 custom-shader = ~/.config/ghostty/shaders/mode-glow.glsl
 custom-shader = ~/.config/ghostty/shaders/cursor_blaze.glsl
 
+#custom-shader = ~/.config/ghostty/shaders/glitchy.glsl
+#custom-shader = ~/.config/ghostty/shaders/bettercrt.glsl
+#custom-shader = ~/.config/ghostty/shaders/water.glsl
+#custom-shader = ~/.config/ghostty/shaders/bloom.glsl
