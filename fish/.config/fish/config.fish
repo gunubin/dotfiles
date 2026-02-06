@@ -217,6 +217,9 @@ function cd
 end
 
 
+# Ctrl+Tをアプリに渡す（macOSのstty status無効化）
+stty status undef
+
 #######
 # starship
 #######

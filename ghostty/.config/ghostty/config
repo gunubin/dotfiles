@@ -11,7 +11,7 @@ theme = catppuccin-frappe.conf
 font-family = "JetBrainsMonoNL Nerd Font"
 font-family = "Hiragino Kaku Gothic ProN"
 font-feature = -calt, -liga, -dlig
-font-size = 16
+font-size = 15
 bold-is-bright = true
 
 cursor-style = block
@@ -50,6 +50,7 @@ keybind = shift+ctrl+tab=text:\x13\x10
 keybind = cmd+e=text:\x0e
 keybind = cmd+t=text:\x13\x03
 keybind = cmd+w=text:\x13\x0b
+keybind = ctrl+t=text:\x14
 
 # tmux window switching (ctrl+s + number)
 keybind = cmd+digit_1=text:\x13\x31

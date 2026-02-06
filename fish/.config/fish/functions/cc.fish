@@ -50,7 +50,7 @@ function cc --description "Claude Code with modes"
 
     # CLAUDE_CODE_TASK_LIST_ID: 手動指定 or gitリポジトリ名から自動生成
     if test -z "$task_id"
-        set task_id (git rev-parse --show-toplevel 2>/dev/null | string replace -r '.*/'' '')
+        set task_id (basename (git rev-parse --show-toplevel 2>/dev/null))
     end
     if test -n "$task_id"
         set -a env_vars CLAUDE_CODE_TASK_LIST_ID=$task_id
