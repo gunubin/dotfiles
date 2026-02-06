@@ -1,0 +1,12 @@
+complete -c cc -f
+complete -c cc -a think -d '思考トークン倍増（63999）'
+complete -c cc -a team -d 'マルチエージェントチーム'
+complete -c cc -a fast -d '段階的推論オフ（高速化）'
+complete -c cc -a long -d 'Bashタイムアウト30分'
+complete -c cc -a opus46 -d 'Opus 4.6モデル'
+complete -c cc -a opus -d 'Opusモデル'
+complete -c cc -a sonnet -d 'Sonnetモデル'
+complete -c cc -a haiku -d 'Haikuモデル（安い・速い）'
+complete -c cc -a c -d '直前セッション継続（-c）'
+complete -c cc -a pr -d 'PR連動セッション再開'
+complete -c cc -a task -d 'タスクリストID指定（省略でgitリポ名）'

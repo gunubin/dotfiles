@@ -134,5 +134,8 @@
   "feedbackSurveyState": {
     "lastShownTime": 1753975827090
   },
+  "env": {
+    "ENABLE_EXPERIMENTAL_MCP_CLI": "true"
+  },
   "mcpServers": {}
 }
