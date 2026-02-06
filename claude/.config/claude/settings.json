@@ -126,6 +126,10 @@
     "type": "command",
     "command": "~/.claude/statusline.sh"
   },
+  "fileSuggestion": {
+    "type": "command",
+    "command": "~/.claude/scripts/file-suggestion.sh"
+  },
   "alwaysThinkingEnabled": true,
   "feedbackSurveyState": {
     "lastShownTime": 1753975827090
