@@ -5,7 +5,7 @@
 
 set -eu
 
-query=$(cat | jq -r '.query')
+query=$(cat | jq -r '.query // empty')
 cd "${CLAUDE_PROJECT_DIR:-.}"
 
 {
@@ -23,4 +23,4 @@ cd "${CLAUDE_PROJECT_DIR:-.}"
     # git外ではfdにフォールバック
     fd --type f --hidden --exclude .git
   fi
-} | awk 'NF && !seen[$0]++' | if [ -n "$query" ]; then fzf --filter="$query"; else cat; fi | head -15
+} | awk 'NF && !seen[$0]++' | if [ -n "$query" ]; then fzf --filter="$query" --no-sort; else cat; fi | head -15
