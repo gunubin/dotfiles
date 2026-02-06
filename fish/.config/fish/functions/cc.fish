@@ -19,8 +19,6 @@ function cc --description "Claude Code with modes"
 
         switch $arg
             # --- 環境変数モード ---
-            case think
-                set -a env_vars MAX_THINKING_TOKENS=63999
             case team
                 set -a env_vars CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
             case fast
@@ -28,8 +26,6 @@ function cc --description "Claude Code with modes"
             case long
                 set -a env_vars BASH_MAX_TIMEOUT_MS=1800000
             # --- モデル指定 ---
-            case opus46
-                set -a claude_args --model claude-opus-4-6
             case opus
                 set -a claude_args --model opus
             case sonnet
