@@ -1,6 +1,12 @@
 {
+  "fileSuggestion": {
+    "type": "command",
+    "command": "~/.claude/scripts/file-suggestion.sh"
+  },
   "respectGitignore": true,
-  "language": "ja",
+  "env": {
+    "ENABLE_EXPERIMENTAL_MCP_CLI": "true"
+  },
   "permissions": {
     "allow": [
       "Bash(npx tsc:*)",
@@ -81,6 +87,74 @@
       "Write(/etc/sudoers)"
     ]
   },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/scripts/tmux-state.sh"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "afplay /System/Library/Sounds/Purr.aiff &"
+          }
+        ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/scripts/tmux-state.sh"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "mkdir -p ~/.claude/prompts && jq -r '{session: .session_id, prompt: .prompt} | \"\\(.session)\\t\\(.prompt)\"' >> ~/.claude/prompts/history.tsv"
+          }
+        ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/scripts/tmux-state.sh"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/scripts/tmux-state.sh"
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh"
+  },
   "enabledPlugins": {
     "frontend-design@claude-plugins-official": true,
     "supabase@claude-plugins-official": true,
@@ -98,44 +172,10 @@
     "pr-review-toolkit@claude-plugins-official": true,
     "figma@claude-plugins-official": true
   },
-  "hooks": {
-    "Stop": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "afplay /System/Library/Sounds/Purr.aiff &"
-          }
-        ]
-      }
-    ],
-    "UserPromptSubmit": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "mkdir -p ~/.claude/prompts && jq -r '{session: .session_id, prompt: .prompt} | \"\\(.session)\\t\\(.prompt)\"' >> ~/.claude/prompts/history.tsv"
-          }
-        ]
-      }
-    ]
-  },
-  "statusLine": {
-    "type": "command",
-    "command": "~/.claude/statusline.sh"
-  },
-  "fileSuggestion": {
-    "type": "command",
-    "command": "~/.claude/scripts/file-suggestion.sh"
-  },
+  "language": "ja",
   "alwaysThinkingEnabled": true,
   "feedbackSurveyState": {
     "lastShownTime": 1753975827090
-  },
-  "env": {
-    "ENABLE_EXPERIMENTAL_MCP_CLI": "true"
   },
   "mcpServers": {}
 }

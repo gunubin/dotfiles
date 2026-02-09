@@ -34,7 +34,7 @@ function cc --description "Claude Code with modes"
                 set -a claude_args --model haiku
             # --- サブコマンド ---
             case c
-                set -a claude_args -c
+                set -a claude_args --continue
             case pr
                 set awaiting_pr true
             case task
@@ -52,9 +52,20 @@ function cc --description "Claude Code with modes"
         set -a env_vars CLAUDE_CODE_TASK_LIST_ID=$task_id
     end
 
+    # tmux ウィンドウ名を保存（フォールバック用: SessionEnd が発火しなかった場合の復元）
+    set -l orig_window ""
+    if test -n "$TMUX"
+        set orig_window (tmux display-message -p '#W')
+    end
+
     if test (count $env_vars) -gt 0
         env $env_vars claude $claude_args
     else
         claude $claude_args
+    end
+
+    # tmux ウィンドウ名を復元
+    if test -n "$TMUX" -a -n "$orig_window"
+        tmux rename-window "$orig_window" 2>/dev/null
     end
 end
