@@ -153,7 +153,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "~/.claude/statusline.sh"
+    "command": "~/.claude/statusline.py --show all"
   },
   "enabledPlugins": {
     "frontend-design@claude-plugins-official": true,
