@@ -2075,37 +2075,34 @@ def format_output_full(ctx, terminal_width=None):
 
     return lines
 
-def get_recent_prompts(session_id, count=2):
-    """Get the last N user prompts for the given session from history.tsv
+def get_recent_prompts_from_transcript(transcript_file, count=2):
+    """Get the last N user prompts directly from JSONL transcript file.
 
-    Handles multiline prompts: lines without a tab are continuations.
     Returns list of prompts (newest last), up to count items.
     """
     try:
-        history_path = Path.home() / '.claude' / 'prompts' / 'history.tsv'
-        if not history_path.exists():
+        if not transcript_file or not Path(transcript_file).exists():
             return []
-        lines = history_path.read_text().splitlines()
-        # Find all entry start indices for this session
-        entries = []
-        for i, line in enumerate(lines):
-            if line.startswith(session_id + '\t'):
-                entries.append(i)
-        if not entries:
-            return []
-        # Extract the last `count` entries
         prompts = []
-        for idx in entries[-count:]:
-            parts = lines[idx].split('\t', 1)
-            result = [parts[1]] if len(parts) > 1 else []
-            for j in range(idx + 1, len(lines)):
-                if '\t' in lines[j] and len(lines[j].split('\t')[0]) == 36:
-                    break
-                result.append(lines[j])
-            text = ' '.join(result).strip()
-            if text:
-                prompts.append(text)
-        return prompts
+        with open(transcript_file, 'r') as f:
+            for line in f:
+                try:
+                    entry = json.loads(line.strip())
+                    if entry.get('type') != 'user':
+                        continue
+                    content = entry.get('message', {}).get('content', '')
+                    if isinstance(content, str) and content.strip():
+                        prompts.append(content.strip())
+                    elif isinstance(content, list):
+                        # Array content: extract text parts
+                        texts = [p.get('text', '') for p in content
+                                 if isinstance(p, dict) and p.get('type') == 'text']
+                        text = ' '.join(t for t in texts if t).strip()
+                        if text:
+                            prompts.append(text)
+                except (json.JSONDecodeError, KeyError):
+                    continue
+        return prompts[-count:] if prompts else []
     except Exception:
         return []
 
@@ -2584,7 +2581,7 @@ def main():
             'show_line3': SHOW_LINE3,
             'show_line4': SHOW_LINE4,
             'show_schedule': SHOW_SCHEDULE or args.schedule,
-            'recent_prompts': get_recent_prompts(session_id) if session_id else [],
+            'recent_prompts': get_recent_prompts_from_transcript(transcript_file) if transcript_file else [],
         }
 
         # Select formatter based on display mode and terminal height
