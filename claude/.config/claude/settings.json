@@ -168,5 +168,6 @@
   "feedbackSurveyState": {
     "lastShownTime": 1753975827090
   },
-  "mcpServers": {}
+  "mcpServers": {},
+  "plansDirectory": "./plans"
 }
