@@ -37,7 +37,6 @@
     trustExitCode = true
 [credential]
     UseHttpPath = true
-    helper = !aws –profile CodeCommitProfile codecommit credential-helper $@
 [filter "lfs"]
     process = git-lfs filter-process
     required = true
@@ -47,7 +46,15 @@
     rebase = false
 
 [delta]
-    navigate = true
+	navigate = true
     light = false
-    side-by-side = true
-    line-numbers = true
+	side-by-side = true
+	line-numbers = true
+[credential "https://github.com"]
+	helper =
+	helper = !/opt/homebrew/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper =
+	helper = !/opt/homebrew/bin/gh auth git-credential
+[interactive]
+	diffFilter = delta --color-only
