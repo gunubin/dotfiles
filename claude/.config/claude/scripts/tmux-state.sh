@@ -9,6 +9,8 @@ ICON_WORKING="󰑮"   # 処理中 (nf-md-play_circle_outline)
 # tmux 外では何もしない
 [ -z "$TMUX" ] && exit 0
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 # stdin から hook の JSON を読み取る
 input=$(cat)
 event=$(echo "$input" | jq -r '.hook_event_name // "unknown"' 2>/dev/null)
@@ -16,7 +18,7 @@ event=$(echo "$input" | jq -r '.hook_event_name // "unknown"' 2>/dev/null)
 PANE_ID=$(tmux display-message -p '#{pane_id}')
 WINDOW_ID=$(tmux display-message -p '#{window_id}')
 IS_ACTIVE=$(tmux display-message -p '#{pane_active}')
-DIR_NAME=$(basename "$(tmux display-message -p '#{pane_current_path}')")
+DIR_NAME=$("$SCRIPT_DIR/tmux-project-name.sh" "$(tmux display-message -p '#{pane_current_path}')")
 
 STATE_DIR="/tmp/claude-tmux"
 PANE_FILE="$STATE_DIR/pane-${PANE_ID}"
@@ -101,10 +103,8 @@ case "$event" in
             fi
             rm -f "$ORIG_FILE" "$REFS_FILE" "$AUTORENAME_FILE"
         elif [ "$IS_ACTIVE" = "1" ]; then
-            # アクティブpaneのClaudeが終了 → 元の名前に戻す
-            if [ -f "$ORIG_FILE" ]; then
-                tmux rename-window "$(cat "$ORIG_FILE")"
-            fi
+            # アクティブpaneのClaudeが終了 → プロジェクト名を表示
+            tmux rename-window "$("$SCRIPT_DIR/tmux-project-name.sh" "$(tmux display-message -p '#{pane_current_path}')")"
         fi
         ;;
 esac
