@@ -28,6 +28,7 @@ set -U fish_color_error a6727b
 #######
 # path
 #######
+set -x PATH $HOME/.cargo/bin $PATH
 set -x PATH $HOME/.nodebrew/current/bin $PATH
 set -x PATH $HOME/.rbenv/bin $PATH
 set -x PATH /usr/local/bin $PATH

@@ -51,6 +51,8 @@ keybind = cmd+e=text:\x0e
 keybind = cmd+t=text:\x13\x03
 keybind = cmd+w=text:\x13\x0b
 keybind = ctrl+t=text:\x14
+keybind = cmd+s=text:\x13\x01
+keybind = cmd+g=text:\x13\x67
 
 # tmux window switching (ctrl+s + number)
 keybind = cmd+digit_1=text:\x13\x31

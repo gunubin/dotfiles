@@ -2252,7 +2252,7 @@ def main():
                 return
 
     # Auto-detect Agent Teams teammate
-    agent_name = os.environ.get('CLAUDE_CODE_AGENT_NAME') if not args.show else None
+    agent_name = os.environ.get('CLAUDE_CODE_AGENT_NAME')
 
     try:
         # Read JSON from stdin

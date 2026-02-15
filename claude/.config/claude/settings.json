@@ -88,6 +88,17 @@
     ]
   },
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 ~/.claude/scripts/deny-check.py"
+          }
+        ]
+      }
+    ],
     "SessionStart": [
       {
         "matcher": "",
@@ -165,9 +176,10 @@
   },
   "language": "ja",
   "alwaysThinkingEnabled": true,
+  "plansDirectory": "./plans",
   "feedbackSurveyState": {
     "lastShownTime": 1753975827090
   },
   "mcpServers": {},
-  "plansDirectory": "./plans"
+  "skipDangerousModePermissionPrompt": true
 }
