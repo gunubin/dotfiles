@@ -219,7 +219,9 @@ end
 
 
 # Ctrl+Tをアプリに渡す（macOSのstty status無効化）
-stty status undef
+if status is-interactive
+    stty status undef
+end
 
 #######
 # starship
