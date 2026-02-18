@@ -1832,7 +1832,7 @@ def truncate_text(text, max_len):
 
 def build_line1_parts(ctx, max_branch_len=20, max_dir_len=None,
                       include_active_files=True, include_messages=True,
-                      include_lines=True, include_errors=True, include_cost=True):
+                      include_lines=True, include_errors=True, include_cost=False):
     """Line 1の各パーツを構築する
 
     Args:
@@ -1843,7 +1843,7 @@ def build_line1_parts(ctx, max_branch_len=20, max_dir_len=None,
         include_messages: メッセージ数を含めるか
         include_lines: 行変更数を含めるか
         include_errors: エラー数を含めるか
-        include_cost: コストを含めるか
+        include_cost: コストを含めるか（デフォルトFalse）
 
     Returns:
         list: Line 1のパーツのリスト
@@ -1921,17 +1921,13 @@ def format_agent_line(ctx, agent_name):
     # Compact percentage
     parts.append(f"{ctx['percentage']}%")
 
-    # Cost
-    if ctx['session_cost'] > 0:
-        parts.append(f"\U0001F4B0 ${ctx['session_cost']:.2f}")
-
     return " | ".join(parts)
 
 def format_output_full(ctx, terminal_width=None):
     """Full mode (>= 68 chars): 4行・全項目・装飾あり
 
     Example:
-    [Son4] | 🌿 main M2 | 📁 statusline | 💬 254 | 💰 $1.23
+    [Son4] | 🌿 main M2 | 📁 statusline | 💬 254
     Compact: ████████▒▒▒▒▒▒▒ [58%] 91.8K/160.0K ♻️ 99%
     Session: ███▒▒▒▒▒▒▒▒▒▒▒▒ [25%] 1h15m/5h (08:00-13:00)
     Burn:    ▁▂▃▄▅▆▇█▇▆▅▄▃▂▁ 14.0M tok
@@ -1973,7 +1969,7 @@ def format_output_full(ctx, terminal_width=None):
                 lines.append(line1)
             else:
                 # Step 2: 低優先度要素を削除（コスト、行変更、エラー）
-                line1_parts = build_line1_parts(ctx, include_cost=False, include_lines=False,
+                line1_parts = build_line1_parts(ctx, include_lines=False,
                                                 include_errors=False)
                 line1 = " | ".join(line1_parts)
 
@@ -1981,7 +1977,7 @@ def format_output_full(ctx, terminal_width=None):
                     lines.append(line1)
                 else:
                     # Step 3: アクティブファイルも削除
-                    line1_parts = build_line1_parts(ctx, include_cost=False, include_lines=False,
+                    line1_parts = build_line1_parts(ctx, include_lines=False,
                                                     include_errors=False, include_active_files=False)
                     line1 = " | ".join(line1_parts)
 
@@ -1989,7 +1985,7 @@ def format_output_full(ctx, terminal_width=None):
                         lines.append(line1)
                     else:
                         # Step 4: ディレクトリ名を短縮
-                        line1_parts = build_line1_parts(ctx, include_cost=False, include_lines=False,
+                        line1_parts = build_line1_parts(ctx, include_lines=False,
                                                         include_errors=False, include_active_files=False,
                                                         max_dir_len=12)
                         line1 = " | ".join(line1_parts)
@@ -1998,7 +1994,7 @@ def format_output_full(ctx, terminal_width=None):
                             lines.append(line1)
                         else:
                             # Step 5: ブランチ名をさらに短縮
-                            line1_parts = build_line1_parts(ctx, include_cost=False, include_lines=False,
+                            line1_parts = build_line1_parts(ctx, include_lines=False,
                                                             include_errors=False, include_active_files=False,
                                                             max_branch_len=12, max_dir_len=12)
                             line1 = " | ".join(line1_parts)
@@ -2007,7 +2003,7 @@ def format_output_full(ctx, terminal_width=None):
                                 lines.append(line1)
                             else:
                                 # Step 6: メッセージも削除、最小構成
-                                line1_parts = build_line1_parts(ctx, include_cost=False, include_lines=False,
+                                line1_parts = build_line1_parts(ctx, include_lines=False,
                                                                 include_errors=False, include_active_files=False,
                                                                 include_messages=False,
                                                                 max_branch_len=10, max_dir_len=10)
