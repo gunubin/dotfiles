@@ -1,10 +1,57 @@
 #!/bin/bash
 CALLER_PANE="$1"
-result=$(/opt/homebrew/bin/fd --type f --hidden --exclude .git --color=always | /opt/homebrew/bin/fzf-tmux -p 80%,80% \
+EZA=/opt/homebrew/bin/eza
+FZF=/opt/homebrew/bin/fzf-tmux
+FD=/opt/homebrew/bin/fd
+BAT=/opt/homebrew/bin/bat
+STRIP="perl -CSD -pe 's/\e\[\d+(?:;\d+)*m//g; s/^.\s//'"
+
+git_map=$(mktemp)
+trap 'rm -f "$git_map"' EXIT
+
+if git rev-parse --is-inside-work-tree &>/dev/null; then
+  git status --porcelain 2>/dev/null | awk '{ print substr($0, 4) "\t" substr($0, 1, 2) }' > "$git_map"
+fi
+
+result=$({
+  if [ -s "$git_map" ]; then
+    cut -f1 "$git_map" | while IFS= read -r f; do
+      [ -e "$f" ] && echo "$f"
+    done
+  fi
+  $FD --type f --hidden --exclude .git
+} | awk 'seen[$0]++ == 0' \
+  | $EZA --stdin --color=always --icons=always --sort=none -1 2>/dev/null \
+  | awk -v mapfile="$git_map" '
+  BEGIN {
+    while ((getline line < mapfile) > 0) {
+      idx = index(line, "\t")
+      if (idx > 0) statuses[substr(line, 1, idx-1)] = substr(line, idx+1)
+    }
+    close(mapfile)
+  }
+  {
+    plain = $0
+    gsub(/\033\[[0-9;]*m/, "", plain)
+    sub(/^. /, "", plain)
+    st = statuses[plain]
+    if (st == "??")                                    prefix = "\033[90m??\033[0m"
+    else if (st == " M" || st == " D")                 prefix = "\033[31m" st "\033[0m"
+    else if (st == "M " || st == "A " || st == "D " || st == "R ") prefix = "\033[32m" st "\033[0m"
+    else if (st == "MM" || st == "AM")                 prefix = "\033[33m" st "\033[0m"
+    else if (st != "")                                 prefix = st
+    else                                               prefix = "  "
+    printf "%s\t%s\n", prefix, $0
+  }' \
+  | $FZF -p 80%,80% \
   --ansi \
-  --preview "/opt/homebrew/bin/bat --color=always {} 2>/dev/null" \
+  --delimiter=$'\t' \
+  --tabstop=3 \
+  --nth=2 \
+  --preview "$BAT --color=always --style=plain \$(echo {2} | $STRIP) 2>/dev/null" \
   --expect=ctrl-a \
   --header="enter: relative / ctrl-a: absolute" \
+  --tiebreak=index \
   --style=full \
   --no-border \
   --padding=0,0 \
@@ -21,7 +68,7 @@ if [ -z "$result" ]; then
   exit 0
 fi
 key=$(echo "$result" | head -1)
-file=$(echo "$result" | tail -1)
+file=$(echo "$result" | tail -1 | sed $'s/\033\\[[0-9;]*m//g; s/^[^\t]*\t//' | perl -CSD -pe 's/^.\s//')
 if [ "$key" = "ctrl-a" ]; then
   file="$(pwd)/$file"
 fi
