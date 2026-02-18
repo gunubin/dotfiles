@@ -17,7 +17,7 @@ bold-is-bright = true
 cursor-style = block
 cursor-style-blink = true
 #cursor-invert-fg-bg = true
-cursor-color = #9adee8
+cursor-color = #f0e6d3
 #cursor-opacity = 0.8
 
 copy-on-select = true
