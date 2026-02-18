@@ -1903,25 +1903,6 @@ def get_dead_agents():
     except (FileNotFoundError, PermissionError):
         return []
 
-def format_agent_line(ctx, agent_name):
-    """Agent Teams teammate: single-line status"""
-    parts = []
-
-    # Agent name
-    parts.append(f"{Colors.BRIGHT_MAGENTA}\U0001F916 {agent_name}{Colors.RESET}")
-
-    # Model
-    model_name = shorten_model_name(ctx['model'])
-    parts.append(f"{Colors.BRIGHT_YELLOW}[{model_name}]{Colors.RESET}")
-
-    # Messages
-    if ctx['total_messages'] > 0:
-        parts.append(f"{Colors.BRIGHT_CYAN}\U0001F4AC {ctx['total_messages']}{Colors.RESET}")
-
-    # Compact percentage
-    parts.append(f"{ctx['percentage']}%")
-
-    return " | ".join(parts)
 
 def format_output_full(ctx, terminal_width=None):
     """Full mode (>= 68 chars): 4行・全項目・装飾あり
@@ -2249,6 +2230,9 @@ def main():
 
     # Auto-detect Agent Teams teammate
     agent_name = os.environ.get('CLAUDE_CODE_AGENT_NAME')
+    if agent_name:
+        sys.stdin.read()  # consume stdin
+        return
 
     try:
         # Read JSON from stdin
@@ -2533,9 +2517,7 @@ def main():
         # Select formatter based on display mode and terminal height
         terminal_height = get_terminal_height()
 
-        if agent_name:
-            lines = [format_agent_line(ctx, agent_name)]
-        elif not args.show and terminal_height <= 8:
+        if not args.show and terminal_height <= 8:
             # Short terminal: 1-line minimal mode
             lines = format_output_minimal(ctx, terminal_width)
         elif display_mode == 'full':
