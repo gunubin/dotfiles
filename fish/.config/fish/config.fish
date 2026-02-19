@@ -94,6 +94,7 @@ alias ta='tmux attach-session -t'
 alias tk='tmux kill-session -t'
 alias tka='tmux kill-server'  # 全セッション削除（注意して使用）
 alias wm='workmux'
+alias unssh='set -e SSH_CONNECTION; set -e SSH_CLIENT; set -e SSH_TTY'
 
 
 #######
