@@ -96,6 +96,72 @@ alias tka='tmux kill-server'  # 全セッション削除（注意して使用）
 alias wm='workmux'
 alias unssh='set -e SSH_CONNECTION; set -e SSH_CLIENT; set -e SSH_TTY'
 
+# 孤児プロセスの対話的 kill（fzf TUI）
+# macOSではPPID=1はlaunchd管理の正規プロセスも含むため
+# デフォルトはdev系ツールのみ表示（安全側に倒す）
+# -a: システムパスを除く全ユーザープロセス表示
+function kill-orphans --description 'Interactive orphan process killer with fzf'
+    set -l mode dev
+    for arg in $argv
+        switch $arg
+            case -a --all
+                set mode all
+        end
+    end
+
+    set -l procs (ps -u (whoami) -o pid=,ppid=,tty=,%cpu=,rss=,etime=,command= 2>/dev/null | \
+        awk -v mode="$mode" '
+        $2 == 1 && $3 == "??" {
+            cmd = ""
+            for (i=7; i<=NF; i++) cmd = cmd (i>7?" ":"") $i
+
+            if (mode == "dev") {
+                if (!(cmd ~ /\.local\/share\/claude/ || \
+                      cmd ~ /\.npm/ || cmd ~ /\.nvm/ || \
+                      cmd ~ /\.nodebrew/ || cmd ~ /\.cargo/ || \
+                      cmd ~ /\.rbenv/ || \
+                      (cmd ~ /^node[ ]/ || cmd == "node") || \
+                      (cmd ~ /^\/bin\/(ba|z)sh/ && cmd ~ /\.claude\//)))
+                    next
+            } else {
+                if (cmd ~ /^\/System\// || cmd ~ /^\/usr\// || \
+                    cmd ~ /^\/Library\/Apple/)
+                    next
+            }
+
+            display = substr(cmd, 1, 55)
+            if (length(cmd) > 55) display = display "..."
+            mem = sprintf("%.0f", $5/1024)
+            printf "%-7s %-5s %-8s %-14s %s\n", $1, $4, mem, $6, display
+        }')
+
+    if test (count $procs) -eq 0
+        echo "孤児プロセスなし"
+        return 0
+    end
+
+    echo (count $procs)"件の孤児プロセス"
+
+    set -l selected (
+        begin
+            printf "%-7s %-5s %-8s %-14s %s\n" PID CPU% "MEM(MB)" ELAPSED COMMAND
+            printf '%s\n' $procs
+        end | fzf --multi \
+            --header "TAB:選択 / Enter:kill(SIGTERM) / Ctrl-C:キャンセル" \
+            --header-lines=1 \
+            --preview 'ps -p {1} -o pid,ppid,%cpu,%mem,rss,lstart 2>/dev/null; echo ""; echo "--- command ---"; ps -p {1} -o command= 2>/dev/null | fold -w 80' \
+            --preview-label=" 詳細 " \
+            --input-label=" 孤児プロセス "
+    )
+
+    test -z "$selected" && return 0
+
+    for line in $selected
+        set -l pid (echo $line | awk '{print $1}')
+        kill $pid && echo "killed: $pid"
+    end
+end
+
 
 #######
 # fzf
@@ -186,7 +252,7 @@ end
 #######
 # direnv
 #######
-#eval (direnv hook fish)
+eval (direnv hook fish)
 
 
 # set -gx VOLTA_HOME "$HOME/.volta"

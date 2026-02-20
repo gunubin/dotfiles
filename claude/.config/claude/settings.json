@@ -125,7 +125,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "afplay /System/Library/Sounds/Purr.aiff &"
+            "command": "~/.config/claude/scripts/notify-complete.sh stop"
           }
         ]
       },
@@ -135,6 +135,17 @@
           {
             "type": "command",
             "command": "~/.claude/scripts/tmux-state.sh"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.config/claude/scripts/notify-complete.sh notification"
           }
         ]
       }
