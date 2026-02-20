@@ -2,3 +2,13 @@
 desc = "Start bunny.yazi"
 on = "b"
 run = "plugin bunny"
+
+[[mgr.prepend_keymap]]
+desc = "fazif: fd+fzf fuzzy file search"
+on = "F"
+run = "plugin fazif -- faziffd"
+
+[[mgr.prepend_keymap]]
+desc = "fazif: rg+fzf fuzzy content search"
+on = "R"
+run = "plugin fazif -- fazifrg"
