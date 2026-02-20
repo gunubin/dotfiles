@@ -5,10 +5,11 @@
 #theme = catppuccin-mocha
 theme = catppuccin-frappe.conf
 
-#font-family = Hack Nerd Font Mono
-#font-family = "FiraCode Nerd Font"
+#font-family = "Hack Nerd Font Mono"
+#font-family = "JetBrainsMonoNL Nerd Font"
+#font-family = "IBM Plex Mono"
 
-font-family = "JetBrainsMonoNL Nerd Font"
+font-family = "FiraCode Nerd Font"
 font-family = "Hiragino Kaku Gothic ProN"
 font-feature = -calt, -liga, -dlig
 font-size = 15
