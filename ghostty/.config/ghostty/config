@@ -8,13 +8,18 @@ theme = catppuccin-frappe.conf
 #font-family = "JetBrainsMonoNL Nerd Font"
 
 #font-family = "IBM Plex Mono"
-font-family = "Gintronic"
+#font-family = "Gintronic"
 #font-family = "Atkinson Hyperlegible Mono"
+
+font-family = "Berkeley Mono Variable"
 font-family = "IBM Plex Sans JP"
-font-feature = -calt, -liga, -dlig
+font-feature = +calt, +liga
 font-size = 14
-bold-is-bright = true
+font-variation = wght=400
+font-variation-bold = wght=850
+#bold-is-bright = true
 #font-thicken = true
+#adjust-cell-height = -2%
 
 cursor-style = block
 cursor-style-blink = true
@@ -22,6 +27,7 @@ cursor-style-blink = true
 cursor-color = #f0e6d3
 #cursor-opacity = 0.8
 
+mouse-scroll-multiplier = 1.0
 copy-on-select = true
 clipboard-trim-trailing-spaces = true
 
