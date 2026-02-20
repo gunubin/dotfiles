@@ -44,12 +44,13 @@ quick-terminal-screen = "main"
 quick-terminal-animation-duration = 0.15
 
 macos-option-as-alt = true
-keybind = global:ctrl+cmd+u=toggle_visibility
+# toggle_visibility は macOS で unhide が不安定なため Alfred で制御
+#keybind = global:ctrl+cmd+u=toggle_visibility
 keybind = ctrl+tab=text:\x13\x0E
 keybind = shift+ctrl+tab=text:\x13\x10
 keybind = cmd+e=text:\x13\x65
 keybind = cmd+t=text:\x13\x03
-keybind = cmd+w=text:\x13\x0b
+keybind = cmd+w=text:\x13\x77
 keybind = ctrl+t=text:\x14
 keybind = cmd+s=text:\x13\x01
 keybind = cmd+g=text:\x13\x67
