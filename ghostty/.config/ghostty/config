@@ -5,15 +5,16 @@
 #theme = catppuccin-mocha
 theme = catppuccin-frappe.conf
 
-#font-family = "Hack Nerd Font Mono"
 #font-family = "JetBrainsMonoNL Nerd Font"
-#font-family = "IBM Plex Mono"
 
-font-family = "FiraCode Nerd Font"
-font-family = "Hiragino Kaku Gothic ProN"
+#font-family = "IBM Plex Mono"
+font-family = "Gintronic"
+#font-family = "Atkinson Hyperlegible Mono"
+font-family = "IBM Plex Sans JP"
 font-feature = -calt, -liga, -dlig
-font-size = 15
+font-size = 14
 bold-is-bright = true
+#font-thicken = true
 
 cursor-style = block
 cursor-style-blink = true
@@ -22,6 +23,7 @@ cursor-color = #f0e6d3
 #cursor-opacity = 0.8
 
 copy-on-select = true
+clipboard-trim-trailing-spaces = true
 
 fullscreen = true
 macos-non-native-fullscreen = true
