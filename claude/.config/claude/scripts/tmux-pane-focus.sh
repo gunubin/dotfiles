@@ -51,4 +51,7 @@ if [ -f "$PANE_FILE" ]; then
 elif [ -f "$REFS_FILE" ] && [ -s "$REFS_FILE" ]; then
     # Claude実行中のウィンドウで非Claudeペインにフォーカス → カレントディレクトリ名を表示
     tmux rename-window "$("$SCRIPT_DIR/tmux-project-name.sh" "$(tmux display-message -p '#{pane_current_path}')")"
+else
+    # Claude状態なし → project名にフォールバック（resurrectの古い名前を上書き）
+    tmux rename-window "$("$SCRIPT_DIR/tmux-project-name.sh" "$(tmux display-message -p '#{pane_current_path}')")"
 fi
