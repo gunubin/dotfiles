@@ -5,11 +5,21 @@
 # ============================================
 
 # Display settings (True = show, False = hide)
-SHOW_LINE1    = True   # [Sonnet 4] | 🌿 main M2 | 📁 project | 💬 254
+SHOW_LINE1    = True   # [Sonnet 4] |  main M2 |  project |  254
 SHOW_LINE2    = True   # Compact: 91.8K/160.0K ████████▒▒▒ 58%
 SHOW_LINE3    = True   # Session: 1h15m/5h ███▒▒▒▒▒▒▒▒ 25%
 SHOW_LINE4    = True   # Burn: 14.0M ▁▂▃▄▅▆▇█▇▆▅▄▃▂▁
-SHOW_SCHEDULE = True   # 📅 14:00 Meeting (in 30m) - swaps with Line1
+SHOW_SCHEDULE = True   #  14:00 Meeting (in 30m) - swaps with Line1
+
+# Icon settings (Nerd Font)
+ICON_BRANCH   = '\ue0a0'  #
+ICON_FOLDER   = '\uf07c'  #
+ICON_MESSAGE  = '\uf075'  #
+ICON_FILE     = '\uf15c'  #
+ICON_WARNING  = '\uf071'  #
+ICON_DOLLAR   = '\uf155'  #
+ICON_REFRESH  = '\uf021'  #
+ICON_CALENDAR = '\uf073'  #
 
 # Schedule settings (requires `gog` command)
 SCHEDULE_SWAP_INTERVAL = 1    # Swap interval (seconds)
@@ -1638,7 +1648,7 @@ def format_schedule_line(event, terminal_width):
         terminal_width: available width for the line
 
     Returns:
-        str: Formatted schedule line e.g., "📅 14:00 ミーティング (in 30m)"
+        str: Formatted schedule line e.g., " 14:00 ミーティング (in 30m)"
     """
     if not event:
         return None
@@ -1653,8 +1663,8 @@ def format_schedule_line(event, terminal_width):
 
     summary = event['summary']
 
-    # Build the line: 📅 14:00 summary (in Xm)
-    prefix = f"📅 {time_part} "
+    # Build the line:  14:00 summary (in Xm)
+    prefix = f"{ICON_CALENDAR} {time_part} "
     suffix = f" {time_until}"
 
     # Calculate available space for summary
@@ -1676,7 +1686,7 @@ def format_schedule_line(event, terminal_width):
             current_width += char_width
         summary = truncated + "…"
 
-    return f"{color}📅 {time_part} {summary} {time_until}{Colors.RESET}"
+    return f"{color}{ICON_CALENDAR} {time_part} {summary} {time_until}{Colors.RESET}"
 
 # REMOVED: detect_session_boundaries() - unused function (replaced by 5-hour block system)
 
@@ -1850,34 +1860,34 @@ def build_line1_parts(ctx, max_branch_len=20, max_dir_len=None,
     """
     parts = []
 
-    # Model (always shortened)
-    model_name = shorten_model_name(ctx['model'])
-    parts.append(f"{Colors.BRIGHT_YELLOW}[{model_name}]{Colors.RESET}")
+    # Directory
+    dir_name = ctx['current_dir']
+    if max_dir_len and len(dir_name) > max_dir_len:
+        dir_name = truncate_text(dir_name, max_dir_len)
+    parts.append(f"{Colors.BRIGHT_CYAN}{ICON_FOLDER} {dir_name}{Colors.RESET}")
 
     # Git branch (no untracked files count)
     if ctx['git_branch']:
         branch = ctx['git_branch']
         if max_branch_len and len(branch) > max_branch_len:
             branch = truncate_text(branch, max_branch_len)
-        git_display = f"{Colors.BRIGHT_GREEN}🌿 {branch}"
+        git_display = f"{Colors.BRIGHT_GREEN}{ICON_BRANCH} {branch}"
         if ctx['modified_files'] > 0:
             git_display += f" {Colors.BRIGHT_YELLOW}M{ctx['modified_files']}"
         git_display += Colors.RESET
         parts.append(git_display)
 
-    # Directory
-    dir_name = ctx['current_dir']
-    if max_dir_len and len(dir_name) > max_dir_len:
-        dir_name = truncate_text(dir_name, max_dir_len)
-    parts.append(f"{Colors.BRIGHT_CYAN}📁 {dir_name}{Colors.RESET}")
+    # Model (always shortened)
+    model_name = shorten_model_name(ctx['model'])
+    parts.append(f"{Colors.BRIGHT_YELLOW}[{model_name}]{Colors.RESET}")
 
     # Active files
     if include_active_files and ctx['active_files'] > 0:
-        parts.append(f"{Colors.BRIGHT_WHITE}📝 {ctx['active_files']}{Colors.RESET}")
+        parts.append(f"{Colors.BRIGHT_WHITE}{ICON_FILE} {ctx['active_files']}{Colors.RESET}")
 
     # Messages
     if include_messages and ctx['total_messages'] > 0:
-        parts.append(f"{Colors.BRIGHT_CYAN}💬 {ctx['total_messages']}{Colors.RESET}")
+        parts.append(f"{Colors.BRIGHT_CYAN}{ICON_MESSAGE} {ctx['total_messages']}{Colors.RESET}")
 
     # Lines changed
     if include_lines and (ctx['lines_added'] > 0 or ctx['lines_removed'] > 0):
@@ -1885,12 +1895,12 @@ def build_line1_parts(ctx, max_branch_len=20, max_dir_len=None,
 
     # Errors
     if include_errors and ctx['error_count'] > 0:
-        parts.append(f"{Colors.BRIGHT_RED}⚠️ {ctx['error_count']}{Colors.RESET}")
+        parts.append(f"{Colors.BRIGHT_RED}{ICON_WARNING} {ctx['error_count']}{Colors.RESET}")
 
     # Cost
     if include_cost and ctx['session_cost'] > 0:
         cost_color = Colors.BRIGHT_YELLOW if ctx['session_cost'] > 10 else Colors.BRIGHT_WHITE
-        parts.append(f"{cost_color}💰 {format_cost(ctx['session_cost'])}{Colors.RESET}")
+        parts.append(f"{cost_color}{ICON_DOLLAR} {format_cost(ctx['session_cost'])}{Colors.RESET}")
 
     return parts
 
@@ -1908,8 +1918,8 @@ def format_output_full(ctx, terminal_width=None):
     """Full mode (>= 68 chars): 4行・全項目・装飾あり
 
     Example:
-    [Son4] | 🌿 main M2 | 📁 statusline | 💬 254
-    Compact: ████████▒▒▒▒▒▒▒ [58%] 91.8K/160.0K ♻️ 99%
+    [Son4] |  main M2 |  statusline |  254
+    Compact: ████████▒▒▒▒▒▒▒ [58%] 91.8K/160.0K  99%
     Session: ███▒▒▒▒▒▒▒▒▒▒▒▒ [25%] 1h15m/5h (08:00-13:00)
     Burn:    ▁▂▃▄▅▆▇█▇▆▅▄▃▂▁ 14.0M tok
 
@@ -2011,7 +2021,7 @@ def format_output_full(ctx, terminal_width=None):
         line2_parts.append(f"{Colors.BRIGHT_WHITE}{compact_display}/{format_token_count(ctx['compaction_threshold'])}{Colors.RESET}")
 
         if ctx['cache_ratio'] >= 50:
-            line2_parts.append(f"{Colors.BRIGHT_GREEN}♻️ {int(ctx['cache_ratio'])}% cached{Colors.RESET}")
+            line2_parts.append(f"{Colors.BRIGHT_GREEN}{ICON_REFRESH} {int(ctx['cache_ratio'])}% cached{Colors.RESET}")
 
         lines.append(" ".join(line2_parts))
 
@@ -2039,18 +2049,18 @@ def format_output_compact(ctx):
     """Compact mode (55-71 chars): 4行・ラベル短縮・装飾削減
 
     Example:
-    [Son4] main M2+1 statusline 💬254
+    [Son4] main M2+1 statusline 254
     C: ████████▒▒▒ [58%] 91K/160K
     S: ███▒▒▒▒▒▒▒▒ [25%] 1h15m/5h
     B: ▁▂▃▄▅▆▇█▇▆▅ 14M
     """
     lines = []
 
-    # Line 1: Shortened model/git/dir
+    # Line 1: Shortened dir/git/model
     if ctx['show_line1']:
         line1_parts = []
-        short_model = shorten_model_name(ctx['model'])
-        line1_parts.append(f"{Colors.BRIGHT_YELLOW}[{short_model}]{Colors.RESET}")
+
+        line1_parts.append(f"{Colors.BRIGHT_CYAN}{ctx['current_dir']}{Colors.RESET}")
 
         if ctx['git_branch']:
             git_display = f"{Colors.BRIGHT_GREEN}{ctx['git_branch']}"
@@ -2061,10 +2071,11 @@ def format_output_compact(ctx):
             git_display += Colors.RESET
             line1_parts.append(git_display)
 
-        line1_parts.append(f"{Colors.BRIGHT_CYAN}{ctx['current_dir']}{Colors.RESET}")
+        short_model = shorten_model_name(ctx['model'])
+        line1_parts.append(f"{Colors.BRIGHT_YELLOW}[{short_model}]{Colors.RESET}")
 
         if ctx['total_messages'] > 0:
-            line1_parts.append(f"{Colors.BRIGHT_CYAN}💬{ctx['total_messages']}{Colors.RESET}")
+            line1_parts.append(f"{Colors.BRIGHT_CYAN}{ICON_MESSAGE}{ctx['total_messages']}{Colors.RESET}")
 
         lines.append(" ".join(line1_parts))
 
@@ -2107,11 +2118,9 @@ def format_output_tight(ctx):
     """
     lines = []
 
-    # Line 1: Model, branch (ultra short)
+    # Line 1: Branch, model (ultra short)
     if ctx['show_line1']:
         line1_parts = []
-        short_model = shorten_model_name(ctx['model'], tight=True)
-        line1_parts.append(f"{Colors.BRIGHT_YELLOW}[{short_model}]{Colors.RESET}")
 
         if ctx['git_branch']:
             git_display = f"{Colors.BRIGHT_GREEN}{ctx['git_branch']}"
@@ -2119,6 +2128,9 @@ def format_output_tight(ctx):
                 git_display += f" M{ctx['modified_files']}+{ctx['untracked_files']}"
             git_display += Colors.RESET
             line1_parts.append(git_display)
+
+        short_model = shorten_model_name(ctx['model'], tight=True)
+        line1_parts.append(f"{Colors.BRIGHT_YELLOW}[{short_model}]{Colors.RESET}")
 
         lines.append(" ".join(line1_parts))
 
@@ -2151,7 +2163,7 @@ def format_output_minimal(ctx, terminal_width):
     """Minimal 1-line mode for short terminal heights (<= 8 lines)
 
     Example:
-    Cpt58% 91K/160K ♻99%
+    Cpt58% 91K/160K 99%
     """
     percentage = ctx['percentage']
     compact_display = format_token_count_short(ctx['compact_tokens'])
@@ -2166,7 +2178,7 @@ def format_output_minimal(ctx, terminal_width):
 
     # Add cache ratio if it fits
     if ctx['cache_ratio'] >= 50:
-        cache_part = f" {Colors.BRIGHT_GREEN}\u267b{int(ctx['cache_ratio'])}%{Colors.RESET}"
+        cache_part = f" {Colors.BRIGHT_GREEN}{ICON_REFRESH}{int(ctx['cache_ratio'])}%{Colors.RESET}"
         if get_display_width(line + cache_part) <= terminal_width:
             line += cache_part
 
