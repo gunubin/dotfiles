@@ -86,19 +86,36 @@ COMPACTION_THRESHOLD = 200000 * 0.8  # 80% of 200K tokens (fallback)
 class Colors:
     # Catppuccin Mocha palette (pastel colors)
     _colors = {
-        'BRIGHT_CYAN': '\033[38;2;137;220;235m',     # Sky #89dceb
-        'BRIGHT_BLUE': '\033[38;2;116;199;236m',     # Sapphire #74c7ec
-        'BRIGHT_MAGENTA': '\033[38;2;203;166;247m',   # Mauve #cba6f7
-        'BRIGHT_GREEN': '\033[38;2;166;227;161m',     # Green #a6e3a1
-        'BRIGHT_YELLOW': '\033[38;2;249;226;175m',    # Yellow #f9e2af
-        'BRIGHT_RED': '\033[38;2;243;139;168m',       # Red #f38ba8
-        'BRIGHT_WHITE': '\033[38;2;205;214;244m',     # Text #cdd6f4
-        'LIGHT_GRAY': '\033[38;2;88;91;112m',         # Surface2 #585b70
-        'DIM': '\033[38;2;166;173;200m',              # Subtext0 #a6adc8
+        # Catppuccin Mocha - full palette
+        'PEACH': '\033[38;2;250;179;135m',             # Peach #fab387
+        'YELLOW': '\033[38;2;249;226;175m',            # Yellow #f9e2af
+        'GREEN': '\033[38;2;166;227;161m',             # Green #a6e3a1
+        'TEAL': '\033[38;2;148;226;213m',              # Teal #94e2d5
+        'SKY': '\033[38;2;137;220;235m',               # Sky #89dceb
+        'SAPPHIRE': '\033[38;2;116;199;236m',          # Sapphire #74c7ec
+        'BLUE': '\033[38;2;137;180;250m',              # Blue #89b4fa
+        'LAVENDER': '\033[38;2;180;190;254m',          # Lavender #b4befe
+        'MAUVE': '\033[38;2;203;166;247m',             # Mauve #cba6f7
+        'PINK': '\033[38;2;245;194;231m',              # Pink #f5c2e7
+        'RED': '\033[38;2;243;139;168m',               # Red #f38ba8
+        'TEXT': '\033[38;2;205;214;244m',               # Text #cdd6f4
+        'SUBTEXT0': '\033[38;2;166;173;200m',           # Subtext0 #a6adc8
+        'SURFACE2': '\033[38;2;88;91;112m',             # Surface2 #585b70
+        # Legacy aliases (backward compat)
+        'BRIGHT_CYAN': '\033[38;2;137;220;235m',       # Sky
+        'BRIGHT_BLUE': '\033[38;2;116;199;236m',       # Sapphire
+        'BRIGHT_MAGENTA': '\033[38;2;203;166;247m',    # Mauve
+        'BRIGHT_GREEN': '\033[38;2;166;227;161m',      # Green
+        'BRIGHT_YELLOW': '\033[38;2;249;226;175m',     # Yellow
+        'BRIGHT_RED': '\033[38;2;243;139;168m',        # Red
+        'BRIGHT_WHITE': '\033[38;2;205;214;244m',      # Text
+        'LIGHT_GRAY': '\033[38;2;88;91;112m',          # Surface2
+        'DIM': '\033[38;2;166;173;200m',               # Subtext0
+        # Modifiers
         'BOLD': '\033[1m',
         'BLINK': '\033[5m',
-        'BG_RED': '\033[48;2;243;139;168m',           # Red bg #f38ba8
-        'BG_YELLOW': '\033[48;2;249;226;175m',        # Yellow bg #f9e2af
+        'BG_RED': '\033[48;2;243;139;168m',            # Red bg
+        'BG_YELLOW': '\033[48;2;249;226;175m',         # Yellow bg
         'RESET': '\033[0m'
     }
     
@@ -1864,42 +1881,42 @@ def build_line1_parts(ctx, max_branch_len=20, max_dir_len=None,
     dir_name = ctx['current_dir']
     if max_dir_len and len(dir_name) > max_dir_len:
         dir_name = truncate_text(dir_name, max_dir_len)
-    parts.append(f"{Colors.BRIGHT_CYAN}{ICON_FOLDER} {dir_name}{Colors.RESET}")
+    parts.append(f"{Colors.PEACH}{ICON_FOLDER} {dir_name}{Colors.RESET}")
 
     # Git branch (no untracked files count)
     if ctx['git_branch']:
         branch = ctx['git_branch']
         if max_branch_len and len(branch) > max_branch_len:
             branch = truncate_text(branch, max_branch_len)
-        git_display = f"{Colors.BRIGHT_GREEN}{ICON_BRANCH} {branch}"
+        git_display = f"{Colors.GREEN}{ICON_BRANCH} {branch}"
         if ctx['modified_files'] > 0:
-            git_display += f" {Colors.BRIGHT_YELLOW}M{ctx['modified_files']}"
+            git_display += f" {Colors.YELLOW}M{ctx['modified_files']}"
         git_display += Colors.RESET
         parts.append(git_display)
 
     # Model (always shortened)
     model_name = shorten_model_name(ctx['model'])
-    parts.append(f"{Colors.BRIGHT_YELLOW}[{model_name}]{Colors.RESET}")
+    parts.append(f"{Colors.LAVENDER}[{model_name}]{Colors.RESET}")
 
     # Active files
     if include_active_files and ctx['active_files'] > 0:
-        parts.append(f"{Colors.BRIGHT_WHITE}{ICON_FILE} {ctx['active_files']}{Colors.RESET}")
+        parts.append(f"{Colors.SKY}{ICON_FILE} {ctx['active_files']}{Colors.RESET}")
 
     # Messages
     if include_messages and ctx['total_messages'] > 0:
-        parts.append(f"{Colors.BRIGHT_CYAN}{ICON_MESSAGE} {ctx['total_messages']}{Colors.RESET}")
+        parts.append(f"{Colors.MAUVE}{ICON_MESSAGE} {ctx['total_messages']}{Colors.RESET}")
 
     # Lines changed
     if include_lines and (ctx['lines_added'] > 0 or ctx['lines_removed'] > 0):
-        parts.append(f"{Colors.BRIGHT_GREEN}+{ctx['lines_added']}{Colors.RESET}/{Colors.BRIGHT_RED}-{ctx['lines_removed']}{Colors.RESET}")
+        parts.append(f"{Colors.GREEN}+{ctx['lines_added']}{Colors.RESET}/{Colors.RED}-{ctx['lines_removed']}{Colors.RESET}")
 
     # Errors
     if include_errors and ctx['error_count'] > 0:
-        parts.append(f"{Colors.BRIGHT_RED}{ICON_WARNING} {ctx['error_count']}{Colors.RESET}")
+        parts.append(f"{Colors.RED}{ICON_WARNING} {ctx['error_count']}{Colors.RESET}")
 
     # Cost
     if include_cost and ctx['session_cost'] > 0:
-        cost_color = Colors.BRIGHT_YELLOW if ctx['session_cost'] > 10 else Colors.BRIGHT_WHITE
+        cost_color = Colors.YELLOW if ctx['session_cost'] > 10 else Colors.TEXT
         parts.append(f"{cost_color}{ICON_DOLLAR} {format_cost(ctx['session_cost'])}{Colors.RESET}")
 
     return parts
@@ -2012,7 +2029,7 @@ def format_output_full(ctx, terminal_width=None):
             percentage_display = f"{Colors.BG_RED}{Colors.BRIGHT_WHITE}{Colors.BOLD}[{percentage}%]{Colors.RESET}"
             compact_label = f"{title_color}Compact:{Colors.RESET}"
         else:
-            compact_label = f"{Colors.BRIGHT_CYAN}Compact:{Colors.RESET}"
+            compact_label = f"{Colors.BLUE}Compact:{Colors.RESET}"
             percentage_display = f"{percentage_color}{Colors.BOLD}[{percentage}%]{Colors.RESET}"
 
         line2_parts.append(compact_label)
@@ -2021,14 +2038,14 @@ def format_output_full(ctx, terminal_width=None):
         line2_parts.append(f"{Colors.BRIGHT_WHITE}{compact_display}/{format_token_count(ctx['compaction_threshold'])}{Colors.RESET}")
 
         if ctx['cache_ratio'] >= 50:
-            line2_parts.append(f"{Colors.BRIGHT_GREEN}{ICON_REFRESH} {int(ctx['cache_ratio'])}% cached{Colors.RESET}")
+            line2_parts.append(f"{Colors.TEAL}{ICON_REFRESH} {int(ctx['cache_ratio'])}% cached{Colors.RESET}")
 
         lines.append(" ".join(line2_parts))
 
     # Line 3: Session time
     if ctx['show_line3'] and ctx['session_duration']:
         line3_parts = []
-        line3_parts.append(f"{Colors.BRIGHT_CYAN}Session:{Colors.RESET}")
+        line3_parts.append(f"{Colors.BLUE}Session:{Colors.RESET}")
         line3_parts.append(get_progress_bar(ctx['block_progress'], width=20, show_current_segment=True))
         line3_parts.append(f"{Colors.BRIGHT_WHITE}[{int(ctx['block_progress'])}%]{Colors.RESET}")
         line3_parts.append(f"{Colors.BRIGHT_WHITE}{ctx['session_duration']}/5h{Colors.RESET}")
@@ -2060,22 +2077,22 @@ def format_output_compact(ctx):
     if ctx['show_line1']:
         line1_parts = []
 
-        line1_parts.append(f"{Colors.BRIGHT_CYAN}{ctx['current_dir']}{Colors.RESET}")
+        line1_parts.append(f"{Colors.PEACH}{ctx['current_dir']}{Colors.RESET}")
 
         if ctx['git_branch']:
-            git_display = f"{Colors.BRIGHT_GREEN}{ctx['git_branch']}"
+            git_display = f"{Colors.GREEN}{ctx['git_branch']}"
             if ctx['modified_files'] > 0:
-                git_display += f" M{ctx['modified_files']}"
+                git_display += f" {Colors.YELLOW}M{ctx['modified_files']}"
             if ctx['untracked_files'] > 0:
                 git_display += f"+{ctx['untracked_files']}"
             git_display += Colors.RESET
             line1_parts.append(git_display)
 
         short_model = shorten_model_name(ctx['model'])
-        line1_parts.append(f"{Colors.BRIGHT_YELLOW}[{short_model}]{Colors.RESET}")
+        line1_parts.append(f"{Colors.LAVENDER}[{short_model}]{Colors.RESET}")
 
         if ctx['total_messages'] > 0:
-            line1_parts.append(f"{Colors.BRIGHT_CYAN}{ICON_MESSAGE}{ctx['total_messages']}{Colors.RESET}")
+            line1_parts.append(f"{Colors.MAUVE}{ICON_MESSAGE}{ctx['total_messages']}{Colors.RESET}")
 
         lines.append(" ".join(line1_parts))
 
@@ -2086,14 +2103,14 @@ def format_output_compact(ctx):
         threshold_display = format_token_count_short(ctx['compaction_threshold'])
         percentage_color = get_percentage_color(percentage)
 
-        line2 = f"{Colors.BRIGHT_CYAN}C:{Colors.RESET} {get_progress_bar(percentage, width=12)} "
+        line2 = f"{Colors.BLUE}C:{Colors.RESET} {get_progress_bar(percentage, width=12)} "
         line2 += f"{percentage_color}[{percentage}%]{Colors.RESET} "
         line2 += f"{Colors.BRIGHT_WHITE}{compact_display}/{threshold_display}{Colors.RESET}"
         lines.append(line2)
 
     # Line 3: Session (shortened)
     if ctx['show_line3'] and ctx['session_duration']:
-        line3 = f"{Colors.BRIGHT_CYAN}S:{Colors.RESET} {get_progress_bar(ctx['block_progress'], width=12)} "
+        line3 = f"{Colors.BLUE}S:{Colors.RESET} {get_progress_bar(ctx['block_progress'], width=12)} "
         line3 += f"{Colors.BRIGHT_WHITE}[{int(ctx['block_progress'])}%]{Colors.RESET} "
         line3 += f"{Colors.BRIGHT_WHITE}{ctx['session_duration']}/5h{Colors.RESET}"
         lines.append(line3)
@@ -2102,7 +2119,7 @@ def format_output_compact(ctx):
     if ctx['show_line4'] and ctx['burn_timeline']:
         sparkline = create_sparkline(ctx['burn_timeline'], width=12)
         tokens_display = format_token_count_short(ctx['block_tokens'])
-        line4 = f"{Colors.BRIGHT_CYAN}B:{Colors.RESET} {sparkline} {Colors.BRIGHT_WHITE}{tokens_display}{Colors.RESET}"
+        line4 = f"{Colors.BLUE}B:{Colors.RESET} {sparkline} {Colors.BRIGHT_WHITE}{tokens_display}{Colors.RESET}"
         lines.append(line4)
 
     return lines
@@ -2123,14 +2140,14 @@ def format_output_tight(ctx):
         line1_parts = []
 
         if ctx['git_branch']:
-            git_display = f"{Colors.BRIGHT_GREEN}{ctx['git_branch']}"
+            git_display = f"{Colors.GREEN}{ctx['git_branch']}"
             if ctx['modified_files'] > 0 or ctx['untracked_files'] > 0:
-                git_display += f" M{ctx['modified_files']}+{ctx['untracked_files']}"
+                git_display += f" {Colors.YELLOW}M{ctx['modified_files']}+{ctx['untracked_files']}"
             git_display += Colors.RESET
             line1_parts.append(git_display)
 
         short_model = shorten_model_name(ctx['model'], tight=True)
-        line1_parts.append(f"{Colors.BRIGHT_YELLOW}[{short_model}]{Colors.RESET}")
+        line1_parts.append(f"{Colors.LAVENDER}[{short_model}]{Colors.RESET}")
 
         lines.append(" ".join(line1_parts))
 
@@ -2140,13 +2157,13 @@ def format_output_tight(ctx):
         compact_display = format_token_count_short(ctx['compact_tokens'])
         percentage_color = get_percentage_color(percentage)
 
-        line2 = f"{Colors.BRIGHT_CYAN}C:{Colors.RESET} {get_progress_bar(percentage, width=8)} "
+        line2 = f"{Colors.BLUE}C:{Colors.RESET} {get_progress_bar(percentage, width=8)} "
         line2 += f"{percentage_color}[{percentage}%]{Colors.RESET} {Colors.BRIGHT_WHITE}{compact_display}{Colors.RESET}"
         lines.append(line2)
 
     # Line 3: Session (ultra short)
     if ctx['show_line3'] and ctx['session_duration']:
-        line3 = f"{Colors.BRIGHT_CYAN}S:{Colors.RESET} {get_progress_bar(ctx['block_progress'], width=8)} "
+        line3 = f"{Colors.BLUE}S:{Colors.RESET} {get_progress_bar(ctx['block_progress'], width=8)} "
         line3 += f"{Colors.BRIGHT_WHITE}[{int(ctx['block_progress'])}%]{Colors.RESET} {Colors.BRIGHT_WHITE}{ctx['session_duration']}{Colors.RESET}"
         lines.append(line3)
 
@@ -2154,7 +2171,7 @@ def format_output_tight(ctx):
     if ctx['show_line4'] and ctx['burn_timeline']:
         sparkline = create_sparkline(ctx['burn_timeline'], width=8)
         tokens_display = format_token_count_short(ctx['block_tokens'])
-        line4 = f"{Colors.BRIGHT_CYAN}B:{Colors.RESET} {sparkline} {Colors.BRIGHT_WHITE}{tokens_display}{Colors.RESET}"
+        line4 = f"{Colors.BLUE}B:{Colors.RESET} {sparkline} {Colors.BRIGHT_WHITE}{tokens_display}{Colors.RESET}"
         lines.append(line4)
 
     return lines
@@ -2178,7 +2195,7 @@ def format_output_minimal(ctx, terminal_width):
 
     # Add cache ratio if it fits
     if ctx['cache_ratio'] >= 50:
-        cache_part = f" {Colors.BRIGHT_GREEN}{ICON_REFRESH}{int(ctx['cache_ratio'])}%{Colors.RESET}"
+        cache_part = f" {Colors.TEAL}{ICON_REFRESH}{int(ctx['cache_ratio'])}%{Colors.RESET}"
         if get_display_width(line + cache_part) <= terminal_width:
             line += cache_part
 
@@ -2475,9 +2492,9 @@ def main():
                 if now_local > end_time_local:
                     session_time_info = f"{Colors.BRIGHT_YELLOW}{current_time}{Colors.RESET} {Colors.BRIGHT_YELLOW}(ended at {session_end_time}){Colors.RESET}"
                 else:
-                    session_time_info = f"{Colors.BRIGHT_WHITE}{current_time}{Colors.RESET} {Colors.BRIGHT_GREEN}({session_start_time} to {session_end_time}){Colors.RESET}"
+                    session_time_info = f"{Colors.TEXT}{current_time}{Colors.RESET} {Colors.TEAL}({session_start_time} to {session_end_time}){Colors.RESET}"
             except Exception:
-                session_time_info = f"{Colors.BRIGHT_WHITE}{current_time}{Colors.RESET}"
+                session_time_info = f"{Colors.TEXT}{current_time}{Colors.RESET}"
 
         # Generate burn line and timeline for context
         burn_line = ""
@@ -2701,10 +2718,10 @@ def get_burn_line(current_session_data=None, session_id=None, block_stats=None, 
         
         sparkline = create_sparkline(burn_timeline, width=20)
         
-        return (f"{Colors.BRIGHT_CYAN}Burn:   {Colors.RESET} {sparkline} "
-                f"{Colors.BRIGHT_WHITE}{tokens_formatted} token(w/cache){Colors.RESET}, Rate: {burn_rate_formatted} t/m")
+        return (f"{Colors.BLUE}Burn:   {Colors.RESET} {sparkline} "
+                f"{Colors.TEXT}{tokens_formatted} token(w/cache){Colors.RESET}, Rate: {burn_rate_formatted} t/m")
 
     except Exception:
-        return f"{Colors.BRIGHT_CYAN}Burn:   {Colors.RESET} {Colors.BRIGHT_WHITE}ERROR{Colors.RESET}"
+        return f"{Colors.BLUE}Burn:   {Colors.RESET} {Colors.TEXT}ERROR{Colors.RESET}"
 if __name__ == "__main__":
     main()
