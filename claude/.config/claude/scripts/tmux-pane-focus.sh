@@ -11,9 +11,13 @@ STATE_DIR="/tmp/claude-tmux"
 
 PANE_ID=$(tmux display-message -p '#{pane_id}')
 WINDOW_ID=$(tmux display-message -p '#{window_id}')
+WINDOW_NAME=$(tmux display-message -p '#{window_name}')
 PANE_FILE="$STATE_DIR/pane-${PANE_ID}"
 ORIG_FILE="$STATE_DIR/orig-${WINDOW_ID}"
 REFS_FILE="$STATE_DIR/refs-${WINDOW_ID}"
+
+# workmux管理のwindowはリネームしない
+case "$WINDOW_NAME" in wm-*) exit 0 ;; esac
 
 # Correct stale working state: if mtime is older than threshold, rewrite to idle
 correct_stale_state() {
