@@ -5,15 +5,16 @@
 #theme = catppuccin-mocha
 theme = catppuccin-frappe.conf
 
-#font-family = "JetBrainsMonoNL Nerd Font"
 
 #font-family = "IBM Plex Mono"
 #font-family = "Gintronic"
 #font-family = "Atkinson Hyperlegible Mono"
 
+#font-family = "JetBrainsMono Nerd Font"
 font-family = "Berkeley Mono Variable"
 font-family = "IBM Plex Sans JP"
-font-feature = +calt, +liga
+font-feature = +calt
+font-feature = +liga
 font-size = 14
 font-variation = wght=400
 font-variation-bold = wght=850
