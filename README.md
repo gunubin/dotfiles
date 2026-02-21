@@ -32,6 +32,7 @@ My personal development environment managed with [GNU Stow](https://www.gnu.org/
 | [Ghostty](https://ghostty.org/) | GPU-accelerated terminal emulator |
 | [iTerm2](https://iterm2.com/) | macOS terminal emulator |
 | [tmux](https://github.com/tmux/tmux) | Terminal multiplexer |
+| [workmux](https://github.com/raine/workmux) | Git worktree + tmux workflow manager |
 
 ### Editor & IDE
 
