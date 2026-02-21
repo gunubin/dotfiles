@@ -5,8 +5,6 @@ window_prefix: "wm-"
 panes:
   - command: <agent>
     focus: true
-worktree_dir: /Users/koki/dev/worktrees
-
 # ステータス表示: tmux.confで管理（アイコン後のスペース確保のため）
 status_format: false
 
