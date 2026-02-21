@@ -1,87 +1,91 @@
 # Dotfiles
 
-![screen.png](./assets/screen.png)
+![macOS](https://img.shields.io/badge/macOS-000000?style=flat&logo=apple&logoColor=white)
+![Homebrew](https://img.shields.io/badge/Homebrew-FBB040?style=flat&logo=homebrew&logoColor=black)
+![Fish Shell](https://img.shields.io/badge/Fish_Shell-4AAE46?style=flat)
+![Neovim](https://img.shields.io/badge/Neovim-57A143?style=flat&logo=neovim&logoColor=white)
+![Tmux](https://img.shields.io/badge/Tmux-1BB91F?style=flat&logo=tmux&logoColor=white)
 
-このリポジトリには私の開発環境の設定ファイル（dotfiles）が含まれています。Makefileを使用して簡単にインストールと管理ができるように設計されています。
+![Terminal screenshot](./assets/screen.png)
 
-## 特徴
+My personal development environment managed with [GNU Stow](https://www.gnu.org/software/stow/), [Homebrew](https://brew.sh/), and [Make](https://www.gnu.org/software/make/).
 
-- GNU Stowを使用したシンボリックリンク管理
-- Brewfileを使用したパッケージ管理
-- Makefileによる簡単なセットアップ
+## Features
 
-## 含まれるパッケージ
+- **GNU Stow** — Symlink-based dotfile management
+- **Brewfile** — Declarative package management via Homebrew Bundle
+- **Makefile** — One-command setup and teardown
 
-- starship: モダンなプロンプト
-- fish: シェル
-- yazi: ファイルマネージャ
-- nvim: テキストエディタ
-- karabiner: macOSのキーボードカスタマイズツール
-- git: バージョン管理
-- iterm2: ターミナルエミュレータ
-- tmux: ターミナルマルチプレクサ
+## Packages
 
-## 必要条件
+### Shell & Prompt
+
+| Package | Description |
+|---------|-------------|
+| [Fish](https://fishshell.com/) | User-friendly interactive shell |
+| [Starship](https://starship.rs/) | Cross-shell prompt |
+
+### Terminal
+
+| Package | Description |
+|---------|-------------|
+| [Ghostty](https://ghostty.org/) | GPU-accelerated terminal emulator |
+| [iTerm2](https://iterm2.com/) | macOS terminal emulator |
+| [tmux](https://github.com/tmux/tmux) | Terminal multiplexer |
+
+### Editor & IDE
+
+| Package | Description |
+|---------|-------------|
+| [Neovim](https://neovim.io/) | Hyperextensible text editor |
+| [IntelliJ IDEA](https://www.jetbrains.com/idea/) | JetBrains IDE settings |
+
+### CLI Tools
+
+| Package | Description |
+|---------|-------------|
+| [bat](https://github.com/sharkdp/bat) | A `cat` clone with syntax highlighting |
+| [eza](https://eza.rocks/) | A modern replacement for `ls` |
+| [yazi](https://yazi-rs.github.io/) | Terminal file manager |
+| [Claude Code](https://github.com/anthropics/claude-code) | AI coding assistant |
+
+### System
+
+| Package | Description |
+|---------|-------------|
+| [Git](https://git-scm.com/) | Version control configuration |
+| [Karabiner-Elements](https://karabiner-elements.pqrs.org/) | macOS keyboard customizer (config generated via [karabiner.ts](https://github.com/evan-liu/karabiner.ts) in `karabiner-config/`) |
+
+## Prerequisites
 
 - macOS
 - [Homebrew](https://brew.sh/)
 - [Git](https://git-scm.com/)
 
-## インストール方法
+## Installation
 
-### 1. リポジトリのクローン
+### Quick Start
 
 ```bash
-git clone https://github.com/[username]/dotfiles.git
+git clone https://github.com/gunubin/dotfiles.git
 cd dotfiles
-```
-
-### 2. セットアップ
-依存パッケージのインストールとdotfilesの設定を行います：
-
-```bash
 make install
 ```
 
-これにより、以下の処理が実行されます：
+### Individual Commands
 
-- 必要なパッケージのインストール（brew-bundle）
-- 設定ファイルのシンボリックリンク作成（stow-packages）
+| Command | Description |
+|---------|-------------|
+| `make install` | Create symlinks for all packages |
+| `make brew-bundle` | Install Homebrew dependencies from Brewfile |
+| `make update` | Re-sync all symlinks (clean + install) |
+| `make clean` | Remove all symlinks |
 
-### 3. 個別のコマンド 
+## Git Configuration
 
-Brewの依存パッケージのみインストール
-```bash
-make brew-bundle
-```
+User-specific Git settings (name, email) should be stored in `~/.gitconfig.local`, which is **not** tracked by this repository.
 
-
-設定ファイルのリンクのみ作成
-
-```bash
-make stow-packages
-```
-
-リンクの削除（アンインストール）
-
-```bash
-make clean
-```
-
-設定の再同期
-
-```bash
-make update
-```
-
-
-### ~/.gitconfig.localの作成
-
-Gitを使用する際、ユーザー名とメールアドレスは必須の設定です。個人情報はリポジトリに含めず、`~/.gitconfig.local`ファイルで管理します。
-
-以下の内容で`~/.gitconfig.local`ファイルを作成してください：
-
-```text
+```gitconfig
 [user]
     name = YOUR_NAME
     email = YOUR_EMAIL
