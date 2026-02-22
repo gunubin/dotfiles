@@ -1,0 +1,13 @@
+{
+  "_meta": {
+    "description": "Google Search Console - 検索パフォーマンス・インデックス",
+    "tags": ["google", "seo", "search"],
+    "requiredEnvVars": ["GOOGLE_APPLICATION_CREDENTIALS"]
+  },
+  "type": "stdio",
+  "command": "npx",
+  "args": ["-y", "mcp-server-gsc"],
+  "env": {
+    "GOOGLE_APPLICATION_CREDENTIALS": "${GOOGLE_APPLICATION_CREDENTIALS}"
+  }
+}

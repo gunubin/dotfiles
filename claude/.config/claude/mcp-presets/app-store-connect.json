@@ -1,0 +1,15 @@
+{
+  "_meta": {
+    "description": "App Store Connect - アプリ管理・分析・テスター",
+    "tags": ["apple", "app-store"],
+    "requiredEnvVars": ["APP_STORE_CONNECT_KEY_ID", "APP_STORE_CONNECT_ISSUER_ID", "APP_STORE_CONNECT_P8_PATH"]
+  },
+  "type": "stdio",
+  "command": "npx",
+  "args": ["-y", "appstore-connect-mcp-server"],
+  "env": {
+    "APP_STORE_CONNECT_KEY_ID": "${APP_STORE_CONNECT_KEY_ID}",
+    "APP_STORE_CONNECT_ISSUER_ID": "${APP_STORE_CONNECT_ISSUER_ID}",
+    "APP_STORE_CONNECT_P8_PATH": "${APP_STORE_CONNECT_P8_PATH}"
+  }
+}

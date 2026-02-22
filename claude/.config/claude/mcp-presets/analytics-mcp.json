@@ -1,0 +1,14 @@
+{
+  "_meta": {
+    "description": "Google Analytics - レポート・リアルタイムデータ",
+    "tags": ["google", "analytics"],
+    "requiredEnvVars": ["GOOGLE_APPLICATION_CREDENTIALS", "GOOGLE_CLOUD_PROJECT"]
+  },
+  "type": "stdio",
+  "command": "pipx",
+  "args": ["run", "analytics-mcp"],
+  "env": {
+    "GOOGLE_APPLICATION_CREDENTIALS": "${GOOGLE_APPLICATION_CREDENTIALS}",
+    "GOOGLE_CLOUD_PROJECT": "${GOOGLE_CLOUD_PROJECT}"
+  }
+}
