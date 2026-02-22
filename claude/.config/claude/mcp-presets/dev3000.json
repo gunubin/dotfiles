@@ -1,0 +1,8 @@
+{
+  "_meta": {
+    "description": "ローカル開発サーバー (localhost:3684)",
+    "tags": ["local", "dev"]
+  },
+  "type": "http",
+  "url": "http://localhost:3684/api/mcp/mcp"
+}

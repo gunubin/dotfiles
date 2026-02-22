@@ -1,0 +1,13 @@
+{
+  "_meta": {
+    "description": "App Ranking - ASO・レビュー・ランキング分析",
+    "tags": ["app-store", "ranking"],
+    "requiredEnvVars": ["APP_RANKING_DATABASE_URL", "APP_RANKING_SERVER_PATH"]
+  },
+  "type": "stdio",
+  "command": "node",
+  "args": ["${APP_RANKING_SERVER_PATH}"],
+  "env": {
+    "DATABASE_URL": "${APP_RANKING_DATABASE_URL}"
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "_meta": {
+    "description": "Obsidian - ノート検索・作成・編集 (mcp-obsidian)",
+    "tags": ["obsidian", "notes"],
+    "requiredEnvVars": ["OBSIDIAN_API_KEY"]
+  },
+  "type": "stdio",
+  "command": "uvx",
+  "args": ["mcp-obsidian"],
+  "env": {
+    "OBSIDIAN_API_KEY": "${OBSIDIAN_API_KEY}"
+  }
+}

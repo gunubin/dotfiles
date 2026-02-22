@@ -1,7 +1,7 @@
 ---
 name: obsidian-knowledge
 description: Obsidianのフォルダ構造を分析し、ナレッジを適切な場所に自動分類して追加・更新する。「Obsidianに追加して」「Obsidianに追記して」「ナレッジにして」「メモしておいて」などの指示で起動。
-allowed-tools: mcp__obsidian-mcp-tools__*, Read
+allowed-tools: mcp__mcp-obsidian__*, Read
 ---
 
 # Obsidian ナレッジ管理

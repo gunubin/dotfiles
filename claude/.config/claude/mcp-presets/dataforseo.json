@@ -1,0 +1,12 @@
+{
+  "_meta": {
+    "description": "DataForSEO - SEOデータAPI (SSE接続)",
+    "tags": ["seo", "dataforseo", "api"],
+    "requiredEnvVars": ["DATAFORSEO_API_AUTH"]
+  },
+  "type": "sse",
+  "url": "https://mcp.dataforseo.com/mcp",
+  "headers": {
+    "Authorization": "Basic ${DATAFORSEO_API_AUTH}"
+  }
+}
