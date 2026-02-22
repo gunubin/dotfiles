@@ -66,9 +66,11 @@ keybind = cmd+s=text:\x13\x01
 keybind = cmd+g=text:\x13\x67
 keybind = cmd+f=text:\x13\x66
 keybind = cmd+z=text:\x13\x7a
+keybind = cmd+p=text:\x13\x70
+keybind = cmd+enter=text:\x13\x0d
+keybind = cmd+n=text:\x13\x6e
 
 # disable default shortcuts
-keybind = cmd+n=unbind
 keybind = cmd+d=unbind
 keybind = shift+cmd+d=unbind
 keybind = alt+cmd+w=unbind
