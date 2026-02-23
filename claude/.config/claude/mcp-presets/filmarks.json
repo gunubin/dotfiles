@@ -1,0 +1,13 @@
+{
+  "_meta": {
+    "description": "Filmarks - 映画レビュー・評価取得",
+    "tags": ["movie", "review", "entertainment"],
+    "requiredEnvVars": ["FILMARKS_USER_ID"]
+  },
+  "type": "stdio",
+  "command": "node",
+  "args": ["${FILMARKS_SERVER_PATH}"],
+  "env": {
+    "FILMARKS_USER_ID": "${FILMARKS_USER_ID}"
+  }
+}
