@@ -5,8 +5,8 @@
     "requiredEnvVars": ["TMDB_API_KEY"]
   },
   "type": "stdio",
-  "command": "node",
-  "args": ["${TMDB_SERVER_PATH}"],
+  "command": "${NPX_PATH}",
+  "args": ["-y", "mcp-server-tmdb"],
   "env": {
     "TMDB_API_KEY": "${TMDB_API_KEY}",
     "TMDB_VERSION": "2"
