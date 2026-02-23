@@ -1,0 +1,10 @@
+{
+  "_meta": {
+    "description": "Netflix - 作品検索",
+    "tags": ["netflix", "entertainment"],
+    "requiredEnvVars": []
+  },
+  "type": "stdio",
+  "command": "${NETFLIX_MCP_PYTHON}",
+  "args": ["${NETFLIX_MCP_SERVER_PATH}"]
+}

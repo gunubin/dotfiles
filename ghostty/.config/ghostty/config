@@ -71,7 +71,7 @@ keybind = cmd+enter=text:\x13\x0d
 keybind = cmd+n=text:\x13\x6e
 
 # disable default shortcuts
-keybind = cmd+d=unbind
+keybind = cmd+d=text:\x13\x64
 keybind = shift+cmd+d=unbind
 keybind = alt+cmd+w=unbind
 keybind = shift+cmd+w=unbind
