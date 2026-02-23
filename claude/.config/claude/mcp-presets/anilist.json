@@ -1,0 +1,10 @@
+{
+  "_meta": {
+    "description": "AniList - アニメ・マンガデータベース検索",
+    "tags": ["anime", "manga", "entertainment"],
+    "requiredEnvVars": []
+  },
+  "type": "stdio",
+  "command": "npx",
+  "args": ["-y", "anilist-mcp"]
+}

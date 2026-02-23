@@ -1,4 +1,14 @@
 [[mgr.prepend_keymap]]
+desc = "Enter directory"
+on = "<Enter>"
+run = "enter"
+
+[[mgr.prepend_keymap]]
+desc = "Open file with editor"
+on = "o"
+run = "open"
+
+[[mgr.prepend_keymap]]
 desc = "Start bunny.yazi"
 on = "b"
 run = "plugin bunny"

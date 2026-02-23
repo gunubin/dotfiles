@@ -1,0 +1,14 @@
+{
+  "_meta": {
+    "description": "TMDB - 映画・TV番組データベース検索",
+    "tags": ["movie", "tv", "entertainment"],
+    "requiredEnvVars": ["TMDB_API_KEY"]
+  },
+  "type": "stdio",
+  "command": "node",
+  "args": ["${TMDB_SERVER_PATH}"],
+  "env": {
+    "TMDB_API_KEY": "${TMDB_API_KEY}",
+    "TMDB_VERSION": "2"
+  }
+}
