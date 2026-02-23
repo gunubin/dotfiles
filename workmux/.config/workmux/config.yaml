@@ -1,6 +1,8 @@
 nerdfont: true
-agent: "env PATH=$HOME/.local/bin:$PATH CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 claude --dangerously-skip-permissions"
+agent: "env CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 claude --dangerously-skip-permissions"
 window_prefix: "wm-"
+post_create:
+  - direnv allow
 
 panes:
   - command: <agent>

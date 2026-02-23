@@ -2,10 +2,10 @@
   "_meta": {
     "description": "Kindle Library - Kindle蔵書管理・検索",
     "tags": ["kindle", "book", "reading"],
-    "requiredEnvVars": ["KINDLE_COOKIES"]
+    "requiredEnvVars": ["KINDLE_COOKIES", "KINDLE_LIBRARY_SERVER_PATH"]
   },
   "type": "stdio",
-  "command": "node",
+  "command": "${NODE_PATH}",
   "args": ["${KINDLE_LIBRARY_SERVER_PATH}"],
   "env": {
     "KINDLE_COOKIES": "${KINDLE_COOKIES}"

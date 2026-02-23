@@ -1,25 +1,38 @@
 function wma --description 'workmux add with auto date-based name'
-    set -l today (date +%Y-%m-%d)
-    set -l prefix "feature-$today"
+    set -l project (basename (git rev-parse --show-toplevel 2>/dev/null) 2>/dev/null)
+    if test -z "$project"
+        set project (basename (pwd))
+    end
 
-    # 既存ブランチから今日使われたサフィックスの最大文字コードを取得
-    set -l max 0
-    for branch in (git branch --all --list "*$prefix-*" 2>/dev/null | string trim | string replace -r '.*/' '')
-        set -l s (string replace "$prefix-" '' $branch | string sub -l 1)
-        set -l code (printf '%d' "'$s" 2>/dev/null)
-        if test $code -gt $max
-            set max $code
+    set -l today (date +%m-%d)
+    set -l base "$project-$today"
+
+    # 既存ブランチから同日のものを検索
+    set -l has_base false
+    set -l max_code 0
+
+    for branch in (git branch --all --list "*$base*" 2>/dev/null | string trim | string replace -r '.*/' '')
+        if test "$branch" = "$base"
+            set has_base true
+        else
+            set -l s (string replace "$base-" '' $branch | string sub -l 1)
+            set -l code (printf '%d' "'$s" 2>/dev/null)
+            if test $code -gt $max_code
+                set max_code $code
+            end
         end
     end
 
-    # 次のサフィックスを決定 (a, b, c, ...)
-    set -l suffix
-    if test $max -eq 0
-        set suffix a
+    # 命名: 初回=サフィックスなし, 2つ目=-b, 3つ目=-c, ...
+    set -l name
+    if not $has_base
+        set name $base
+    else if test $max_code -eq 0
+        set name "$base-b"
     else
-        set suffix (printf "\\x$(printf '%02x' (math $max + 1))")
+        set name "$base-"(printf "\\x$(printf '%02x' (math $max_code + 1))")
     end
 
-    echo "Creating: $prefix-$suffix"
-    workmux add $argv "$prefix-$suffix"
+    echo "Creating: $name"
+    workmux add $argv "$name"
 end

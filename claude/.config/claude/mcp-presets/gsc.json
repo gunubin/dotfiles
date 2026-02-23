@@ -5,7 +5,7 @@
     "requiredEnvVars": ["GOOGLE_APPLICATION_CREDENTIALS"]
   },
   "type": "stdio",
-  "command": "npx",
+  "command": "${NPX_PATH}",
   "args": ["-y", "mcp-server-gsc"],
   "env": {
     "GOOGLE_APPLICATION_CREDENTIALS": "${GOOGLE_APPLICATION_CREDENTIALS}"

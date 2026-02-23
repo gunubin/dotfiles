@@ -5,7 +5,7 @@
     "requiredEnvVars": ["APP_RANKING_DATABASE_URL", "APP_RANKING_SERVER_PATH"]
   },
   "type": "stdio",
-  "command": "node",
+  "command": "${NODE_PATH}",
   "args": ["${APP_RANKING_SERVER_PATH}"],
   "env": {
     "DATABASE_URL": "${APP_RANKING_DATABASE_URL}"

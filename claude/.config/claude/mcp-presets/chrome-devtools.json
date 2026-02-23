@@ -4,7 +4,7 @@
     "tags": ["browser", "chrome", "debug"]
   },
   "type": "stdio",
-  "command": "npx",
+  "command": "${NPX_PATH}",
   "args": ["chrome-devtools-mcp@latest"],
   "env": {}
 }
