@@ -29,5 +29,11 @@ while [ "$current" != "$HOME" ] && [ "$current" != "/" ]; do
     current=$(dirname "$current")
 done
 
-# 3. フォールバック: カレントディレクトリ名
+# 3. $HOME ならチルダ表示
+if [ "$dir" = "$HOME" ]; then
+    echo "~"
+    exit 0
+fi
+
+# 4. フォールバック: カレントディレクトリ名
 basename "$dir"

@@ -19,7 +19,7 @@ if not $is_workmux
 end
 
 if $is_workmux
-    tmux display-popup -E -d "$pane_path" -w 50% -h 7 \
+    tmux display-popup -E -d "$pane_path" -w 50% -h 10 \
         -b rounded -S "fg=#f38ba8" -T " 󰆴 manage " \
         "fish ~/.config/tmux/scripts/wma-popup.fish manage"
 else

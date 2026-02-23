@@ -5,6 +5,6 @@
     "requiredEnvVars": []
   },
   "type": "stdio",
-  "command": "npx",
+  "command": "${NPX_PATH}",
   "args": ["-y", "anilist-mcp"]
 }

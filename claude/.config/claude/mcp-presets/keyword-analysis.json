@@ -2,13 +2,11 @@
   "_meta": {
     "description": "キーワード分析 - DataForSEO + Serper連携",
     "tags": ["seo", "keyword", "analysis"],
-    "requiredEnvVars": ["DATAFORSEO_LOGIN", "DATAFORSEO_PASSWORD", "SERPER_API_KEY"]
+    "requiredEnvVars": ["DATAFORSEO_LOGIN", "DATAFORSEO_PASSWORD", "SERPER_API_KEY", "KEYWORD_ANALYSIS_SERVER_PATH"]
   },
   "type": "stdio",
-  "command": "/Users/koki/.local/share/nvm/v22.14.0/bin/node",
-  "args": [
-    "/Users/koki/works/mcp-servers/keyword-analysis/dist/index.js"
-  ],
+  "command": "${NODE_PATH}",
+  "args": ["${KEYWORD_ANALYSIS_SERVER_PATH}"],
   "env": {
     "DATAFORSEO_LOGIN": "${DATAFORSEO_LOGIN}",
     "DATAFORSEO_PASSWORD": "${DATAFORSEO_PASSWORD}",

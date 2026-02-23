@@ -15,6 +15,8 @@ if test "$mode" = manage
     # git worktree root からワークスペース名を取得
     set -l worktree_root (git rev-parse --show-toplevel 2>/dev/null)
     set -l name (basename "$worktree_root")
+    # 親リポジトリのルート（worktree 削除時に cwd を退避するため）
+    set -l main_repo (dirname (git rev-parse --path-format=absolute --git-common-dir 2>/dev/null))
 
     echo ""
     printf "  %s⚠ workspace %s%s%s\n" $warn $name_clr $name $reset
@@ -28,10 +30,21 @@ if test "$mode" = manage
 
         switch "$key"
             case m M
-                workmux merge $name
+                if not workmux merge $name
+                    echo ""
+                    printf "  %s✗ merge failed — resolve conflicts and retry%s\n" $warn $reset
+                    echo ""
+                    read -n 1 -P "  $dim(press any key)$reset "
+                end
                 break
             case d D
-                workmux remove -f $name
+                cd "$main_repo"
+                if not workmux remove -f $name
+                    echo ""
+                    printf "  %s✗ remove failed%s\n" $warn $reset
+                    echo ""
+                    read -n 1 -P "  $dim(press any key)$reset "
+                end
                 break
         end
     end

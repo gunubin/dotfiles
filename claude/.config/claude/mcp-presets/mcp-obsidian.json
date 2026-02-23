@@ -5,7 +5,7 @@
     "requiredEnvVars": ["OBSIDIAN_API_KEY"]
   },
   "type": "stdio",
-  "command": "uvx",
+  "command": "${UVX_PATH}",
   "args": ["mcp-obsidian"],
   "env": {
     "OBSIDIAN_API_KEY": "${OBSIDIAN_API_KEY}"

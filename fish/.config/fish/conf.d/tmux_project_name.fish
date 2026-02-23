@@ -2,18 +2,16 @@
 
 # シェル起動時に1回だけ実行（--on-variable PWD は PWD 変化時のみ発火するため）
 if test -n "$TMUX"
-    set -l _pane_id (tmux display-message -p '#{pane_id}')
     set -l _win_name (tmux display-message -p '#{window_name}')
-    if not test -f "/tmp/claude-tmux/pane-$_pane_id"; and not string match -q 'wm-*' $_win_name
+    if not string match -q 'wm-*' $_win_name
         tmux rename-window ($HOME/.config/claude/scripts/tmux-project-name.sh $PWD)
     end
+    tmux set-option -pq @shell_cwd $PWD
 end
 
 function __tmux_update_project_name --on-variable PWD
     test -n "$TMUX"; or return
-    # Claude pane 自身は tmux-state.sh が管理するのでスキップ
-    set -l pane_id (tmux display-message -p '#{pane_id}')
-    test -f "/tmp/claude-tmux/pane-$pane_id"; and return
+    tmux set-option -pq @shell_cwd $PWD
     # workmux管理のwindowはリネームしない
     set -l win_name (tmux display-message -p '#{window_name}')
     string match -q 'wm-*' $win_name; and return

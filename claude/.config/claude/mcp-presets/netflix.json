@@ -2,7 +2,7 @@
   "_meta": {
     "description": "Netflix - 作品検索",
     "tags": ["netflix", "entertainment"],
-    "requiredEnvVars": []
+    "requiredEnvVars": ["NETFLIX_MCP_PYTHON", "NETFLIX_MCP_SERVER_PATH"]
   },
   "type": "stdio",
   "command": "${NETFLIX_MCP_PYTHON}",
