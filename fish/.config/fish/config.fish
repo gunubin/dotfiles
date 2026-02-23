@@ -94,6 +94,9 @@ alias tls='tmux ls'
 alias ta='tmux attach-session -t'
 alias tk='tmux kill-session -t'
 alias tka='tmux kill-server'  # 全セッション削除（注意して使用）
+# Happy Coder (self-hosted server)
+set -gx HAPPY_SERVER_URL "http://localhost:3005"
+
 alias wm='workmux'
 alias wmr='workmux remove'
 alias unssh='set -e SSH_CONNECTION; set -e SSH_CLIENT; set -e SSH_TTY'
