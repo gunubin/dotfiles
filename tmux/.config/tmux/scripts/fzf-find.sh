@@ -1,9 +1,9 @@
 #!/bin/bash
 CALLER_PANE="$1"
-EZA=/opt/homebrew/bin/eza
+EZA=$(command -v eza || true)
 FZF=/opt/homebrew/bin/fzf-tmux
 FD=/opt/homebrew/bin/fd
-BAT=/opt/homebrew/bin/bat
+BAT=$(command -v bat || true)
 STRIP="perl -CSD -pe 's/\e\[\d+(?:;\d+)*m//g; s/^.\s//'"
 
 git_map=$(mktemp)
@@ -21,7 +21,7 @@ result=$({
   fi
   $FD --type f --hidden --exclude .git
 } | awk 'seen[$0]++ == 0' \
-  | $EZA --stdin --color=always --icons=always --sort=none -1 2>/dev/null \
+  | if [ -n "$EZA" ]; then $EZA --stdin --color=always --icons=always --sort=none -1 2>/dev/null; else cat; fi \
   | awk -v mapfile="$git_map" '
   BEGIN {
     while ((getline line < mapfile) > 0) {
@@ -48,7 +48,7 @@ result=$({
   --delimiter=$'\t' \
   --tabstop=3 \
   --nth=2 \
-  --preview "$BAT --color=always --style=plain \$(echo {2} | $STRIP) 2>/dev/null" \
+  --preview "$(if [ -n "$BAT" ]; then echo "$BAT --color=always --style=plain"; else echo "cat"; fi) \$(echo {2} | $STRIP) 2>/dev/null" \
   --expect=ctrl-a \
   --header="enter: relative / ctrl-a: absolute" \
   --tiebreak=index \
