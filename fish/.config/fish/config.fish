@@ -14,6 +14,7 @@ set -g __done_notify_sound 1
 set -g __done_min_cmd_duration 3000
 set -g __done_notification_command 'echo "$message" | terminal-notifier -title "$title" -sound Pop -contentImage $HOME/Documents/ghostty-catppuccin-mocha.icns'
 set -g __done_exclude '^git (?!push|pull|fetch)' 'claude'
+set -g __done_sway_ignore_visible 0
 
 ###
 set U FZF_LEGACY_KEYBINDINGS 0
@@ -29,7 +30,7 @@ set -U fish_color_error a6727b
 #######
 # path
 #######
-set -x PATH $HOME/.cargo/bin $PATH
+set -x PATH $HOME/.local/bin $HOME/.cargo/bin $PATH
 set -x PATH $HOME/.nodebrew/current/bin $PATH
 set -x PATH $HOME/.rbenv/bin $PATH
 set -x PATH /usr/local/bin $PATH
@@ -61,7 +62,9 @@ eval $(/opt/homebrew/bin/brew shellenv)
 # Load rbenv automatically by appending
 # # the following to ~/.config/fish/config.fish:
 ######
-status --is-interactive; and source (rbenv init -|psub)
+if command -q rbenv
+    status --is-interactive; and source (rbenv init -|psub)
+end
 
 #######
 # alias
@@ -257,7 +260,9 @@ end
 #######
 # direnv
 #######
-eval (direnv hook fish)
+if command -q direnv
+    eval (direnv hook fish)
+end
 
 
 # set -gx VOLTA_HOME "$HOME/.volta"
