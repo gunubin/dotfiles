@@ -8,3 +8,7 @@ iterm2/.config/iterm2/com.googlecode.iterm2.plist
 plans/
 .claude/
 .mcp.json
+
+# tpm管理のプラグイン（tpm自体は残す）
+tmux/.config/tmux/plugins/*
+!tmux/.config/tmux/plugins/tpm
