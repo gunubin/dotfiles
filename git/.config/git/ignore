@@ -1,1 +1,21 @@
+# IDE
+.idea/
+
+# Dependencies
+node_modules/
+
+# OS
+.DS_Store
+
+# Build
+tsconfig.tsbuildinfo
+
+# Local overrides
+**/*.local.md
+**/*.local.json
+
+# Claude
 **/.claude/settings.local.json
+
+# Serena
+.serena
