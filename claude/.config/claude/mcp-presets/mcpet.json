@@ -2,12 +2,12 @@
   "_meta": {
     "description": "mcpet - バーチャルペット育成",
     "tags": ["pet", "game"],
-    "requiredEnvVars": ["MCPET_SERVER_PATH"]
+    "requiredEnvVars": ["MCPET_SERVER_PATH", "PET_DATA_DIR"]
   },
   "type": "stdio",
   "command": "${NODE_PATH}",
   "args": ["${MCPET_SERVER_PATH}"],
   "env": {
-    "PET_DATA_DIR": "/Users/koki/.mcpet"
+    "PET_DATA_DIR": "${PET_DATA_DIR}"
   }
 }
