@@ -2,7 +2,7 @@ nerdfont: true
 agent: "env CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 claude --dangerously-skip-permissions"
 window_prefix: "wm-"
 post_create:
-  - direnv allow
+  - direnv allow || true
 
 panes:
   - command: <agent>

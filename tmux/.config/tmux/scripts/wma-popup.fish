@@ -56,8 +56,12 @@ else
     or exit 0
 
     if test -n "$task_desc"
-        workmux add "$task_desc"
+        workmux add "$task_desc" </dev/null
     else
-        wma
+        wma </dev/null
     end
 end
+
+# workmux の post_create hook 失敗等のエラーコードを吸収
+# (popup は UI 層なので run-shell にエラーを伝播させない)
+exit 0
