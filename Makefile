@@ -53,8 +53,20 @@ clean: check-stow
 
 # インストール処理
 .PHONY: install
-install: stow-packages
+install: stow-packages gitignore-init
 	@echo "dotfilesのインストールが完了しました！"
+
+# グローバルgitignoreの初回セットアップ
+# ~/.config/git/ignore をデフォルトテンプレートとして ~/.gitignore にコピー
+# 既存ファイルがある場合は上書きしない
+.PHONY: gitignore-init
+gitignore-init:
+	@if [ ! -f $(HOME_DIR)/.gitignore ]; then \
+		cp $(DOTFILES)/git/.config/git/ignore $(HOME_DIR)/.gitignore; \
+		echo "~/.gitignore を作成しました"; \
+	else \
+		echo "~/.gitignore は既に存在します"; \
+	fi
 
 # パッケージ更新（再同期）
 .PHONY: update
