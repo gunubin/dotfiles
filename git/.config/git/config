@@ -22,7 +22,7 @@
     autocrlf = input
     editor = nvim
     ignorecase = false
-    excludesFile = ~/.config/git/.gitignore
+    excludesFile = ~/.gitignore
     pager = delta
     preloadindex = true
     quotepath = false
