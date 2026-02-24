@@ -77,18 +77,20 @@ alias p='pnpm'
 #######
 # eza
 #######
-set -Ux EZA_CONFIG_DIR ~/.config/eza
-alias ei="eza --icons --git"
-alias ea="eza -a --icons --git"
-alias ee="eza -aahl --icons --git"
-alias et="eza -T -L 3 -a -I 'node_modules|.git|.cache' --icons"
-alias eta="eza -T -a -I 'node_modules|.git|.cache' --color=always --icons | less -r"
-alias ls=ei
-alias la=ea
-alias ll=ee
-alias lt=et
-alias lta=eta
-alias l="clear && ls"
+if command -q eza
+    set -Ux EZA_CONFIG_DIR ~/.config/eza
+    alias ei="eza --icons --git"
+    alias ea="eza -a --icons --git"
+    alias ee="eza -aahl --icons --git"
+    alias et="eza -T -L 3 -a -I 'node_modules|.git|.cache' --icons"
+    alias eta="eza -T -a -I 'node_modules|.git|.cache' --color=always --icons | less -r"
+    alias ls=ei
+    alias la=ea
+    alias ll=ee
+    alias lt=et
+    alias lta=eta
+    alias l="clear && ls"
+end
 
 alias vim="nvim"
 
@@ -277,7 +279,7 @@ zoxide init fish | source
 function zf --description 'zoxide + fzf + eza preview'
   set selected (
     zoxide query -ls |
-    fzf --preview 'eza --icons --color=always (echo {} | awk \'{print $2}\') | head -20' |
+    fzf --preview 'if command -v eza >/dev/null; eza --icons --color=always (echo {} | awk \'{print $2}\') | head -20; else; ls -la (echo {} | awk \'{print $2}\') | head -20; end' |
     awk '{print $2}'
   )
   if test -n "$selected"
