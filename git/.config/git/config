@@ -58,3 +58,5 @@
 	helper = !/opt/homebrew/bin/gh auth git-credential
 [interactive]
 	diffFilter = delta --color-only
+[submodule]
+	recurse = true
