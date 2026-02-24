@@ -6,6 +6,7 @@ node_modules/
 tsconfig.tsbuildinfo
 
 **/*.local.md
+**/*.local.json
 
 #**/.claude/settings.local.json
 #**/.claude/settings.json
