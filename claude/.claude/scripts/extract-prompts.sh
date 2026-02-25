@@ -184,15 +184,6 @@ while read logfile; do
     # Note: timestampは "2026-02-02T22:56:03.048Z" 形式（UTC）
     # JSTに変換するため +9時間（32400秒）を加算
 
-    # UNTIL_DATEがある場合はその範囲内のみ抽出
-    if [ -n "$UNTIL_DATE" ]; then
-      UNTIL_ARG="--arg until $UNTIL_DATE"
-      UNTIL_FILTER='select($clean_ts <= $until) |'
-    else
-      UNTIL_ARG=""
-      UNTIL_FILTER=""
-    fi
-
     # 1. 通常のプロンプト
     jq -r --arg last "$LAST_RUN" --arg until "${UNTIL_DATE:-2099-12-31T23:59:59}" '
       select(.type == "user") |

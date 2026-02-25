@@ -5,6 +5,7 @@ PANE_ID="$1"
 [ -z "$PANE_ID" ] && exit 0
 
 STATE_FILE="$HOME/.claude/pane-state.json"
+TEXT=""
 if [ -f "$STATE_FILE" ]; then
     TEXT=$(jq -r --arg id "$PANE_ID" '.[$id].prompt // ""' "$STATE_FILE" 2>/dev/null | tr '\n' ' ' | sed 's/  */ /g; s/^ //; s/ $//')
 fi

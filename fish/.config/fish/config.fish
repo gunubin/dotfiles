@@ -30,11 +30,11 @@ set -U fish_color_error a6727b
 #######
 # path
 #######
-set -x PATH $HOME/.local/bin $HOME/.cargo/bin $PATH
-set -x PATH $HOME/.nodebrew/current/bin $PATH
-set -x PATH $HOME/.rbenv/bin $PATH
-set -x PATH /usr/local/bin $PATH
-set -x JAVA_HOME /Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home
+set -gx PATH $HOME/.local/bin $HOME/.cargo/bin $PATH
+set -gx PATH $HOME/.nodebrew/current/bin $PATH
+set -gx PATH $HOME/.rbenv/bin $PATH
+set -gx PATH /usr/local/bin $PATH
+set -gx JAVA_HOME /Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home
 # set -x NVM_DIR $HOME/.nvm
 
 # pnpm
@@ -47,9 +47,9 @@ end
 #######
 # path react-native Android
 #######
-set -x ANDROID_HOME $HOME/Library/Android/sdk
-set -x PATH $PATH $ANDROID_HOME/emulator
-set -x PATH $PATH $ANDROID_HOME/platform-tools
+set -gx ANDROID_HOME $HOME/Library/Android/sdk
+set -gx PATH $PATH $ANDROID_HOME/emulator
+set -gx PATH $PATH $ANDROID_HOME/platform-tools
 
 
 #######
@@ -78,7 +78,7 @@ alias p='pnpm'
 # eza
 #######
 if command -q eza
-    set -Ux EZA_CONFIG_DIR ~/.config/eza
+    set -gx EZA_CONFIG_DIR ~/.config/eza
     alias ei="eza --icons --git"
     alias ea="eza -a --icons --git"
     alias ee="eza -aahl --icons --git"
@@ -178,7 +178,7 @@ end
 #######
 #   --color=bg+:#414559,bg:#303446,spinner:#F2D5CF,hl:#E78284
 #   --color=border:#303446,label:#C6D0F5
-set -x FZF_DEFAULT_OPTS '
+set -gx FZF_DEFAULT_OPTS '
   --style=full
   --tmux 70%
   --padding=0,0
