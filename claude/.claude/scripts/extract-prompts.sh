@@ -1,5 +1,5 @@
 #!/bin/bash
-# ネストセッション防止を回避（Claude Code内から実行可能にする）
+# ネストセッション防止を回避（手動実行専用スクリプト — hook経由では呼び出さないこと）
 unset CLAUDECODE
 # Claude Code プロンプト抽出スクリプト
 #
@@ -21,7 +21,7 @@ unset CLAUDECODE
 OBSIDIAN_BASE="$HOME/Documents/notes/020_Ideas/Claude Prompts"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LAST_RUN_FILE="$SCRIPT_DIR/.last-extract-time"
-TMP_DIR="/tmp/claude-prompts-$$"
+TMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/claude-prompts-XXXXXX")
 
 # === 引数処理 ===
 SINCE_DATE=""

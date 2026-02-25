@@ -1,16 +1,6 @@
-# theme = matrix
-# theme = Alabaster
-# theme = ENCOM
-#theme = catppuccin-macchiato
-#theme = catppuccin-mocha
 theme = catppuccin-frappe.conf
 
 
-#font-family = "IBM Plex Mono"
-#font-family = "Gintronic"
-#font-family = "Atkinson Hyperlegible Mono"
-
-#font-family = "JetBrainsMono Nerd Font"
 font-family = "Berkeley Mono Variable"
 font-family = "IBM Plex Sans JP"
 font-feature = +calt
@@ -18,15 +8,10 @@ font-feature = +liga
 font-size = 14
 font-variation = wght=400
 font-variation-bold = wght=850
-#bold-is-bright = true
-#font-thicken = true
-#adjust-cell-height = -2%
 
 cursor-style = block
 cursor-style-blink = true
-#cursor-invert-fg-bg = true
 cursor-color = #f0e6d3
-#cursor-opacity = 0.8
 
 mouse-scroll-multiplier = 1.0
 copy-on-select = true
@@ -46,16 +31,11 @@ background-image = ~/Pictures/ghostty-wallpaper.jpg
 background-image-opacity = 0.07
 background-image-fit = cover
 
-#background-opacity = 0.75
-#background-blur-radius = 20
-
 quick-terminal-position = "top"
 quick-terminal-screen = "main"
 quick-terminal-animation-duration = 0.15
 
 macos-option-as-alt = true
-# toggle_visibility は macOS で unhide が不安定なため Alfred で制御
-#keybind = global:ctrl+cmd+u=toggle_visibility
 keybind = ctrl+tab=text:\x13\x0E
 keybind = shift+ctrl+tab=text:\x13\x10
 keybind = cmd+e=text:\x13\x65
@@ -92,7 +72,3 @@ custom-shader-animation = true
 custom-shader = ~/.config/ghostty/shaders/mode-glow.glsl
 custom-shader = ~/.config/ghostty/shaders/cursor_blaze.glsl
 
-#custom-shader = ~/.config/ghostty/shaders/glitchy.glsl
-#custom-shader = ~/.config/ghostty/shaders/bettercrt.glsl
-#custom-shader = ~/.config/ghostty/shaders/water.glsl
-#custom-shader = ~/.config/ghostty/shaders/bloom.glsl

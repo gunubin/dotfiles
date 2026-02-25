@@ -29,9 +29,6 @@ $cmd_duration\
 $line_break\
 $jobs\
 $character"""
-#[](fg:pink bg:sapphire)\
-#$docker_context\
-#$conda\
 
 palette = 'catppuccin_mocha'
 
@@ -47,20 +44,7 @@ Ubuntu = "󰕈"
 SUSE = ""
 Raspbian = "󰐿"
 Mint = "󰣭"
-#Macos = "󰀵"
-#Macos = "👾"
-#Macos = ""
-#Macos = ""
 Macos = ""
-#Macos = ""
-#Macos = "󰊠"
-#Macos = "󰏩"
-#Macos = ""
-#Macos = ""
-#Macos = ""
-#Macos = ""
-#Macos = "󰇷"
-#Macos = "󱀆"
 
 Manjaro = ""
 Linux = "󰌽"
