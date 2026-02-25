@@ -22,9 +22,9 @@ status: active
 
 1. このファイルを全文 Read で読む
 2. 会話履歴（既存の Round）を確認する
-3. `## Round N (Pane %XX)` フォーマットで応答をファイル末尾に Edit で追記する（Round番号は duo-reply から送られたプロンプト内の番号を使うこと）
-4. 応答後 `/duo-reply {{SESSION_ID}}` を実行する
-5. 合意に達した場合は、応答末尾に `[CONCLUDED]` を含める（`/duo-reply` は実行しない）
+3. `## Round N (Pane %XX)` フォーマットで応答をファイル末尾に Edit で追記する（Round番号は cc-chat-reply から送られたプロンプト内の番号を使うこと）
+4. 応答後 `/cc-chat-reply {{SESSION_ID}}` を実行する
+5. 合意に達した場合は、応答末尾に `[CONCLUDED]` を含める（`/cc-chat-reply` は実行しない）
 
 ## ガイドライン
 
