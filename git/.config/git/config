@@ -29,12 +29,6 @@
 [merge]
     # http://qiita.com/nog/items/c79469afbf3e632f10a1
     # ff = false
-[difftool "sourcetree"]
-    cmd = opendiff \"$LOCAL\" \"$REMOTE\"
-    path =
-[mergetool "sourcetree"]
-    cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
-    trustExitCode = true
 [credential]
     UseHttpPath = true
 [filter "lfs"]
@@ -47,7 +41,7 @@
 
 [delta]
 	navigate = true
-    light = false
+	light = false
 	side-by-side = true
 	line-numbers = true
 [credential "https://github.com"]

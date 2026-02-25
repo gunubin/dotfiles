@@ -93,6 +93,11 @@ brew-bundle: check-brew
 	@brew bundle install --file=Brewfile
 	@echo "Brewfileのインストールが完了しました"
 
+# フルセットアップ（クリーンマシン用）
+.PHONY: setup
+setup: brew-bundle install
+	@echo "フルセットアップが完了しました！"
+
 # 現在インストールされているパッケージからBrewfileを作成
 .PHONY: brew-dump
 brew-dump: check-brew

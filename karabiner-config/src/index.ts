@@ -22,8 +22,8 @@ function main() {
       ruleBasic(),
       ruleApp(),
       ruleOptionSymbol(),
-      ruleBuildInKeyboard(),
-      ruleNotBuildInKeyboard(),
+      ruleBuiltInKeyboard(),
+      ruleNotBuiltInKeyboard(),
       ruleIme(),
     ],
     {
@@ -83,8 +83,8 @@ const ruleApp = () => {
   ])
 }
 
-const ruleBuildInKeyboard = () => {
-  return rule("buildIn")
+const ruleBuiltInKeyboard = () => {
+  return rule("builtIn")
     .condition(
       ifDevice({is_built_in_keyboard: true}))
     .manipulators([
@@ -106,8 +106,8 @@ const ruleBuildInKeyboard = () => {
     ]);
 }
 
-const ruleNotBuildInKeyboard = () => {
-  return rule("notBuildIn")
+const ruleNotBuiltInKeyboard = () => {
+  return rule("notBuiltIn")
     .condition(
       ifDevice({is_built_in_keyboard: false}))
     .manipulators([

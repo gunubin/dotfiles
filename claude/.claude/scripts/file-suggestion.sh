@@ -3,7 +3,7 @@
 # 優先順位: Git変更ファイル > git追跡ファイル > 全ファイル
 # 依存: fd, fzf, jq
 
-set -eu
+set -euo pipefail
 
 query=$(cat | jq -r '.query // empty')
 cd "${CLAUDE_PROJECT_DIR:-.}"

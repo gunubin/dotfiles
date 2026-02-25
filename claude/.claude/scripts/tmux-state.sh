@@ -85,6 +85,8 @@ case "$event" in
         jq_update --arg id "$PANE_ID" 'del(.[$id])'
         release_lock
         ;;
+    *)
+        ;;
 esac
 
 exit 0
