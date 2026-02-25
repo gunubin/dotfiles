@@ -1,7 +1,7 @@
 #!/bin/bash
 # シンプルな git 差分ビューア（fzf-tmux ポップアップ）
 
-FZF=/opt/homebrew/bin/fzf-tmux
+FZF=$(command -v fzf-tmux 2>/dev/null) || { echo "fzf-tmux not found" >&2; exit 1; }
 STRIP="sed 's/^...//; s/\"//g'"
 
 if ! git rev-parse --is-inside-work-tree &>/dev/null; then
