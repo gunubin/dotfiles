@@ -2,6 +2,7 @@
 .stow-local-ignore
 .idea
 claude/.claude/research/
+claude/.claude/scripts/.last-extract-time
 fish/.config/fish/fish_variables
 iterm2/.config/iterm2/com.googlecode.iterm2.plist
 
