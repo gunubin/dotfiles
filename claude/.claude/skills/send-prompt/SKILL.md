@@ -5,7 +5,7 @@ description: |
   「他のpaneに指示を送りたい」「別のClaude Codeに依頼したい」時に使用。
 allowed-tools: Bash, Read
 argument-hint: "[pane-id] <prompt>"
-disable-model-invocation: true
+disable-model-invocation: false 
 ---
 
 # send-prompt
