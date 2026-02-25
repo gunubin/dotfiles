@@ -4,7 +4,7 @@ description: |
   別のtmux paneで実行中のClaude Codeにプロンプトを送信する。
   「他のpaneに指示を送りたい」「別のClaude Codeに依頼したい」時に使用。
 allowed-tools: Bash, Read
-argument-hint: "<pane-id> <prompt>"
+argument-hint: "[pane-id] <prompt>"
 disable-model-invocation: true
 ---
 
@@ -14,15 +14,16 @@ disable-model-invocation: true
 
 | 引数 | 説明 |
 |------|------|
-| `$0` | pane ID（数字部分のみ。例: `60`） |
+| `$0` | pane ID（省略可。数字部分のみ。例: `60`） |
 | `$1...` | 送信するプロンプトテキスト（残り全部） |
 
 ## 実行手順
 
 1. **引数パース**
-   - `$0` を pane ID として取得（数字のみ許可）
-   - 残りを結合してプロンプトテキストとする
-   - どちらかが空ならエラーメッセージを出して終了
+   - `$0` が数字なら pane ID、残りをプロンプトテキストとする
+   - `$0` が数字でなければ、全引数をプロンプトテキストとし、pane ID は前回と同じものを使う
+   - 前回の送信先がない場合はエラー「送信先 pane ID を指定してください」
+   - プロンプトが空ならエラーメッセージを出して終了
 
 2. **JSON 確認**: `$HOME/.claude/pane-state.json` を Read で読む
    - ファイルが存在しない → 「pane-state.json が見つかりません。対象 pane で Claude Code が起動していることを確認してください」
