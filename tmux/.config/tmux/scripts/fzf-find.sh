@@ -73,4 +73,4 @@ file=$(echo "$result" | tail -1 | sed $'s/\033\\[[0-9;]*m//g; s/^[^\t]*\t//' | p
 if [ "$key" = "ctrl-a" ]; then
   file="$(pwd)/$file"
 fi
-tmux send-keys -t "$CALLER_PANE" "$file"
+tmux send-keys -t "$CALLER_PANE" -l -- "$file"
