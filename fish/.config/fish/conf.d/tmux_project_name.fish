@@ -7,7 +7,7 @@ status is-interactive; or return
 if test -n "$TMUX"
     set -l _win_name (tmux display-message -p '#{window_name}')
     if not string match -q 'wm-*' $_win_name
-        tmux rename-window ($HOME/.config/claude/scripts/tmux-project-name.sh $PWD)
+        tmux rename-window ($HOME/.claude/scripts/tmux-project-name.sh $PWD)
     end
 end
 
@@ -16,5 +16,5 @@ function __tmux_update_project_name --on-variable PWD
     # workmux管理のwindowはリネームしない
     set -l win_name (tmux display-message -p '#{window_name}')
     string match -q 'wm-*' $win_name; and return
-    tmux rename-window ($HOME/.config/claude/scripts/tmux-project-name.sh $PWD)
+    tmux rename-window ($HOME/.claude/scripts/tmux-project-name.sh $PWD)
 end

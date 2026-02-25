@@ -125,7 +125,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.config/claude/scripts/notify-complete.sh stop"
+            "command": "~/.claude/scripts/notify-complete.sh stop"
           }
         ]
       },
@@ -145,7 +145,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.config/claude/scripts/notify-complete.sh notification"
+            "command": "~/.claude/scripts/notify-complete.sh notification"
           }
         ]
       }
@@ -175,7 +175,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "~/.claude/statusline.py --show 1,2"
+    "command": "~/.claude/scripts/statusline.py --show 1,2"
   },
   "enabledPlugins": {
     "frontend-design@claude-plugins-official": false,
