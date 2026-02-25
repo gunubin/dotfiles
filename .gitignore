@@ -1,12 +1,12 @@
 .DS_Store
 .stow-local-ignore
 .idea
-claude/.config/claude/research/
+claude/.claude/research/
 fish/.config/fish/fish_variables
 iterm2/.config/iterm2/com.googlecode.iterm2.plist
 
 plans/
-.claude/
+/.claude/
 .mcp.json
 
 # tpm管理のプラグイン（tpm自体は残す）
