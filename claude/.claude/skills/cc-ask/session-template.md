@@ -24,13 +24,13 @@ status: active
 2. 質問内容を確認する
 3. 必要に応じて WebSearch / WebFetch / コード調査で情報収集する
 4. `## Round N - 回答 (Pane %XX)` フォーマットで回答をファイル末尾に Edit で追記する
-5. 回答後 `/duo-ask-reply {{SESSION_ID}}` を実行する
+5. 回答後 `/cc-ask-reply {{SESSION_ID}}` を実行する
 
 ### 質問者 (Pane A) のルール
 
 1. このファイルを全文 Read で読み、回答を確認する
-2. 追加質問がある場合: `## Round N - 質問 (Pane %XX)` フォーマットで追記し `/duo-ask-reply {{SESSION_ID}}` を実行する
-3. 不明点が解消された場合: `## Round N - 完了 (Pane %XX)` に `[CONCLUDED]` を含めて追記し `/duo-ask-reply {{SESSION_ID}}` を実行する
+2. 追加質問がある場合: `## Round N - 質問 (Pane %XX)` フォーマットで追記し `/cc-ask-reply {{SESSION_ID}}` を実行する
+3. 不明点が解消された場合: `## Round N - 完了 (Pane %XX)` に `[CONCLUDED]` を含めて追記し `/cc-ask-reply {{SESSION_ID}}` を実行する
 
 ## ガイドライン
 
