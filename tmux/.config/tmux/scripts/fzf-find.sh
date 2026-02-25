@@ -1,8 +1,9 @@
 #!/bin/bash
 CALLER_PANE="$1"
 EZA=$(command -v eza || true)
-FZF=/opt/homebrew/bin/fzf-tmux
-FD=/opt/homebrew/bin/fd
+FZF=$(command -v fzf-tmux || true)
+if [ -z "$FZF" ]; then tmux display-message "fzf not found"; exit 1; fi
+FD=$(command -v fd || command -v fdfind || true)
 BAT=$(command -v bat || true)
 STRIP="perl -CSD -pe 's/\e\[\d+(?:;\d+)*m//g; s/^.\s//'"
 
@@ -19,7 +20,7 @@ result=$({
       [ -e "$f" ] && echo "$f"
     done
   fi
-  $FD --type f --hidden --exclude .git
+  if [ -n "$FD" ]; then $FD --type f --hidden --exclude .git; else find . -type f -not -path '*/.git/*' 2>/dev/null; fi
 } | awk 'seen[$0]++ == 0' \
   | if [ -n "$EZA" ]; then $EZA --stdin --color=always --icons=always --sort=none -1 2>/dev/null; else cat; fi \
   | awk -v mapfile="$git_map" '
