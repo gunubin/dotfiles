@@ -90,4 +90,4 @@ terminal-notifier \
     -message "${NOTIFY_MESSAGE}" \
     -sound "${SOUND}" \
     -execute "${CLICK_CMD}" \
-    -group "claude-code-${TMUX_SESSION}-${TMUX_WINDOW}" &
+    -group "claude-code-${TMUX_SESSION_SAFE}-${TMUX_WINDOW}" &
