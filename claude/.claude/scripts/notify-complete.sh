@@ -65,6 +65,10 @@ else
     TMUX_PANE_INDEX=$(tmux display-message -p '#{pane_index}' 2>/dev/null)
 fi
 
+# TMUX_WINDOW / TMUX_PANE_INDEX の数値バリデーション
+[[ "$TMUX_WINDOW" =~ ^[0-9]+$ ]] || TMUX_WINDOW=""
+[[ "$TMUX_PANE_INDEX" =~ ^[0-9]+$ ]] || TMUX_PANE_INDEX=""
+
 # tmux外で実行された場合はフォールバック
 if [ -z "$TMUX_SESSION" ] || [ -z "$TMUX_WINDOW" ]; then
     osascript -e "display notification \"${MESSAGE}\" with title \"Claude Code\"" &

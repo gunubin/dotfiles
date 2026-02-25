@@ -17,7 +17,7 @@ set -g __done_exclude '^git (?!push|pull|fetch)' 'claude'
 set -g __done_sway_ignore_visible 0
 
 ###
-set U FZF_LEGACY_KEYBINDINGS 0
+set -U FZF_LEGACY_KEYBINDINGS 0
 
 set -gx EDITOR nvim
 
@@ -30,12 +30,8 @@ set -U fish_color_error a6727b
 #######
 # path
 #######
-set -gx PATH $HOME/.local/bin $HOME/.cargo/bin $PATH
-set -gx PATH $HOME/.nodebrew/current/bin $PATH
-set -gx PATH $HOME/.rbenv/bin $PATH
-set -gx PATH /usr/local/bin $PATH
+fish_add_path $HOME/.local/bin $HOME/.cargo/bin /usr/local/bin
 set -gx JAVA_HOME /Library/Java/JavaVirtualMachines/zulu-17.jdk/Contents/Home
-# set -x NVM_DIR $HOME/.nvm
 
 # pnpm
 set -gx PNPM_HOME "$HOME/Library/pnpm"
@@ -58,13 +54,6 @@ set -gx PATH $PATH $ANDROID_HOME/platform-tools
 
 eval $(/opt/homebrew/bin/brew shellenv)
 
-######
-# Load rbenv automatically by appending
-# # the following to ~/.config/fish/config.fish:
-######
-if command -q rbenv
-    status --is-interactive; and source (rbenv init -|psub)
-end
 
 #######
 # alias
@@ -208,7 +197,7 @@ function go_back_directory --description 'Go to previous directory'
   commandline -f repaint
 end
 
-function go_next_directory --description 'Go to previous directory'
+function go_next_directory --description 'Go to next directory'
   # cd -
   nextd
   commandline -f repaint
@@ -222,14 +211,6 @@ bind \el 'go_next_directory'     # Alt+L
 
 bind \ci complete
 
-
-#######
-# dirh
-#######
-# option + [ でディレクトリを戻る
-# bind \e\[ prevd-or-backward-word
-# option + ] でディレクトリを進む
-# bind \e\] nextd-or-forward-word
 
 
 #######

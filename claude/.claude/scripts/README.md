@@ -4,18 +4,6 @@
 
 ## スクリプト一覧
 
-### format-edited-file.sh
-- **目的**: 編集されたファイルに対して自動的にコードフォーマット（Prettier等）を実行
-- **トリガー**: Edit, MultiEdit, Writeツール使用後
-- **対象**: TypeScript/JavaScript ファイル（.ts, .tsx, .js, .jsx, .mjs, .cjs）
-- **実行コマンド**: `npm run format`
-
-### lint-edited-file.sh
-- **目的**: 編集されたファイルに対して自動的にESLint修正を実行
-- **トリガー**: Edit, MultiEdit, Writeツール使用後
-- **対象**: TypeScript/JavaScript ファイル（.ts, .tsx, .js, .jsx, .mjs, .cjs）
-- **実行コマンド**: `npm run lint:fix`
-
 ### deny-check.py
 - **目的**: 危険なBashコマンドの実行を防ぐセキュリティチェック
 - **トリガー**: Bashツール使用前
@@ -40,21 +28,6 @@
           }
         ]
       }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "Edit|MultiEdit|Write",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "$HOME/dotfiles/claude/.claude/scripts/format-edited-file.sh"
-          },
-          {
-            "type": "command",
-            "command": "$HOME/dotfiles/claude/.claude/scripts/lint-edited-file.sh"
-          }
-        ]
-      }
     ]
   }
 }
@@ -71,13 +44,6 @@ export CLAUDE_HOOK_LOGGING=true
 ログファイルの場所：
 - format-edited-file.sh: `~/.claude/format-hook.log`
 - lint-edited-file.sh: `~/.claude/lint-hook.log`
-
-### 3. 前提条件
-
-各スクリプトが正常に動作するには、プロジェクトの `package.json` に以下のスクリプトが定義されている必要があります：
-
-- **format-edited-file.sh**: `"format": "prettier --write"`
-- **lint-edited-file.sh**: `"lint:fix": "eslint --fix"`
 
 ## トラブルシューティング
 

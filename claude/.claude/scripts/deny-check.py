@@ -41,8 +41,8 @@ def _load_deny_patterns() -> list[str]:
 
 
 def _split_chained(command: str) -> list[str]:
-    """&&, ;, || でコマンドを分割（パイプは分割しない）"""
-    segments = re.split(r"\s*(?:&&|;|\|\|)\s*", command)
+    """&&, ;, ||, | でコマンドを分割"""
+    segments = re.split(r"\s*(?:&&|;|\|\||(?<!\|)\|(?!\|))\s*", command)
     return [s.strip() for s in segments if s.strip()]
 
 
