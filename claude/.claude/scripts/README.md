@@ -16,7 +16,7 @@
 - **対象**: TypeScript/JavaScript ファイル（.ts, .tsx, .js, .jsx, .mjs, .cjs）
 - **実行コマンド**: `npm run lint:fix`
 
-### deny-check.sh
+### deny-check.py
 - **目的**: 危険なBashコマンドの実行を防ぐセキュリティチェック
 - **トリガー**: Bashツール使用前
 - **機能**: 設定されたパターンに一致するコマンドをブロック
@@ -36,7 +36,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.claude/scripts/deny-check.sh"
+            "command": "python3 ~/.claude/scripts/deny-check.py"
           }
         ]
       }
