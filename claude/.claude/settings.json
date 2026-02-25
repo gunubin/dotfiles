@@ -159,6 +159,15 @@
             "command": "~/.claude/scripts/tmux-state.sh"
           }
         ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "date '+Current date and time: %Y-%m-%d %H:%M:%S %Z'"
+          }
+        ]
       }
     ],
     "SessionEnd": [
