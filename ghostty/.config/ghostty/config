@@ -1,13 +1,17 @@
 theme = catppuccin-frappe.conf
 
 
-font-family = "Berkeley Mono Variable"
+#font-family = "Berkeley Mono Variable"
+#font-family = "MonoLisa Variable"
+font-family = "MonoLisa sara"
 font-family = "IBM Plex Sans JP"
 font-feature = +calt
 font-feature = +liga
-font-size = 14
-font-variation = wght=400
+font-size = 13.5
+font-variation = wght=350
 font-variation-bold = wght=850
+adjust-cell-height = -3
+adjust-cell-width = -1
 
 cursor-style = block
 cursor-style-blink = true
