@@ -1,11 +1,9 @@
 #!/bin/bash
-# cc-pick をgitルートで実行するラッパー
+# cc-pick をカレントディレクトリで実行するラッパー
 # tmux popup から呼び出される
-# ※ディレクトリは tmux display-popup -d で設定済み
+# ※ディレクトリは tmux display-popup -d "#{pane_current_path}" で設定済み
 
-root=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
-cd "$root" || exit 1
-npx @gunubin/cc-pick
+npx @gunubin/cc-pick@latest
 status=$?
 if [ $status -ne 0 ]; then
   echo ""
