@@ -10,7 +10,7 @@ font-feature = +liga
 font-size = 13.5
 font-variation = wght=350
 font-variation-bold = wght=850
-adjust-cell-height = -3
+adjust-cell-height = -4
 adjust-cell-width = -1
 
 cursor-style = block
