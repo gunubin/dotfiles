@@ -7,9 +7,9 @@ font-family = "MonoLisa sara"
 font-family = "IBM Plex Sans JP"
 font-feature = +calt
 font-feature = +liga
-font-size = 13.5
-font-variation = wght=350
-font-variation-bold = wght=850
+font-size = 14
+font-variation = wght=400
+font-variation-bold = wght=900
 adjust-cell-height = -4
 adjust-cell-width = -1
 
