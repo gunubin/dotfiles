@@ -1,0 +1,16 @@
+#!/bin/bash
+# Prevent committing secret files or API keys
+
+# Check for secret files
+if git diff --cached --name-only | grep -qi "secret"; then
+  echo "ERROR: secrets ファイルをコミットしようとしています"
+  exit 1
+fi
+
+# Check for API key patterns in staged content
+if git diff --cached -U0 | grep -qE '(API_KEY|_PASSWORD|_SECRET|_TOKEN|_AUTH)\s*=\s*"[^"]{8,}"'; then
+  echo "ERROR: API キーまたはシークレットがステージングされています"
+  exit 1
+fi
+
+exit 0

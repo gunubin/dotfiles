@@ -1,4 +1,3 @@
-
 "$schema" = 'https://starship.rs/config-schema.json'
 
 command_timeout = 1000
@@ -201,13 +200,13 @@ flamingo = "#f6d0d0"
 #pink = "#f5c6e5"
 #pink = "#FEB7FF"
 #pink = "#ffc8dd"
-pink = "#bfe7bb"
+pink = "#F5C2E7"
 mauve = "#d9bcfa"
 red = "#f485ad"
 maroon = "#eeb0bd"
 peach = "#fabeab"
 yellow = "#f9e1aa"
-green = "#F5C2E7"
+green = "#bfe7bb"
 teal = "#ace7e0"
 sky = "#A8E6F2"
 sapphire = "#9bd5f2"

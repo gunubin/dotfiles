@@ -1,4 +1,6 @@
 nerdfont: true
+# ⚠️ --dangerously-skip-permissions はClaude Codeの全権限チェックをスキップする。
+# 自動化用途（workmux）で意図的に使用。他の用途では推奨しない。
 agent: "env CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1 claude --dangerously-skip-permissions"
 window_prefix: "wm-"
 post_create:
