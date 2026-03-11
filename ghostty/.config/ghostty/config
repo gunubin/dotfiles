@@ -53,6 +53,7 @@ keybind = cmd+z=text:\x13\x7a
 keybind = cmd+p=text:\x13\x70
 keybind = cmd+enter=text:\x13\x0d
 keybind = cmd+n=text:\x13\x6e
+keybind = cmd+b=text:\x13\x06
 
 # disable default shortcuts
 keybind = cmd+d=text:\x13\x64
