@@ -12,7 +12,7 @@ CWD=$(tmux display-message -t "$CALLER_PANE" -p '#{pane_current_path}')
 [ -z "$CWD" ] && exit 1
 
 # cwdをClaude Codeのプロジェクトディレクトリ名にエンコード
-PROJECT_DIR="$CLAUDE_PROJECTS/$(echo "$CWD" | sed 's|/|-|g')"
+PROJECT_DIR="$CLAUDE_PROJECTS/$(echo "$CWD" | sed 's|[/.]|-|g')"
 [ -d "$PROJECT_DIR" ] || { tmux display-message "No Claude sessions for this directory"; exit 0; }
 
 # プレビュー用スクリプト（fzfの--previewから呼ばれる）
