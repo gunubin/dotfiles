@@ -124,4 +124,10 @@ SELECTED=$(echo "$DISPLAY_LIST" | fzf-tmux -p 85%,85% \
 SESSION_ID=$(echo "$SELECTED" | cut -d$'\t' -f2)
 [ -z "$SESSION_ID" ] && exit 0
 
-tmux send-keys -t "$CALLER_PANE" "claude --resume $SESSION_ID" Enter
+# claude code が起動中なら右に新paneを作ってそこで実行
+CURRENT_CMD=$(tmux display-message -t "$CALLER_PANE" -p '#{pane_current_command}')
+if echo "$CURRENT_CMD" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
+    tmux split-window -h -t "$CALLER_PANE" -c "$(tmux display-message -t "$CALLER_PANE" -p '#{pane_current_path}')" "claude --resume $SESSION_ID"
+else
+    tmux send-keys -t "$CALLER_PANE" "claude --resume $SESSION_ID" Enter
+fi
