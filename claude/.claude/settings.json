@@ -85,7 +85,8 @@
       "Write(/etc/passwd)",
       "Write(/etc/shadow)",
       "Write(/etc/sudoers)"
-    ]
+    ],
+    "defaultMode": "auto"
   },
   "hooks": {
     "PreToolUse": [
@@ -207,8 +208,10 @@
   "alwaysThinkingEnabled": true,
   "plansDirectory": "./plans",
   "skipDangerousModePermissionPrompt": true,
+  "skipAutoPermissionPrompt": true,
   "feedbackSurveyState": {
     "lastShownTime": 1753975827090
   },
-  "mcpServers": {}
+  "mcpServers": {},
+  "theme": "dark-ansi"
 }
