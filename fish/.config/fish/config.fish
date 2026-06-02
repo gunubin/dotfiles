@@ -1,4 +1,3 @@
-
 function fish_greeting
   set_color cyan
   echo '
@@ -290,3 +289,7 @@ starship init fish | source
 
 
 
+
+### MANAGED BY RANCHER DESKTOP START (DO NOT EDIT)
+set --export --prepend PATH "/Users/koki.kato.a/.rd/bin"
+### MANAGED BY RANCHER DESKTOP END (DO NOT EDIT)
