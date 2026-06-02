@@ -9,6 +9,7 @@ STATUS_IDLE="idle"
 
 input=$(cat)
 event=$(echo "$input" | jq -r '.hook_event_name // "unknown"' 2>/dev/null)
+SESSION_ID=$(echo "$input" | jq -r '.session_id // ""' 2>/dev/null)
 
 PANE_ID="$TMUX_PANE"
 [ -z "$PANE_ID" ] && exit 0
@@ -54,18 +55,18 @@ case "$event" in
         # Cleanup stale + add new entry in one lock
         active=$(tmux list-panes -a -F '#{pane_id}' 2>/dev/null | tr '\n' ' ')
         acquire_lock || exit 0
-        jq_update --arg id "$PANE_ID" --arg status "$STATUS_IDLE" --arg dir "$DIR_NAME" --arg active "$active" '
+        jq_update --arg id "$PANE_ID" --arg status "$STATUS_IDLE" --arg dir "$DIR_NAME" --arg active "$active" --arg sid "$SESSION_ID" '
             ($active | split(" ") | map(select(length > 0))) as $valid |
             with_entries(select(.key | IN($valid[]))) |
-            .[$id] = {"status": $status, "dir": $dir, "prompt": ""}
+            .[$id] = {"status": $status, "dir": $dir, "prompt": "", "session_id": $sid}
         '
         release_lock
         ;;
     UserPromptSubmit)
         prompt=$(echo "$input" | jq -r '.prompt // ""' 2>/dev/null)
         acquire_lock || exit 0
-        jq_update --arg id "$PANE_ID" --arg status "$STATUS_WORKING" --arg dir "$DIR_NAME" --arg prompt "$prompt" \
-            '.[$id] = {"status": $status, "dir": $dir, "prompt": $prompt}'
+        jq_update --arg id "$PANE_ID" --arg status "$STATUS_WORKING" --arg dir "$DIR_NAME" --arg prompt "$prompt" --arg sid "$SESSION_ID" \
+            '.[$id] = {"status": $status, "dir": $dir, "prompt": $prompt, "session_id": $sid}'
         release_lock
         ;;
     PreToolUse)
