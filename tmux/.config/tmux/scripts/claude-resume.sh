@@ -20,17 +20,24 @@ preview_session() {
     local jsonl="$1"
     [ -f "$jsonl" ] || return
 
-    # メタデータ表示
-    head -5 "$jsonl" | jq -r '
-        select(.type == "user") |
-        "\u001b[36mSlug:\u001b[0m    " + (.slug // "unnamed") +
-        "\n\u001b[36mBranch:\u001b[0m  " + (.gitBranch // "?") +
-        "\n\u001b[36mCWD:\u001b[0m     " + .cwd +
-        "\n\u001b[36mVersion:\u001b[0m " + (.version // "?") +
+    # メタデータ表示（最初のuserエントリから抽出）
+    head -200 "$jsonl" | jq -rs '
+        def txt(c): if (c|type)=="string" then c
+                    elif (c|type)=="array" then ([c[] | select(type=="object" and .type=="text") | .text] | join(""))
+                    else "" end;
+        ([.[] | select(.type == "user")]) as $users |
+        (([$users[] | select((.isMeta != true)
+                              and ((txt(.message.content) | ltrimstr(" ")) != "")
+                              and ((txt(.message.content) | ltrimstr(" ") | startswith("<")) | not))][0])
+         // $users[0] // empty) |
+        "[36mSlug:[0m    " + (.slug // "unnamed") +
+        "\n[36mBranch:[0m  " + (.gitBranch // "?") +
+        "\n[36mCWD:[0m     " + (.cwd // "?") +
+        "\n[36mVersion:[0m " + (.version // "?") +
         "\n"
-    ' 2>/dev/null | head -5
+    ' 2>/dev/null
 
-    echo -e "\u001b[33m━━━ Recent conversation ━━━\u001b[0m"
+    echo -e "[33m━━━ Recent conversation ━━━[0m"
     echo ""
 
     # 末尾200行からuser/assistantメッセージを抽出（新しい順）
@@ -38,7 +45,7 @@ preview_session() {
         [.[] | select(.type == "user" or .type == "assistant")] | reverse[] |
         (.timestamp | split("T") | .[0] as $d | .[1] | split(".")[0] | "\($d) \(.[0:5])") as $ts |
         if .type == "user" then
-            "\u001b[42;30m USER \u001b[0m \u001b[90m" + $ts + "\u001b[0m\n" +
+            "[42;30m USER [0m [90m" + $ts + "[0m\n" +
             (.message.content |
                 if type == "string" then .[:500]
                 elif type == "array" then
@@ -53,7 +60,7 @@ preview_session() {
                     ] | join("") | .[:500]
                 else "" end) + "\n"
         elif .type == "assistant" then
-            "\u001b[48;5;208;30m CLAUDE \u001b[0m \u001b[90m" + $ts + "\u001b[0m\n" +
+            "[48;5;208;30m CLAUDE [0m [90m" + $ts + "[0m\n" +
             (.message.content |
                 if type == "string" then .[:500]
                 elif type == "array" then
@@ -76,15 +83,21 @@ list_sessions() {
         [ -f "$f" ] || continue
         local basename
         basename=$(basename "$f" .jsonl)
-        head -5 "$f" | jq -r --arg id "$basename" '
-            select(.type == "user") |
+        # 先頭200行から「最初の実プロンプト」を取得
+        # isMeta(caveat等)や <command-name>/<system-reminder> 等のラッパー行をスキップし、
+        # 本来のユーザープロンプトをタイトル・タイムスタンプに使う（該当なしは先頭userにフォールバック）
+        head -200 "$f" | jq -rs --arg id "$basename" '
+            def txt(c): if (c|type)=="string" then c
+                        elif (c|type)=="array" then ([c[] | select(type=="object" and .type=="text") | .text] | join(""))
+                        else "" end;
+            ([.[] | select(.type == "user")]) as $users |
+            (([$users[] | select((.isMeta != true)
+                                  and ((txt(.message.content) | ltrimstr(" ")) != "")
+                                  and ((txt(.message.content) | ltrimstr(" ") | startswith("<")) | not))][0])
+             // $users[0] // empty) |
             .timestamp + "\t" + $id + "\t" + (.slug // "unnamed") + "\t" +
-            (.message.content |
-                if type == "string" then .[:80] | gsub("\n"; " ")
-                elif type == "array" then
-                    [.[] | select(type == "object" and .type == "text") | .text] | join("") | .[:80] | gsub("\n"; " ")
-                else "" end)
-        ' 2>/dev/null | head -1
+            (txt(.message.content) | .[:80] | gsub("\n"; " "))
+        ' 2>/dev/null
     done | sort -rk1,1
 }
 
