@@ -9,6 +9,9 @@ WINDOW_NAME=$(tmux display-message -p '#{window_name}')
 # workmux管理のwindowはリネームしない
 case "$WINDOW_NAME" in wm-*) exit 0 ;; esac
 
+# 手動リネーム済み(prefix+R)のwindowは自動命名しない
+[ "$(tmux display-message -p '#{@manual_name}')" = "1" ] && exit 0
+
 DIR=$(tmux display-message -p '#{pane_current_path}')
 [ -z "$DIR" ] && exit 0
 
