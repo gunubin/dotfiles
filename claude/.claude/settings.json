@@ -88,6 +88,7 @@
     ],
     "defaultMode": "auto"
   },
+  "model": "opus",
   "hooks": {
     "PreToolUse": [
       {
@@ -207,7 +208,9 @@
   "language": "ja",
   "alwaysThinkingEnabled": true,
   "plansDirectory": "./plans",
+  "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
+  "preferredNotifChannel": "terminal_bell",
   "skipAutoPermissionPrompt": true,
   "feedbackSurveyState": {
     "lastShownTime": 1753975827090
