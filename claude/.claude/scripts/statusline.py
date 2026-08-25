@@ -20,6 +20,7 @@ ICON_WARNING  = '\uf071'  #
 ICON_DOLLAR   = '\uf155'  #
 ICON_REFRESH  = '\uf021'  #
 ICON_CALENDAR = '\uf073'  #
+ICON_FAST     = '\u26a1'  # ⚡ fast mode
 
 # Schedule settings (requires `gog` command)
 SCHEDULE_SWAP_INTERVAL = 1    # Swap interval (seconds)
@@ -1849,6 +1850,37 @@ def shorten_model_name(model, tight=False):
 
     return name
 
+def build_model_badge(ctx, tight=False):
+    """モデル名の後ろに付ける状態バッジを構築
+
+    デフォルト状態（fast off / effort medium / thinking on）では空文字を返し、
+    非デフォルトのときだけ表示する。
+
+    Args:
+        ctx: コンテキスト辞書
+        tight: 幅が狭いモード（fast mode のみ表示）
+
+    Returns:
+        str: " ⚡ high" のような文字列（何も無ければ ""）
+    """
+    parts = []
+
+    # fast mode（/fast でトグル）
+    if ctx.get('fast_mode'):
+        parts.append(f"{Colors.YELLOW}{ICON_FAST}{Colors.RESET}{Colors.LAVENDER}")
+
+    if not tight:
+        # effort level: low/medium/high/xhigh/max（medium がデフォルトなので省略）
+        effort = ctx.get('effort_level')
+        if effort and effort != 'medium':
+            parts.append(f"{Colors.TEAL}{effort}{Colors.RESET}{Colors.LAVENDER}")
+
+        # thinking は有効がデフォルト。無効のときだけ警告として出す
+        if ctx.get('thinking_enabled') is False:
+            parts.append(f"{Colors.RED}!t{Colors.RESET}{Colors.LAVENDER}")
+
+    return (" " + " ".join(parts)) if parts else ""
+
 def truncate_text(text, max_len):
     """テキストを最大長で切り詰め、...を追加"""
     if len(text) <= max_len:
@@ -1896,7 +1928,7 @@ def build_line1_parts(ctx, max_branch_len=20, max_dir_len=None,
 
     # Model (always shortened)
     model_name = shorten_model_name(ctx['model'])
-    parts.append(f"{Colors.LAVENDER}[{model_name}]{Colors.RESET}")
+    parts.append(f"{Colors.LAVENDER}[{model_name}{build_model_badge(ctx)}]{Colors.RESET}")
 
     # Active files
     if include_active_files and ctx['active_files'] > 0:
@@ -2089,7 +2121,7 @@ def format_output_compact(ctx):
             line1_parts.append(git_display)
 
         short_model = shorten_model_name(ctx['model'])
-        line1_parts.append(f"{Colors.LAVENDER}[{short_model}]{Colors.RESET}")
+        line1_parts.append(f"{Colors.LAVENDER}[{short_model}{build_model_badge(ctx)}]{Colors.RESET}")
 
         if ctx['total_messages'] > 0:
             line1_parts.append(f"{Colors.MAUVE}{ICON_MESSAGE}{ctx['total_messages']}{Colors.RESET}")
@@ -2147,7 +2179,7 @@ def format_output_tight(ctx):
             line1_parts.append(git_display)
 
         short_model = shorten_model_name(ctx['model'], tight=True)
-        line1_parts.append(f"{Colors.LAVENDER}[{short_model}]{Colors.RESET}")
+        line1_parts.append(f"{Colors.LAVENDER}[{short_model}{build_model_badge(ctx, tight=True)}]{Colors.RESET}")
 
         lines.append(" ".join(line1_parts))
 
@@ -2291,6 +2323,11 @@ def main():
         # These are pre-calculated by Claude Code and more accurate than manual calculation
         api_used_percentage = api_context.get('used_percentage')  # v2.1.6+
         api_remaining_percentage = api_context.get('remaining_percentage')  # v2.1.6+
+
+        # Model state flags (v2.1.2xx+ feature)
+        api_fast_mode = data.get('fast_mode', False)
+        api_effort_level = (data.get('effort') or {}).get('level')
+        api_thinking_enabled = (data.get('thinking') or {}).get('enabled', True)
 
         # Dynamic compaction threshold (80% of context window)
         compaction_threshold = api_context_size * 0.8
@@ -2515,6 +2552,9 @@ def main():
         # Build context dictionary for formatters
         ctx = {
             'model': model,
+            'fast_mode': api_fast_mode,
+            'effort_level': api_effort_level,
+            'thinking_enabled': api_thinking_enabled,
             'git_branch': git_branch,
             'modified_files': modified_files,
             'untracked_files': untracked_files,
