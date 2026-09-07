@@ -250,9 +250,6 @@ end
 # set -gx VOLTA_HOME "$HOME/.volta"
 # set -gx PATH "$VOLTA_HOME/bin" $PATH
 
-# nvm のデフォルトバージョンを設定
-set --universal nvm_default_version v22.14.0
-
 # zの代替
 zoxide init fish | source
 
@@ -288,8 +285,3 @@ end
 starship init fish | source
 
 
-
-
-### MANAGED BY RANCHER DESKTOP START (DO NOT EDIT)
-set --export --prepend PATH "$HOME/.rd/bin"
-### MANAGED BY RANCHER DESKTOP END (DO NOT EDIT)

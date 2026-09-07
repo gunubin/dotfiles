@@ -1,0 +1,12 @@
+# local.fish - 端末固有の設定（gitignore対象）
+# 使い方: cp local.fish.example local.fish して編集
+#
+# conf.d はアルファベット順に読まれるため、このファイルは nvm.fish より前に
+# 評価される。nvm_default_version はここで設定すれば当該シェルから即座に効く。
+
+# nvm のデフォルトバージョン（この端末にインストール済みのものを指定）
+#   確認: nvm list
+set --universal nvm_default_version v22.22.0
+
+# Rancher Desktop（インストール済みの端末のみコメント解除）
+# fish_add_path --prepend --global $HOME/.rd/bin
