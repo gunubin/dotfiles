@@ -209,11 +209,12 @@
   "plansDirectory": "./plans",
   "tui": "fullscreen",
   "skipDangerousModePermissionPrompt": true,
+  "theme": "dark-ansi",
   "preferredNotifChannel": "terminal_bell",
   "skipAutoPermissionPrompt": true,
   "feedbackSurveyState": {
     "lastShownTime": 1753975827090
   },
   "mcpServers": {},
-  "theme": "dark-ansi"
+  "agentPushNotifEnabled": true
 }
