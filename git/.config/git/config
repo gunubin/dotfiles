@@ -22,7 +22,6 @@
     autocrlf = input
     editor = nvim
     ignorecase = false
-    excludesFile = ~/.gitignore
     pager = delta
     preloadindex = true
     quotepath = false
