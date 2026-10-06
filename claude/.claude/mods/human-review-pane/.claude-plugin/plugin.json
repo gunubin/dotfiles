@@ -1,0 +1,6 @@
+{
+  "name": "human-review-pane",
+  "version": "0.1.0",
+  "description": "human-review skill のチャンク差分・参照コード・進捗・コメントを色付きペインに表示する",
+  "types": "./types/index.d.ts"
+}
