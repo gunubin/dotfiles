@@ -37,7 +37,6 @@ const ruleBasic = () => {
     withCondition(ifApp(['^com.googlecode.iterm2$', 'com.mitchellh.ghostty']).unless())([
       map('c', '⌃').to('escape').to('japanese_eisuu')
     ]),
-    map('[', '⌃').to('escape').to('japanese_eisuu'),
     map('h', '⌃').to('⌫'),
     // map('q', '⌘').toIfHeldDown('q', '⌘', {repeat: false}),
     map('q', '⌘').to('tab', '⌘', {repeat: false}),

@@ -3569,25 +3569,6 @@
               {
                 "type": "basic",
                 "from": {
-                  "key_code": "open_bracket",
-                  "modifiers": {
-                    "mandatory": [
-                      "control"
-                    ]
-                  }
-                },
-                "to": [
-                  {
-                    "key_code": "escape"
-                  },
-                  {
-                    "key_code": "japanese_eisuu"
-                  }
-                ]
-              },
-              {
-                "type": "basic",
-                "from": {
                   "key_code": "h",
                   "modifiers": {
                     "mandatory": [
