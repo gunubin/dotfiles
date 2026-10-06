@@ -6,6 +6,7 @@ Claude の最後の発言に「待ち: 〜」の行があればそのセッシ�
 Obsidian 側の Markdown は毎回 JSON から作り直す（端末ごとに別ファイルなので git で衝突しない）。
 """
 
+import fcntl
 import json
 import os
 import re
@@ -18,6 +19,7 @@ from pathlib import Path
 VAULT = Path.home() / "Documents/notes"
 NOTE_DIR = VAULT / "000_Inbox/Sessions"
 STATE = Path.home() / ".claude/session-waits.json"
+LOCK = STATE.with_suffix(".lock")
 WAIT_LINE = re.compile(r"^\s*(?:\*\*)?待ち(?:\*\*)?\s*[:：]\s*(.+?)\s*$", re.MULTILINE)
 
 
@@ -67,19 +69,33 @@ def render(host: str, waits: dict) -> str:
     return "\n".join(lines)
 
 
+def write_atomic(path: Path, text: str) -> None:
+    # 書きかけのファイルを他のセッションに読ませないよう、一時ファイルに書いてから置き換える
+    tmp = path.with_name(f".{path.name}.{os.getpid()}.tmp")
+    tmp.write_text(text)
+    os.replace(tmp, path)
+
+
 def main() -> None:
     data = json.load(sys.stdin)
     sid = data.get("session_id")
     if not sid:
         return
     cwd = data.get("cwd") or os.getcwd()
+    matches = WAIT_LINE.findall(last_assistant_text(data))
 
+    # 複数セッションの Stop hook が同時に走っても更新が消えないよう、読み書き全体をロックする
+    with open(LOCK, "w") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
+        update(sid, cwd, matches)
+
+
+def update(sid: str, cwd: str, matches: list[str]) -> None:
     try:
         waits = json.loads(STATE.read_text())
     except (FileNotFoundError, json.JSONDecodeError):
         waits = {}
 
-    matches = WAIT_LINE.findall(last_assistant_text(data))
     if matches:
         waits[sid] = {
             "wait": matches[-1][:200],
@@ -92,11 +108,11 @@ def main() -> None:
     else:
         return
 
-    STATE.write_text(json.dumps(waits, ensure_ascii=False, indent=1))
+    write_atomic(STATE, json.dumps(waits, ensure_ascii=False, indent=1))
     if VAULT.is_dir():
         host = socket.gethostname().split(".")[0]
         NOTE_DIR.mkdir(parents=True, exist_ok=True)
-        (NOTE_DIR / f"{host}.md").write_text(render(host, waits))
+        write_atomic(NOTE_DIR / f"{host}.md", render(host, waits))
 
 
 if __name__ == "__main__":
