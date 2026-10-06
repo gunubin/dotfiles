@@ -53,3 +53,5 @@
 	diffFilter = delta --color-only
 [submodule]
 	recurse = true
+[push]
+	autoSetupRemote = true
