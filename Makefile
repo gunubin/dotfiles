@@ -53,7 +53,7 @@ clean: check-stow
 
 # インストール処理
 .PHONY: install
-install: stow-packages gitignore-init
+install: stow-packages gitignore-init hooks-init
 	@echo "dotfilesのインストールが完了しました！"
 
 # グローバルgitignoreの初回セットアップ
@@ -104,3 +104,9 @@ brew-dump: check-brew
 	@echo "現在のパッケージからBrewfileを作成しています..."
 	@brew bundle dump --force
 	@echo "Brewfileの作成が完了しました"
+
+# リポジトリ同梱の git hooks を有効化
+.PHONY: hooks-init
+hooks-init:
+	@git -C $(DOTFILES) config core.hooksPath .githooks
+	@echo "core.hooksPath を .githooks に設定しました"

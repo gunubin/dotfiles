@@ -13,4 +13,13 @@ if git diff --cached -U0 | grep -qE '(API_KEY|_PASSWORD|_SECRET|_TOKEN|_AUTH)\s*
   exit 1
 fi
 
+# Claude Code の autoMode は業務環境の情報を含むため settings.json に入れない
+# （~/.claude/automode.local.json に置き、fish の claude 関数が --settings で読む）
+if git diff --cached --name-only | grep -qx "claude/.claude/settings.json" \
+  && git show :claude/.claude/settings.json | grep -q '"autoMode"'; then
+  echo "ERROR: claude/.claude/settings.json に autoMode が含まれています"
+  echo "       ~/.claude/automode.local.json に移してください"
+  exit 1
+fi
+
 exit 0

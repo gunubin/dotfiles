@@ -12,6 +12,14 @@ plans/
 /.claude/
 .mcp.json
 
+# Python バイトコードキャッシュ
+__pycache__/
+*.pyc
+
 # tpm管理のプラグイン（tpm自体は残す）
 tmux/.config/tmux/plugins/*
 !tmux/.config/tmux/plugins/tpm
+
+# claude.ai から同期されるスキル（自動生成）
+claude/.claude/skills/synced/
+
