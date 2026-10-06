@@ -3569,6 +3569,25 @@
               {
                 "type": "basic",
                 "from": {
+                  "key_code": "open_bracket",
+                  "modifiers": {
+                    "mandatory": [
+                      "control"
+                    ]
+                  }
+                },
+                "to": [
+                  {
+                    "key_code": "escape"
+                  },
+                  {
+                    "key_code": "japanese_eisuu"
+                  }
+                ]
+              },
+              {
+                "type": "basic",
+                "from": {
                   "key_code": "h",
                   "modifiers": {
                     "mandatory": [
@@ -4956,6 +4975,7 @@
                 },
                 "to": [
                   {
+                    "lazy": true,
                     "key_code": "left_control"
                   }
                 ],
@@ -4964,6 +4984,9 @@
                     "key_code": "return_or_enter"
                   }
                 ],
+                "parameters": {
+                  "basic.to_if_alone_timeout_milliseconds": 500
+                },
                 "conditions": [
                   {
                     "type": "device_if",

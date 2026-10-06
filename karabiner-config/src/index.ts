@@ -37,6 +37,7 @@ const ruleBasic = () => {
     withCondition(ifApp(['^com.googlecode.iterm2$', 'com.mitchellh.ghostty']).unless())([
       map('c', '⌃').to('escape').to('japanese_eisuu')
     ]),
+    map('[', '⌃').to('escape').to('japanese_eisuu'),
     map('h', '⌃').to('⌫'),
     // map('q', '⌘').toIfHeldDown('q', '⌘', {repeat: false}),
     map('q', '⌘').to('tab', '⌘', {repeat: false}),
@@ -89,7 +90,12 @@ const ruleBuiltInKeyboard = () => {
       ifDevice({is_built_in_keyboard: true}))
     .manipulators([
       // map('semicolon').to('left_control').toIfAlone('return_or_enter'),
-      map('return_or_enter').to('left_control').toIfAlone('return_or_enter'),
+      map('return_or_enter')
+        .to('left_control', undefined, {lazy: true})
+        .toIfAlone('return_or_enter')
+        .parameters({
+          'basic.to_if_alone_timeout_milliseconds': 500,
+        }),
       map('left_command').to('left_command').toIfAlone('spacebar'),
       // map('left_option').to('left_option').toIfAlone('tab'),
       // map('tab').to('left_option').toIfAlone('tab'),
