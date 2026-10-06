@@ -39,6 +39,7 @@ C_PANE = "\033[35m"
 C_DIR = "\033[34m"
 C_TITLE = "\033[33m"
 C_PROMPT = "\033[90m"
+C_SID = "\033[90m"
 
 
 def char_width(c: str) -> int:
@@ -265,7 +266,8 @@ def render(rows: list[dict], scope: str) -> str:
     for r in rows:
         mark = f"{C_LIVE}●{C_RESET}" if r["pane"] else f"{C_DEAD}○{C_RESET}"
         pane_col = f"{C_PANE}{r['pane']:<4}{C_RESET}" if r["pane"] else " " * 4
-        cols = [mark, f"{C_TIME}{cell(rel_time(r['dt']), 15)}{C_RESET}", pane_col]
+        sid_col = f"{C_SID}{r['sid'][:8]}{C_RESET}"
+        cols = [mark, f"{C_TIME}{cell(rel_time(r['dt']), 15)}{C_RESET}", pane_col, sid_col]
         if scope == "all":
             cols.append(f"{C_DIR}{cell(Path(r['cwd']).name, 24)}{C_RESET}")
         if r["title"]:
@@ -381,7 +383,9 @@ def recap(path: Path, width: int, names: dict[str, str]) -> str:
             if l_dt and l_dt != f_dt:
                 same_day = l_dt.date() == f_dt.date()
                 meta += " - " + l_dt.strftime("%H:%M" if same_day else "%Y-%m-%d %H:%M")
-    out.append(f"{R_META}{meta}{C_RESET}\n")
+    out.append(f"{R_META}{meta}{C_RESET}")
+    # セッションID（claude --resume / find-session にそのまま渡せるフル桁）
+    out.append(f"{R_META}{path.stem}{C_RESET}\n")
 
     if d["first"]:
         out.append(f"{R_SEC}▶ 最初の依頼{C_RESET}")

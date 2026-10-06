@@ -1840,6 +1840,14 @@ def shorten_model_name(model, tight=False):
     if m:
         name = f"{m.group(2)} {m.group(1)}"
 
+    # コンテキスト長の表記を切り出して短縮
+    # "Opus 5 (1M context)" / "Opus 5 [1M]" → 本体 "Opus 5" + サフィックス "1M"
+    ctx_suffix = ''
+    m_ctx = re.search(r'[\[(（]?\s*(\d+M)(?:\s+context)?\s*[\])）]?\s*$', name, re.IGNORECASE)
+    if m_ctx:
+        ctx_suffix = m_ctx.group(1).upper()
+        name = name[:m_ctx.start()].strip()
+
     if tight:
         # ファミリー名を短縮
         name = re.sub(r'Opus', 'Op', name, flags=re.IGNORECASE)
@@ -1847,6 +1855,9 @@ def shorten_model_name(model, tight=False):
         name = re.sub(r'Haiku', 'Hai', name, flags=re.IGNORECASE)
         # スペース除去 → "Op4.6", "Son4.5", "Hai3.5"
         name = name.replace(' ', '')
+
+    if ctx_suffix:
+        name += f"·{ctx_suffix}"
 
     return name
 
@@ -2071,6 +2082,11 @@ def format_output_full(ctx, terminal_width=None):
 
         if ctx['cache_ratio'] >= 50:
             line2_parts.append(f"{Colors.TEAL}{ICON_REFRESH} {int(ctx['cache_ratio'])}% cached{Colors.RESET}")
+
+        # Session ID (先頭8桁)
+        # cmd+r のセッション一覧・~/.claude/projects/**/<id>.jsonl と突き合わせるための識別子
+        if ctx.get('session_id'):
+            line2_parts.append(f"{Colors.SURFACE2}#{ctx['session_id'][:8]}{Colors.RESET}")
 
         lines.append(" ".join(line2_parts))
 
@@ -2551,6 +2567,7 @@ def main():
 
         # Build context dictionary for formatters
         ctx = {
+            'session_id': session_id,
             'model': model,
             'fast_mode': api_fast_mode,
             'effort_level': api_effort_level,
