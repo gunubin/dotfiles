@@ -124,6 +124,15 @@
             "command": "~/.claude/scripts/tmux-state.sh"
           }
         ]
+      },
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -I ~/.claude/scripts/session-waits.py"
+          }
+        ]
       }
     ],
     "Notification": [
