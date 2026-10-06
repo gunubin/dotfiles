@@ -125,6 +125,31 @@ const SIDE_ACCENT = { context: undefined, removed: '#ff87af', added: '#87d7af' }
 const SIDE_BAR = { context: ' ', removed: '▌', added: '▌' } as const
 const SIDE_SIGN = { context: ' ', removed: '-', added: '+' } as const
 
+type UnifiedRow = { oldNo?: number; newNo?: number; text: string; kind: Side['kind'] } | { header: string }
+
+// unified も Code の diff 表示に任せず split と同じ見た目で描く（テーマ次第で追加・削除の背景がほぼ見えないため）
+const toUnifiedRows = (hunks: string[]): UnifiedRow[] => {
+  const rows: UnifiedRow[] = []
+  let oldNo = 0
+  let newNo = 0
+  for (const line of hunks) {
+    const header = /^@@ -(\d+)(?:,\d+)? \+(\d+)(?:,\d+)? @@/.exec(line)
+    if (header !== null) {
+      oldNo = Number(header[1])
+      newNo = Number(header[2])
+      rows.push({ header: line })
+    } else if (line.startsWith('-')) {
+      rows.push({ oldNo: oldNo++, text: line.slice(1), kind: 'removed' })
+    } else if (line.startsWith('+')) {
+      rows.push({ newNo: newNo++, text: line.slice(1), kind: 'added' })
+    } else if (!line.startsWith('\\')) {
+      rows.push({ oldNo: oldNo++, newNo: newNo++, text: line.slice(1), kind: 'context' })
+    }
+  }
+
+  return rows
+}
+
 const INPUT_SCHEMA = {
   type: 'object',
   properties: {
@@ -377,7 +402,29 @@ export const register: Register = on => {
                 ),
               )
             ) : (
-              <Code source={file.hunks.join('\n')} format="diff" path={file.path} />
+              toUnifiedRows(file.hunks).map(row =>
+                'header' in row ? (
+                  <Text dimColor wrap="truncate-end">
+                    {row.header}
+                  </Text>
+                ) : (
+                  <Box flexDirection="row">
+                    <Box width={gutterWidth * 2 - 2} flexShrink={0}>
+                      <Text>
+                        <Text color={SIDE_ACCENT[row.kind]}>{SIDE_BAR[row.kind]}</Text>
+                        <Text color={SIDE_ACCENT[row.kind]} dimColor={row.kind === 'context'}>
+                          {(row.oldNo === undefined ? '' : String(row.oldNo)).padStart(gutterWidth - 3)}{' '}
+                          {(row.newNo === undefined ? '' : String(row.newNo)).padStart(gutterWidth - 3)}
+                        </Text>
+                        <Text color={SIDE_ACCENT[row.kind]} bold>
+                          {SIDE_SIGN[row.kind]}
+                        </Text>
+                      </Text>
+                    </Box>
+                    {row.text === '' ? <Text> </Text> : <Code source={row.text} path={file.path} />}
+                  </Box>
+                ),
+              )
             )}
           </Box>
         ))}
