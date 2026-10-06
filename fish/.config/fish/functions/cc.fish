@@ -61,11 +61,13 @@ function cc --description "Claude Code with modes"
         set orig_window (tmux display-message -p '#W')
     end
 
-    if test (count $env_vars) -gt 0
-        env $env_vars claude $claude_args
-    else
-        claude $claude_args
+    # env 経由だと外部コマンドとして起動され fish の claude 関数（--settings 付与）を通らないため、
+    # 関数スコープの export で渡す
+    for kv in $env_vars
+        set -l pair (string split -m1 = -- $kv)
+        set -fx $pair[1] $pair[2]
     end
+    claude $claude_args
 
     # tmux ウィンドウ名を復元
     if test -n "$TMUX" -a -n "$orig_window"
