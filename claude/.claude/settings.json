@@ -69,7 +69,7 @@
     ],
     "defaultMode": "auto"
   },
-  "model": "opus",
+  "model": "opus[1m]",
   "hooks": {
     "PreToolUse": [
       {
@@ -98,6 +98,10 @@
           {
             "type": "command",
             "command": "~/.claude/scripts/tmux-state.sh"
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/scripts/session-title-from-pr.sh"
           }
         ]
       }
