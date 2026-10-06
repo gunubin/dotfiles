@@ -22,4 +22,3 @@ tmux/.config/tmux/plugins/*
 
 # claude.ai から同期されるスキル（自動生成）
 claude/.claude/skills/synced/
-

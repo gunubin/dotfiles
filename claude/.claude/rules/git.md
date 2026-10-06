@@ -25,6 +25,10 @@
 - `main` などデフォルトブランチへの直接 push
 - upstream がブランチ名と不一致のまま素の `git push` をリトライし続けること
 
+### 例外
+
+- 個人の dotfiles リポジトリ（`~/dotfiles`）は main へ直接 commit / push してよい
+
 ## 補足
 
 - グローバル git 設定に `push.autoSetupRemote = true` を設定済み（2026-07-10）。upstream 未設定のブランチは素の `git push` でも同名リモートブランチが自動作成・追跡される。ただし **upstream が既に別名（origin/main 等）に設定済みのブランチには効かない**ため、その場合は `git push -u origin HEAD` が必要。
