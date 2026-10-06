@@ -189,11 +189,11 @@ const ruleIme = () => {
       ifInputSource({language: 'ja'}))([
       jkSimultaneous(),
     ]),
-    // jk で IME:OFFだったらESCAPE
+    // JetBrains では jk で IME:OFFだったらESCAPE
     withCondition(
-      ifInputSource({language: 'ja'}).unless())([
+      ifInputSource({language: 'ja'}).unless(),
+      ifApp(['^com.jetbrains.[\\w-]+$']))([
       mapSimultaneous(['j', 'k']).to('escape')
-      // mapSimultaneous(['j', 'k']).to('open_bracket', '⌃')
     ]),
   ])
 }
