@@ -28,7 +28,7 @@ PROJECT_DIR="$CLAUDE_PROJECTS/$(echo "$CWD" | sed 's|[/.]|-|g')"
 # session_idが取れ、対応するjsonlが実在すればfork
 if [ -n "$SESSION_ID" ] && [ -f "$PROJECT_DIR/$SESSION_ID.jsonl" ]; then
     tmux split-window -h -t "$CALLER_PANE" -c "$CWD" \
-        "claude --resume $SESSION_ID --fork-session --dangerously-skip-permissions"
+        "claude --resume $SESSION_ID --fork-session"
     exit 0
 fi
 

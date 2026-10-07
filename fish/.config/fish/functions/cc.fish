@@ -1,6 +1,7 @@
 function cc --description "Claude Code with modes"
     set -l env_vars
-    set -l claude_args --dangerously-skip-permissions
+    # 権限モードは settings.json の defaultMode（auto）に従う。全確認を飛ばすときだけ yolo を付ける
+    set -l claude_args
     set -l awaiting_pr false
     set -l awaiting_task false
     set -l task_id ""
@@ -32,6 +33,9 @@ function cc --description "Claude Code with modes"
                 set -a claude_args --model sonnet
             case haiku
                 set -a claude_args --model haiku
+            # --- 権限モード ---
+            case yolo
+                set -a claude_args --dangerously-skip-permissions
             # --- サブコマンド ---
             case c
                 set -a claude_args --continue
