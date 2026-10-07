@@ -20,9 +20,6 @@ set -U FZF_LEGACY_KEYBINDINGS 0
 
 set -gx EDITOR nvim
 
-# Claude Code mods（human-review skill のペイン表示など）
-set -gx CLAUDE_CODE_PLUGIN_DIRS $HOME/dotfiles/claude/.claude/mods/human-review-pane
-
 #######
 # fish command color
 #######
