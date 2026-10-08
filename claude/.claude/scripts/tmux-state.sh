@@ -64,8 +64,9 @@ set_window_status() {
     fi
     tmux set-option -w -t "$PANE_ID" @claude_status "$icon" 2>/dev/null
     if [ "$status" != "$STATUS_WORKING" ]; then
-        # その後に別の状態へ変わっていたら消さない
-        tmux set-hook -w -t "$PANE_ID" pane-focus-in \
+        # その後に別の状態へ変わっていたら消さない。
+        # workmux も [0] に hook を置くため、別の添字にして共存させる
+        tmux set-hook -w -t "$PANE_ID" 'pane-focus-in[10]' \
             "if-shell -F '#{==:#{@claude_status},$icon}' 'set-option -uw @claude_status'" 2>/dev/null
     fi
 }
