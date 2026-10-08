@@ -270,6 +270,10 @@ def main() -> int:
     target = None
     try:
         tty.setcbreak(fd)
+        # cmd+s が送る C-s（XOFF）で出力が止まらないよう、フロー制御を切る
+        attrs = termios.tcgetattr(fd)
+        attrs[0] &= ~termios.IXON
+        termios.tcsetattr(fd, termios.TCSADRAIN, attrs)
         # 自動折り返しを止める（端末と幅の解釈が違う文字があっても次の行に溢れない）
         write("\033[?1049h\033[?25l\033[?7l\033[2J")
         agents: list[dict] = []
@@ -290,7 +294,8 @@ def main() -> int:
             key = read_key(fd, max(0.05, DATA_INTERVAL - (time.monotonic() - last_load)))
             if key is None:
                 continue
-            if key in ("q", "esc", "\x03"):
+            # C-a: もう一度 cmd+s（C-s C-a）を押したら閉じる。C-s 単体は無視する
+            if key in ("q", "esc", "\x03", "\x01"):
                 break
             if key in ("j", "down") and panes:
                 sel_pane = panes[min(sel + 1, len(panes) - 1)]
