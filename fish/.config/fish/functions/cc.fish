@@ -59,7 +59,7 @@ function cc --description "Claude Code with modes"
     # tmux ウィンドウ名を保存（フォールバック用: SessionEnd が発火しなかった場合の復元）
     set -l orig_window ""
     if test -n "$TMUX"
-        set orig_window (tmux display-message -p '#W')
+        set orig_window (tmux display-message -p -t $TMUX_PANE '#W')
     end
 
     # env 経由だと外部コマンドとして起動され fish の claude 関数（--settings 付与）を通らないため、
@@ -70,8 +70,11 @@ function cc --description "Claude Code with modes"
     end
     claude $claude_args
 
-    # tmux ウィンドウ名を復元
+    # tmux ウィンドウ名を復元（実行中に prefix+R で手動リネームされていたら、その名前を優先する）
     if test -n "$TMUX" -a -n "$orig_window"
-        tmux rename-window "$orig_window" 2>/dev/null
+        set -l manual (tmux display-message -p -t $TMUX_PANE '#{@manual_name}')
+        if test "$manual" != 1
+            tmux rename-window -t $TMUX_PANE "$orig_window" 2>/dev/null
+        end
     end
 end
