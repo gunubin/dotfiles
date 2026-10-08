@@ -4,7 +4,7 @@ description: |
   PRまたは未コミット差分を、理解しやすい単位（チャンク）に分けて適切な順番で1つずつ解説し、人間のレビューを伴走する。
   `next` で次のチャンクへ進む対話型。AIが機械的チェックを担い、人間は意図・設計・ドメイン妥当性の判断に集中する。
   「PRをレビューしたい」「一緒にコードを読みたい」「差分を順番に解説して」時に使用。
-allowed-tools: Bash(git *), Bash(gh *), Bash(mkdir *), Read, Grep, Glob, Write, Edit, AskUserQuestion, mcp__human-review-pane__show
+allowed-tools: Bash(git *), Bash(gh *), Bash(fish -c *), Bash(mkdir *), Read, Grep, Glob, Write, Edit, AskUserQuestion, mcp__human-review-pane__show
 argument-hint: "[<PR番号> | local]"
 ---
 
@@ -49,6 +49,14 @@ Claude はレビュアーではなく**案内役**として振る舞う。
 gh pr view <N> --json number,title,body,author,baseRefName,headRefName,headRefOid,url,commits,files
 gh pr diff <N>
 git fetch origin pull/<N>/head
+```
+
+PR のコミット範囲 `origin/<base>..origin/<head>` をクリップボードにコピーする（WebStorm の Git ログのブランチフィルタに貼る用）。
+Bash ツールのシェルは fish ではないため `fish -c` で呼ぶ。
+失敗してもレビューは続ける。
+
+```bash
+fish -c 'prrange <N>'
 ```
 
 周辺コードを読むため、PR の HEAD を worktree に展開する。
@@ -147,6 +155,7 @@ state.md の形式:
 - まとめ表示時（`phase: "summary"`）と、投稿完了または投稿しないと決まった時点（`phase: "finished"`）にも呼ぶ。local の場合はまとめ表示後に `finished` を渡す
 - 引数には毎回全体を渡す（呼ぶたびに表示が丸ごと置き換わる）
   - `phase`: `map`（全体マップ）/ `chunk`（解説中）/ `summary`（まとめ・投稿確認中）/ `finished`（終了）。入力欄の上の帯に進捗と一緒に表示される
+  - `title`: PR の場合は `PR #<N> <タイトル> ｜ origin/<base>..origin/<head>` の形で、コミット範囲を末尾に付ける。local の場合は範囲を付けない
   - `chunks`: state.md のチャンク一覧（`status` は done / current / todo）
   - `diff`: このチャンクの unified diff。`@@` ハンクの途中で切らない
   - `refs`: 「なぜ・どこに効くか」で参照した周辺コード。1件 30 行以内、前後数行を含める
