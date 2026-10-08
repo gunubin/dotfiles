@@ -146,6 +146,15 @@
             "command": "~/.claude/scripts/notify-complete.sh notification"
           }
         ]
+      },
+      {
+        "matcher": "permission_prompt|elicitation_dialog",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/scripts/tmux-state.sh"
+          }
+        ]
       }
     ],
     "UserPromptSubmit": [
@@ -178,6 +187,17 @@
           }
         ]
       }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/scripts/tmux-state.sh"
+          }
+        ]
+      }
     ]
   },
   "statusLine": {
@@ -198,7 +218,7 @@
     "playwright@claude-plugins-official": false,
     "pr-review-toolkit@claude-plugins-official": false,
     "figma@claude-plugins-official": false,
-    "workmux-status@workmux": true
+    "workmux-status@workmux": false
   },
   "language": "ja",
   "alwaysThinkingEnabled": true,
