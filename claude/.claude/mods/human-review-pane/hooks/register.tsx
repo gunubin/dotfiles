@@ -122,6 +122,11 @@ const toSplitRows = (hunks: string[]): SplitRow[] => {
 // 背景を塗るとハイライトされた文字が読みにくくなるため、行頭の縦バー・記号・行番号の色で変更行を示す。
 // 色は 256 色に丸められても変わらないよう、パレットにそのまま在るパステルピンクとミントを使う
 const SIDE_ACCENT = { context: undefined, removed: '#ff87af', added: '#87d7af' } as const
+// 行の背景は catppuccin Mocha の赤・緑を背景色に薄く溶かした色。
+// tmux 内では CLAUDE_CODE_TMUX_TRUECOLOR が無いと 256 色に丸められ、両方とも灰色に潰れる
+// 本体はペインを明るめの面の色で描くため、本文全体を端末（catppuccin Mocha）の背景色で塗り潰す
+const PANE_BACKGROUND = '#1e1e2e'
+const SIDE_BACKGROUND = { context: undefined, removed: '#45293a', added: '#283f33' } as const
 const SIDE_BAR = { context: ' ', removed: '▌', added: '▌' } as const
 const SIDE_SIGN = { context: ' ', removed: '-', added: '+' } as const
 
@@ -329,9 +334,14 @@ export const register: Register = on => {
   on('ui.render', { component: 'Pane', requestId: PANE }, async ($, e) => {
     const { Box, Text, Code } = $.ui.resolve(e)
     const current = await read($, view)
+    const fill = { backgroundColor: PANE_BACKGROUND, minHeight: e.props.scroll.bodyRows, flexGrow: 1 } as const
 
     if (current === null) {
-      return <Text dimColor>レビュー開始前です。/human-review で始めてください。</Text>
+      return (
+        <Box {...fill}>
+          <Text dimColor>レビュー開始前です。/human-review で始めてください。</Text>
+        </Box>
+      )
     }
 
     const total = current.chunks.length
@@ -341,7 +351,7 @@ export const register: Register = on => {
     const files = current.diff === '' ? [] : parseDiff(current.diff, current.path)
 
     const drawSide = (side: Side | undefined, path: string) => (
-      <Box width={sideColumns}>
+      <Box width={sideColumns} backgroundColor={side === undefined ? undefined : SIDE_BACKGROUND[side.kind]}>
         <Box width={gutterWidth} flexShrink={0}>
           {side !== undefined && (
             <Text>
@@ -364,7 +374,7 @@ export const register: Register = on => {
     )
 
     return (
-      <Box flexDirection="column" gap={1}>
+      <Box flexDirection="column" gap={1} {...fill}>
         <Box flexDirection="column">
           <Text bold>{current.title}</Text>
           {current.chunks.map(chunk => (
@@ -408,7 +418,7 @@ export const register: Register = on => {
                     {row.header}
                   </Text>
                 ) : (
-                  <Box flexDirection="row">
+                  <Box flexDirection="row" backgroundColor={SIDE_BACKGROUND[row.kind]}>
                     <Box width={gutterWidth * 2 - 2} flexShrink={0}>
                       <Text>
                         <Text color={SIDE_ACCENT[row.kind]}>{SIDE_BAR[row.kind]}</Text>
