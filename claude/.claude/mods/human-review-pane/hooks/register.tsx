@@ -246,9 +246,14 @@ export const register: Register = on => {
     // ツールの引数は e.input ではなく e の直下に載る（tool / tool_use_id / agentId は予約キー）
     const { title, phase, chunks, current, path, diff, refs, comments } = e as unknown as ReviewView
     const incoming: ReviewView = { title, phase, chunks, current, path, diff, refs, comments }
+    const previous = await read($, view)
     await update($, view, () => incoming)
     await update($, isBandHidden, () => false)
     await $.ui.open({ id: PANE, title: TITLE })
+    // チャンクや段階が変わったときだけ先頭に戻す（c でコメントを足しただけなら読んでいた位置を保つ）
+    if (previous?.current !== incoming.current || previous?.phase !== incoming.phase) {
+      await $.ui.scroll({ in: PANE, to: 'start' })
+    }
 
     return { result: `#${incoming.current} をペインに表示しました。` }
   })
@@ -299,19 +304,22 @@ export const register: Register = on => {
 
     return (
       <Box flexDirection="column">
+        {/* PR ではタイトルにコミット範囲が付いて長くなるため、進捗とは別の行に置いて押し出さないようにする */}
+        <Text bold wrap="truncate-end">
+          📝 {current.title}
+        </Text>
         <Text wrap="truncate-end">
-          <Text bold>📝 {current.title}</Text>
-          {'  '}
           <Text color="success">{'■'.repeat(filled)}</Text>
           <Text dimColor>{'□'.repeat(empty)}</Text> {done}/{total}
           {'  '}
           <Text color="suggestion">{PHASE_LABEL[current.phase] ?? PHASE_LABEL.chunk}</Text>
+          {'  '}💬 {current.comments.length}
+          {/* 長いチャンク名で他の情報が切れないよう、末尾に置く */}
           {chunk !== undefined && current.phase === 'chunk' && (
             <Text>
               {'  '}▶ #{chunk.n} {chunk.kind}: {chunk.label}
             </Text>
           )}
-          {'  '}💬 {current.comments.length}
         </Text>
         <Box>
           <Button
