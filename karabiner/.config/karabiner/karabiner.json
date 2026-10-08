@@ -5611,16 +5611,22 @@
                 },
                 "to": [
                   {
-                    "key_code": "japanese_eisuu"
+                    "key_code": "escape"
                   }
                 ],
                 "conditions": [
                   {
-                    "type": "input_source_if",
+                    "type": "input_source_unless",
                     "input_sources": [
                       {
                         "language": "ja"
                       }
+                    ]
+                  },
+                  {
+                    "type": "frontmost_application_if",
+                    "bundle_identifiers": [
+                      "^com.jetbrains.[\\w-]+$"
                     ]
                   }
                 ]
@@ -5639,23 +5645,7 @@
                 },
                 "to": [
                   {
-                    "key_code": "escape"
-                  }
-                ],
-                "conditions": [
-                  {
-                    "type": "input_source_unless",
-                    "input_sources": [
-                      {
-                        "language": "ja"
-                      }
-                    ]
-                  },
-                  {
-                    "type": "frontmost_application_if",
-                    "bundle_identifiers": [
-                      "^com.jetbrains.[\\w-]+$"
-                    ]
+                    "key_code": "japanese_eisuu"
                   }
                 ]
               }

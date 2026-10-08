@@ -189,17 +189,14 @@ const ruleIme = () => {
     ]),
     // IME ON
     mapSimultaneous(['d', 'f']).to('japanese_kana'),
-    // IME OFF
-    withCondition(
-      ifInputSource({language: 'ja'}))([
-      jkSimultaneous(),
-    ]),
     // JetBrains では jk で IME:OFFだったらESCAPE
     withCondition(
       ifInputSource({language: 'ja'}).unless(),
       ifApp(['^com.jetbrains.[\\w-]+$']))([
       mapSimultaneous(['j', 'k']).to('escape')
     ]),
+    // IME OFF（すでに OFF でも jk は入力しない）
+    jkSimultaneous(),
   ])
 }
 
