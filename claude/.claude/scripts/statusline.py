@@ -1418,7 +1418,7 @@ def get_git_info(directory):
         try:
             # Check for uncommitted changes
             result = subprocess.run(
-                ['git', 'status', '--porcelain'],
+                ['git', '--no-optional-locks', 'status', '--porcelain'],
                 cwd=directory,
                 capture_output=True,
                 text=True,
