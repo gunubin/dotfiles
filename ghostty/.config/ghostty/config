@@ -17,6 +17,10 @@ cursor-style = block
 cursor-style-blink = true
 cursor-color = #f0e6d3
 
+# 選択範囲は淡いラベンダー（catppuccin Mocha の lavender / base）
+selection-background = #b4befe
+selection-foreground = #1e1e2e
+
 mouse-scroll-multiplier = 1.0
 copy-on-select = true
 clipboard-trim-trailing-spaces = true
@@ -75,6 +79,8 @@ keybind = cmd+digit_8=text:\x13\x38
 keybind = cmd+digit_9=text:\x13\x39
 
 custom-shader-animation = true
+# カーソルの軌跡とカーソル本体の色（他の光が重なる前に色を判定するため最初に置く）
+custom-shader = ~/.config/ghostty/shaders/cursor_blaze.glsl
 # 入力中にカーソルの周りがほんのり光る
 custom-shader = ~/.config/ghostty/shaders/typing-glow.glsl
 # キー入力の演出（1つだけ有効にする）
@@ -82,5 +88,6 @@ custom-shader = ~/.config/ghostty/shaders/typing-glow.glsl
 # custom-shader = ~/.config/ghostty/shaders/ripple.glsl  # 波紋（パステルの輪）
 # custom-shader = ~/.config/ghostty/shaders/sakura.glsl  # 桜吹雪
 custom-shader = ~/.config/ghostty/shaders/sparkle.glsl
-custom-shader = ~/.config/ghostty/shaders/cursor_blaze.glsl
+# ウィンドウが非アクティブのとき画面の縁にパステルのにじみを出す
+custom-shader = ~/.config/ghostty/shaders/focus-glow.glsl
 

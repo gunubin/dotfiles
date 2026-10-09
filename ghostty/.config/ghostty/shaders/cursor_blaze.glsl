@@ -70,10 +70,15 @@ vec2 getRectangleCenter(vec4 rectangle) {
     return vec2(rectangle.x + (rectangle.z / 2.), rectangle.y - (rectangle.w / 2.));
 }
 
-const vec4 TRAIL_COLOR = vec4(0.0, 0.9, 1.0, 1.0); // TRON Legacy cyan
-const vec4 CURRENT_CURSOR_COLOR = TRAIL_COLOR;
-const vec4 PREVIOUS_CURSOR_COLOR = TRAIL_COLOR;
-const vec4 TRAIL_COLOR_ACCENT = vec4(0.4, 1.0, 1.0, 1.0); // TRON Legacy bright cyan
+// 軌跡とカーソル本体の色: typing-glow.glsl と同じパステルで、時間とともに移り変わる
+const float HUE_SPEED = 0.05;        // 色が一周する速さ（周/秒）
+const float SATURATION = 0.45;       // 彩度（低いほど淡いパステル）
+const float CURSOR_COLOR_MATCH = 0.12; // カーソル色とみなす色の差の上限
+
+vec3 hsv2rgb(vec3 c) {
+    vec3 p = abs(fract(c.xxx + vec3(0.0, 2.0 / 3.0, 1.0 / 3.0)) * 6.0 - 3.0);
+    return c.z * mix(vec3(1.0), clamp(p - 1.0, 0.0, 1.0), c.y);
+}
 const float DURATION = .5;
 const float OPACITY = .2;
 
@@ -104,6 +109,10 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
 
     vec4 newColor = vec4(fragColor);
 
+    vec3 pastel = hsv2rgb(vec3(fract(iTime * HUE_SPEED), SATURATION, 1.0));
+    vec4 trailColor = vec4(pastel, 1.0);
+    vec4 trailColorAccent = vec4(mix(pastel, vec3(1.0), 0.4), 1.0);
+
     float progress = blend(clamp((iTime - iTimeCursorChange) / DURATION, 0.0, 1));
     float easedProgress = ease(progress);
 
@@ -121,10 +130,17 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     float sdfCursor = getSdfRectangle(vu, currentCursor.xy - (currentCursor.zw * offsetFactor), currentCursor.zw * 0.5);
     float sdfTrail = getSdfParallelogram(vu, v0, v1, v2, v3);
 
-    newColor = mix(newColor, TRAIL_COLOR_ACCENT, 1.0 - smoothstep(sdfTrail, -0.01, 0.001));
-    newColor = mix(newColor, TRAIL_COLOR, antialising(sdfTrail));
+    newColor = mix(newColor, trailColorAccent, 1.0 - smoothstep(sdfTrail, -0.01, 0.001));
+    newColor = mix(newColor, trailColor, antialising(sdfTrail));
 
     newColor = mix(fragColor, newColor, 1.0 - alphaModifier);
     fragColor = mix(newColor, fragColor, step(sdfCursor, 0));
 
+    // カーソル本体をパステルに塗り替える（カーソル上の文字は元の色のまま）
+    vec2 cursorMin = vec2(iCurrentCursor.x, iCurrentCursor.y - iCurrentCursor.w);
+    vec2 cursorMax = vec2(iCurrentCursor.x + iCurrentCursor.z, iCurrentCursor.y);
+    bool inCursor = all(greaterThanEqual(fragCoord, cursorMin)) && all(lessThan(fragCoord, cursorMax));
+    if (inCursor && distance(fragColor.rgb, iCurrentCursorColor.rgb) < CURSOR_COLOR_MATCH) {
+        fragColor.rgb = pastel;
+    }
 }

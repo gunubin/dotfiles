@@ -13,7 +13,7 @@ const float FADE = 0.8;              // 消えるのにかかる時間（秒）
 const float RADIUS = 1.5;            // 光の広がり（カーソルの高さに対する比）
 const float INTENSITY = 0.22;        // 光の強さ
 const float PULSE = 0.08;            // キーを押した瞬間に足す強さ
-const float HUE_SPEED = 0.1;         // 色が一周する速さ（周/秒）
+const float HUE_SPEED = 0.05;        // 色が一周する速さ（周/秒）
 const float SATURATION = 0.45;       // 彩度（低いほど淡いパステル）
 // ==========================
 
