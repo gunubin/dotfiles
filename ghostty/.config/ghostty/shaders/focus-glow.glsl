@@ -1,7 +1,7 @@
 /*
  * focus-glow.glsl - ウィンドウが非アクティブのとき画面を暗く沈めるシェーダー
  *
- * 機能（フォーカスが外れてしばらくすると、次の状態に切り替わる）:
+ * 機能（フォーカスが外れると、すぐ次の状態に切り替わる）:
  *   - 画面がわずかに縮んで奥へ下がる
  *   - すりガラス越しのようにぼける
  *   - 色が少し抜けて、縁ほど暗く紺色に沈む
@@ -10,12 +10,9 @@
  *   フォーカスが戻ると、すぐ元に戻る。切り替えのアニメーションは付けていない
  *
  * 各演出の強さを 0 にすると、その演出だけ止められる（ぼかしを止めるときは BLUR = 0.0）
- * 非アクティブの間も描き直されるよう、config で custom-shader-animation = always にしている
  */
 
 // ========== 設定 ==========
-const float DELAY = 2.0;             // フォーカスが外れてから切り替わるまで（秒）
-
 const float RECEDE = 0.03;           // 奥に下がるときに縮む割合
 const float BLUR = 3.0;              // ぼかしの半径（px）
 const float DIM = 0.35;              // 画面全体を暗くする割合
@@ -71,7 +68,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec2 uv = fragCoord / iResolution.xy;
     fragColor = texture(iChannel0, uv);
 
-    if (iFocus == 1 || iTime - iTimeFocus < DELAY) {
+    if (iFocus == 1) {
         return;
     }
     // 各演出の掛かり具合。切り替えのアニメーションをしないので常に 1

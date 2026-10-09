@@ -74,6 +74,7 @@ vec2 getRectangleCenter(vec4 rectangle) {
 const float HUE_SPEED = 0.05;        // 色が一周する速さ（周/秒）
 const float SATURATION = 0.45;       // 彩度（低いほど淡いパステル）
 const float CURSOR_COLOR_MATCH = 0.12; // カーソル色とみなす色の差の上限
+const float CURSOR_OPACITY = 0.45;   // カーソル本体の濃さ（背景色との混ぜ具合。1 で不透明）
 
 vec3 hsv2rgb(vec3 c) {
     vec3 p = abs(fract(c.xxx + vec3(0.0, 2.0 / 3.0, 1.0 / 3.0)) * 6.0 - 3.0);
@@ -141,6 +142,6 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord)
     vec2 cursorMax = vec2(iCurrentCursor.x + iCurrentCursor.z, iCurrentCursor.y);
     bool inCursor = all(greaterThanEqual(fragCoord, cursorMin)) && all(lessThan(fragCoord, cursorMax));
     if (inCursor && distance(fragColor.rgb, iCurrentCursorColor.rgb) < CURSOR_COLOR_MATCH) {
-        fragColor.rgb = pastel;
+        fragColor.rgb = mix(iBackgroundColor, pastel, CURSOR_OPACITY);
     }
 }
