@@ -1401,38 +1401,34 @@ def generate_real_burn_timeline(block_stats, current_block):
 def get_git_info(directory):
     """Get git branch and status"""
     try:
-        git_dir = Path(directory) / '.git'
-        if not git_dir.exists():
+        # --branch でブランチ名も同時に取る（worktree の .git ファイルやサブディレクトリにも対応）
+        result = subprocess.run(
+            ['git', '--no-optional-locks', 'status', '--porcelain', '--branch'],
+            cwd=directory,
+            capture_output=True,
+            text=True,
+            timeout=1
+        )
+        if result.returncode != 0:
             return None, 0, 0
-        
-        # Get branch
+
+        lines = result.stdout.rstrip('\n').split('\n') if result.stdout.strip() else []
+
+        # Get branch: "## main...origin/main [ahead 1]" / "## No commits yet on main" / "## HEAD (no branch)"
         branch = None
-        head_file = git_dir / 'HEAD'
-        if head_file.exists():
-            with open(head_file, 'r') as f:
-                head = f.read().strip()
-                if head.startswith('ref: refs/heads/'):
-                    branch = head.replace('ref: refs/heads/', '')
-        
-        # Get detailed status
-        try:
-            # Check for uncommitted changes
-            result = subprocess.run(
-                ['git', '--no-optional-locks', 'status', '--porcelain'],
-                cwd=directory,
-                capture_output=True,
-                text=True,
-                timeout=1
-            )
-            
-            changes = result.stdout.strip().split('\n') if result.stdout.strip() else []
-            modified = len([c for c in changes if c.startswith(' M') or c.startswith('M')])
-            added = len([c for c in changes if c.startswith('??')])
-            
-            return branch, modified, added
-        except:
-            return branch, 0, 0
-            
+        if lines and lines[0].startswith('## '):
+            header = lines.pop(0)[3:]
+            if header.startswith('No commits yet on '):
+                branch = header[len('No commits yet on '):]
+            elif not header.startswith('HEAD (no branch)'):
+                branch = header.split('...')[0]
+
+        changes = lines
+        modified = len([c for c in changes if c.startswith(' M') or c.startswith('M')])
+        added = len([c for c in changes if c.startswith('??')])
+
+        return branch, modified, added
+
     except Exception:
         return None, 0, 0
 
