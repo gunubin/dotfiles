@@ -4,8 +4,8 @@
 Claude Code が stdin で渡す JSON だけを使って2行を表示する。
 
     1行目（丸い帯）:  dotfiles   main M1  +156 -23
-    2行目:            12% 120K/1M   91%  Opus 5.5 high  #02de19d9
-                     （週間枠はペースが速いとき、5時間枠は使用率が高いときだけ、使用率の後ろに帯で出る）
+    2行目:            12% 120K/1M  Opus 5.5 high  #02de19d9
+                     （週間枠はペースが速いとき、5時間枠は使用率が高いとき、キャッシュは切れたときだけ帯で出る）
 
 幅が足りないときは優先度の低い項目から外す。
 NO_COLOR か STATUSLINE_NO_COLOR を設定すると色を付けない。
@@ -43,7 +43,7 @@ DIR_COLOR = LAVENDER
 BRANCH_COLOR = SKY
 DIFF_COLOR = GREEN
 MODEL_COLOR = MAUVE
-CACHE_COLOR = GREEN
+CACHE_COLOR = SKY
 DIM_COLOR = SURFACE2
 
 # 進捗バーのパステルグラデーション（ティール→ラベンダー→ピンク→ピーチ）
@@ -62,7 +62,7 @@ LINE1_TEXT_LIGHTEN = 0.2   # 1行目の文字: 帯の色を白にこの割合だ
 # ========== アイコン（Nerd Font） ==========
 ICON_FOLDER = ''
 ICON_BRANCH = ''
-ICON_CACHE = ''
+ICON_CACHE = '\uf2dc'  # 雪の結晶（キャッシュが冷えた）
 ICON_FAST = '⚡'
 # 進捗バー（Nerd Font の nf-pl 系 progress 記号）
 PROGRESS_FILLED = {'left': '\uee03', 'middle': '\uee04', 'right': '\uee05'}
@@ -197,14 +197,17 @@ def format_remaining(resets_at):
 
 
 def shorten_model_name(model):
-    """"Claude Opus 5.5 (1M context)" → "Opus 5.5·1M" """
+    """"Claude Opus 5.5 (1M context)" → "Opus 5.5"
+
+    コンテキストの大きさはトークン数の「/1M」でわかるので、モデル名からは外す
+    """
     name = re.sub(r'^Claude\s+', '', model, flags=re.IGNORECASE)
     m = re.match(r'^([\d.]+)\s+(Haiku|Sonnet|Opus)', name, re.IGNORECASE)
     if m:
         name = f'{m.group(2)} {m.group(1)}'
     m = re.search(r'[\[(（]?\s*(\d+M)(?:\s+context)?\s*[\])）]?\s*$', name, re.IGNORECASE)
     if m:
-        name = f'{name[:m.start()].strip()}·{m.group(1).upper()}'
+        name = name[:m.start()].strip()
     return name
 
 
@@ -321,8 +324,11 @@ def build_line2(data, width):
     five_hour = build_five_hour(rate_limits.get('five_hour'))
     seven_day = build_seven_day(rate_limits.get('seven_day'))
 
-    hit_ratio = (data.get('prompt_cache') or {}).get('hit_ratio')
-    cache = soft_pill(f'{ICON_CACHE} {hit_ratio * 100:.0f}%', CACHE_COLOR) if hit_ratio is not None else ''
+    # キャッシュは普段ほぼ当たるので、切れた（cold）ときだけ出す。
+    # 切れると次の応答が遅くなり、利用枠も多めに減る
+    prompt_cache = data.get('prompt_cache') or {}
+    cold = prompt_cache.get('caching_observed') and prompt_cache.get('warm') is False
+    cache = soft_pill(f'{ICON_CACHE} cold', CACHE_COLOR) if cold else ''
 
     session_id = data.get('session_id') or ''
     session = paint(f'#{session_id[:8]}', DIM_COLOR) if session_id else ''
