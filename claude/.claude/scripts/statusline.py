@@ -4,7 +4,8 @@
 Claude Code が stdin で渡す JSON だけを使って2行を表示する。
 
     1行目（丸い帯）:  dotfiles   main M1  +156 -23
-    2行目:           █▒▒▒▒▒▒▒▒▒ 12% 120K/1M · 5h 38% 2h10m · 7d 41% ·  91% · Opus 5.5 high #02de19d9
+    2行目:            12% 120K/1M   91%  Opus 5.5 high  #02de19d9
+                     （週間枠はペースが速いとき、5時間枠は使用率が高いときだけ、使用率の後ろに帯で出る）
 
 幅が足りないときは優先度の低い項目から外す。
 NO_COLOR か STATUSLINE_NO_COLOR を設定すると色を付けない。
@@ -12,6 +13,7 @@ NO_COLOR か STATUSLINE_NO_COLOR を設定すると色を付けない。
 """
 
 import json
+import math
 import os
 import re
 import shutil
@@ -32,10 +34,12 @@ SKY = (137, 220, 235)
 LAVENDER = (180, 190, 254)
 TEXT = (205, 214, 244)
 SURFACE2 = (88, 91, 112)
+OVERLAY0 = (108, 112, 134)
+BASE = (30, 30, 46)
 CRUST = (17, 17, 27)
 
 # 表示要素ごとの色（配色を変えるときはここだけ差し替える）
-DIR_COLOR = PINK
+DIR_COLOR = LAVENDER
 BRANCH_COLOR = SKY
 DIFF_COLOR = GREEN
 MODEL_COLOR = MAUVE
@@ -44,16 +48,26 @@ DIM_COLOR = SURFACE2
 
 # 進捗バーのパステルグラデーション（ティール→ラベンダー→ピンク→ピーチ）
 PROGRESS_GRADIENT = [TEAL, LAVENDER, PINK, PEACH]
-PROGRESS_WIDTH = 10
+PROGRESS_WIDTH = 15
+FIVE_HOUR_SHOW_FROM = 50  # 5時間枠はこの使用率（%）以上のときだけ出す
+WEEKLY_PACE_MARGIN = 5    # 週間枠は使用率が週の経過割合をこのポイント以上超えたときだけ出す
+WEEK_SECONDS = 7 * 24 * 60 * 60
+PROGRESS_EMPTY_COLOR = OVERLAY0  # 空きの枠は暗すぎると見えないので少し明るく
+
+# 帯の背景の濃さ（暗い背景色に元の色をどれだけ混ぜるか。0 で背景色、1 で元の色）
+LINE1_PILL_STRENGTH = 0.65  # 1行目: 色で塗った帯を少し落ち着かせる
+SOFT_PILL_STRENGTH = 0.18   # 2行目: 背景が目立たない帯
 
 # ========== アイコン（Nerd Font） ==========
 ICON_FOLDER = ''
 ICON_BRANCH = ''
 ICON_CACHE = ''
 ICON_FAST = '⚡'
+# 進捗バー（Nerd Font の nf-pl 系 progress 記号）
+PROGRESS_FILLED = {'left': '\uee03', 'middle': '\uee04', 'right': '\uee05'}
+PROGRESS_EMPTY = {'left': '\uee00', 'middle': '\uee01', 'right': '\uee02'}
 PILL_LEFT = ''
 PILL_RIGHT = ''
-SEPARATOR = ' · '
 
 NO_COLOR = bool(os.environ.get('NO_COLOR') or os.environ.get('STATUSLINE_NO_COLOR'))
 
@@ -76,11 +90,31 @@ def paint(text, rgb):
     return f'{fg(rgb)}{text}{reset()}'
 
 
-def pill(text, rgb):
-    """丸い端の帯。色なしのときは両端を空白にする"""
+def tint(text, rgb):
+    """帯の中で使う文字色。背景色を消さないよう reset しない"""
+    return f'{fg(rgb)}{text}'
+
+
+def pill(text, rgb, text_rgb=CRUST):
+    """丸い端の帯。text の中の色は tint() で付ける。色なしのときは両端を空白にする"""
     if NO_COLOR:
         return f' {text} '
-    return f'{fg(rgb)}{PILL_LEFT}{bg(rgb)}{fg(CRUST)}{text}{reset()}{fg(rgb)}{PILL_RIGHT}{reset()}'
+    return f'{fg(rgb)}{PILL_LEFT}{bg(rgb)}{fg(text_rgb)}{text}{reset()}{fg(rgb)}{PILL_RIGHT}{reset()}'
+
+
+def mute(rgb, strength):
+    """暗い背景色に rgb を strength の割合で混ぜた色"""
+    return tuple(round(b + (c - b) * strength) for b, c in zip(BASE, rgb))
+
+
+def line1_pill(text, rgb):
+    """1行目の帯: 少し落ち着かせた色で塗り、文字は暗い色"""
+    return pill(text, mute(rgb, LINE1_PILL_STRENGTH))
+
+
+def soft_pill(text, rgb):
+    """2行目の帯: 背景は暗い背景色に薄く混ぜた色、文字は rgb"""
+    return pill(text, mute(rgb, SOFT_PILL_STRENGTH), rgb)
 
 
 def gradient_color(position):
@@ -102,12 +136,18 @@ def usage_color(percentage):
 
 
 def progress_bar(percentage):
-    filled = int(PROGRESS_WIDTH * percentage / 100)
-    if percentage >= 90:
-        bar = paint('█' * filled, RED)
-    else:
-        bar = ''.join(paint('█', gradient_color(i / (PROGRESS_WIDTH - 1))) for i in range(filled))
-    return bar + paint('▒' * (PROGRESS_WIDTH - filled), DIM_COLOR)
+    """Nerd Font の進捗バー記号で描く。両端は丸く、空きは枠だけになる"""
+    # 切り上げて、少しでも使っていれば1マス目を光らせる
+    filled = math.ceil(PROGRESS_WIDTH * percentage / 100)
+    bar = ''
+    for i in range(PROGRESS_WIDTH):
+        part = 'left' if i == 0 else 'right' if i == PROGRESS_WIDTH - 1 else 'middle'
+        if i < filled:
+            color = RED if percentage >= 90 else gradient_color(i / (PROGRESS_WIDTH - 1))
+            bar += tint(PROGRESS_FILLED[part], color)
+        else:
+            bar += tint(PROGRESS_EMPTY[part], PROGRESS_EMPTY_COLOR)
+    return bar
 
 
 # ========== 幅 ==========
@@ -201,7 +241,7 @@ def build_line1(data, width):
     cost = data.get('cost') or {}
     added = cost.get('total_lines_added') or 0
     removed = cost.get('total_lines_removed') or 0
-    diff = pill(f'+{added} -{removed}', DIFF_COLOR) if added or removed else ''
+    diff = line1_pill(f'+{added} -{removed}', DIFF_COLOR) if added or removed else ''
 
     dir_name = os.path.basename(current_dir.rstrip('/')) or current_dir
 
@@ -214,8 +254,8 @@ def build_line1(data, width):
         if shown:
             branch_text = f'{ICON_BRANCH} {shown}' + (f' M{modified}' if modified else '')
         segments = [
-            (3, pill(f'{ICON_FOLDER} {dir_name}', DIR_COLOR)),
-            (2, pill(branch_text, BRANCH_COLOR) if branch_text else ''),
+            (3, line1_pill(f'{ICON_FOLDER} {dir_name}', DIR_COLOR)),
+            (2, line1_pill(branch_text, BRANCH_COLOR) if branch_text else ''),
             (1, diff),
         ]
         line = ' '.join(text for _, text in segments if text)
@@ -225,62 +265,76 @@ def build_line1(data, width):
 
 
 def build_model(data):
-    """モデル名と、既定と違う状態（fast mode / effort / thinking off）"""
-    model = shorten_model_name((data.get('model') or {}).get('display_name') or 'Unknown')
-    badges = []
+    """モデル名の帯と、既定と違う状態（fast mode / effort / thinking off）"""
+    parts = [shorten_model_name((data.get('model') or {}).get('display_name') or 'Unknown')]
     if data.get('fast_mode'):
-        badges.append(paint(ICON_FAST, YELLOW))
+        parts.append(ICON_FAST)
     effort = (data.get('effort') or {}).get('level')
     if effort and effort != 'medium':
-        badges.append(paint(effort, TEAL))
+        parts.append(effort)
+    model = soft_pill(' '.join(parts), MODEL_COLOR)
+    # thinking off は警告なので赤い帯を別に付ける
     if (data.get('thinking') or {}).get('enabled') is False:
-        badges.append(paint('!t', RED))
-    return ' '.join([paint(model, MODEL_COLOR)] + badges)
+        model += ' ' + soft_pill('!t', RED)
+    return model
 
 
-def build_rate_limit(label, window):
+def build_five_hour(window):
+    """5時間枠: 上限が近いときだけ、使用率とリセットまでの時間を帯で出す"""
     if not window or window.get('used_percentage') is None:
         return ''
     percentage = window['used_percentage']
-    text = paint(f'{label} {percentage:.0f}%', usage_color(percentage))
-    if label == '5h' and window.get('resets_at'):
-        text += ' ' + paint(format_remaining(window['resets_at']), DIM_COLOR)
-    return text
+    if percentage < FIVE_HOUR_SHOW_FROM:
+        return ''
+    text = f'5h {percentage:.0f}%'
+    if window.get('resets_at'):
+        text += f' {format_remaining(window["resets_at"])}'
+    return soft_pill(text, usage_color(percentage))
+
+
+def build_seven_day(window):
+    """週間枠: 週の経過割合より使用率が先に進んでいる（ペースが速い）ときだけ帯で出す"""
+    if not window or window.get('used_percentage') is None or not window.get('resets_at'):
+        return ''
+    percentage = window['used_percentage']
+    elapsed = 100 * (1 - (window['resets_at'] - time.time()) / WEEK_SECONDS)
+    if percentage < elapsed + WEEKLY_PACE_MARGIN:
+        return ''
+    # ペースが速いこと自体が注意なので、90% 未満でもピーチにする
+    return soft_pill(f'7d {percentage:.0f}%', RED if percentage >= 90 else PEACH)
 
 
 def build_line2(data, width):
     context = data.get('context_window') or {}
     percentage = context.get('used_percentage')
-    context_text = ''
-    tokens_text = ''
+    context_part = ''
     if percentage is not None:
         percentage = min(100, round(percentage))
-        context_text = f'{progress_bar(percentage)} {paint(f"{percentage}%", usage_color(percentage))}'
+        context_part = f'{progress_bar(percentage)} {tint(f"{percentage}%", usage_color(percentage))}'
         size = context.get('context_window_size')
         if size:
             used = context.get('total_input_tokens') or 0
-            tokens_text = paint(f'{format_tokens(used)}/{format_tokens(size)}', TEXT)
+            context_part += ' ' + tint(f'{format_tokens(used)}/{format_tokens(size)}', TEXT)
+        context_part += reset()
 
     rate_limits = data.get('rate_limits') or {}
-    five_hour = build_rate_limit('5h', rate_limits.get('five_hour'))
-    seven_day = build_rate_limit('7d', rate_limits.get('seven_day'))
+    five_hour = build_five_hour(rate_limits.get('five_hour'))
+    seven_day = build_seven_day(rate_limits.get('seven_day'))
 
     hit_ratio = (data.get('prompt_cache') or {}).get('hit_ratio')
-    cache = paint(f'{ICON_CACHE} {hit_ratio * 100:.0f}%', CACHE_COLOR) if hit_ratio is not None else ''
+    cache = soft_pill(f'{ICON_CACHE} {hit_ratio * 100:.0f}%', CACHE_COLOR) if hit_ratio is not None else ''
 
     session_id = data.get('session_id') or ''
     session = paint(f'#{session_id[:8]}', DIM_COLOR) if session_id else ''
 
-    # 使用率とトークン数は空白でつなぎ、他の項目は · で区切る
-    context_part = ' '.join(t for t in (context_text, tokens_text) if t)
     segments = [
         (7, context_part),
+        (4, seven_day),
         (6, five_hour),
-        (3, seven_day),
         (2, cache),
         (5, build_model(data) + (' ' + session if session else '')),
     ]
-    return fit(segments, width, SEPARATOR)
+    return fit(segments, width, ' ')
 
 
 def main():
