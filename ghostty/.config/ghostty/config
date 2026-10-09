@@ -78,7 +78,8 @@ keybind = cmd+digit_7=text:\x13\x37
 keybind = cmd+digit_8=text:\x13\x38
 keybind = cmd+digit_9=text:\x13\x39
 
-custom-shader-animation = true
+# 非アクティブの間も描き直す（focus-glow.glsl を遅れて暗くするため）
+custom-shader-animation = always
 # カーソルの軌跡とカーソル本体の色（他の光が重なる前に色を判定するため最初に置く）
 custom-shader = ~/.config/ghostty/shaders/cursor_blaze.glsl
 # 入力中にカーソルの周りがほんのり光る
@@ -88,6 +89,6 @@ custom-shader = ~/.config/ghostty/shaders/typing-glow.glsl
 # custom-shader = ~/.config/ghostty/shaders/ripple.glsl  # 波紋（パステルの輪）
 # custom-shader = ~/.config/ghostty/shaders/sakura.glsl  # 桜吹雪
 custom-shader = ~/.config/ghostty/shaders/sparkle.glsl
-# ウィンドウが非アクティブのとき画面の縁にパステルのにじみを出す
+# ウィンドウが非アクティブになって2秒たつと、画面を奥へ下げ、ぼかして暗く沈める
 custom-shader = ~/.config/ghostty/shaders/focus-glow.glsl
 
