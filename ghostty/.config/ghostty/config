@@ -75,6 +75,10 @@ keybind = cmd+digit_8=text:\x13\x38
 keybind = cmd+digit_9=text:\x13\x39
 
 custom-shader-animation = true
-custom-shader = ~/.config/ghostty/shaders/mode-glow.glsl
+# キー入力の演出（1つだけ有効にする）
+# custom-shader = ~/.config/ghostty/shaders/mode-glow.glsl  # 花火（パステルの火花）
+# custom-shader = ~/.config/ghostty/shaders/ripple.glsl  # 波紋（パステルの輪）
+# custom-shader = ~/.config/ghostty/shaders/sakura.glsl  # 桜吹雪
+custom-shader = ~/.config/ghostty/shaders/sparkle.glsl
 custom-shader = ~/.config/ghostty/shaders/cursor_blaze.glsl
 
