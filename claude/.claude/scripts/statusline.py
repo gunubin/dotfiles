@@ -308,16 +308,14 @@ def build_seven_day(window):
 
 def build_line2(data, width):
     context = data.get('context_window') or {}
-    percentage = context.get('used_percentage')
-    context_part = ''
-    if percentage is not None:
-        percentage = min(100, round(percentage))
-        context_part = f'{progress_bar(percentage)} {tint(f"{percentage}%", usage_color(percentage))}'
-        size = context.get('context_window_size')
-        if size:
-            used = context.get('total_input_tokens') or 0
-            context_part += ' ' + tint(f'{format_tokens(used)}/{format_tokens(size)}', TEXT)
-        context_part += reset()
+    # 使用率はセッション開始直後や /compact 直後に null になるが、バーは常に出したいので 0% として描く
+    percentage = min(100, round(context.get('used_percentage') or 0))
+    context_part = f'{progress_bar(percentage)} {tint(f"{percentage}%", usage_color(percentage))}'
+    size = context.get('context_window_size')
+    if size:
+        used = context.get('total_input_tokens') or 0
+        context_part += ' ' + tint(f'{format_tokens(used)}/{format_tokens(size)}', TEXT)
+    context_part += reset()
 
     rate_limits = data.get('rate_limits') or {}
     five_hour = build_five_hour(rate_limits.get('five_hour'))
