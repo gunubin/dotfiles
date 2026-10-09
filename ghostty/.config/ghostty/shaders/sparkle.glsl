@@ -4,14 +4,15 @@
  * 機能:
  *   - カーソル移動時に、カーソルの周りで小さな4本光の星が数個だけ瞬いて消える
  *   - 星はそれぞれ少しずつ遅れて現れ、膨らんでから縮んで消える
+ *   - 大きい星は少なく、小さい星は多く出る
  *   - 星の色は1つごとにランダムなパステルカラー
  */
 
 // ========== 設定 ==========
-const int STAR_COUNT = 3;
+const int STAR_COUNT = 7;
 const float DURATION = 0.5;          // 演出の長さ（秒）
 const float STAGGER = 0.15;          // 星ごとの出現の遅れ（最大, 秒）
-const float SPREAD = 1.2;            // 星が出る範囲（カーソルの高さに対する比）
+const float SPREAD = 1.6;            // 星が出る範囲（カーソルの高さに対する比）
 const float STAR_SIZE = 0.45;       // 光の長さ（カーソルの高さに対する比）
 const float SATURATION = 0.45;       // 彩度（低いほど淡いパステル）
 const float BRIGHTNESS = 1.6;        // 明るさ
@@ -70,7 +71,9 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
         // 膨らんでから縮む、少し回転させる
         float pulse = sin(life * 3.14159);
-        float len = STAR_SIZE * iCurrentCursor.w * (0.7 + 0.6 * hash(seed * 4.567)) * pulse;
+        // 乱数を3乗して、大きい星ほど出にくくする
+        float sizeRand = pow(hash(seed * 4.567), 3.0);
+        float len = STAR_SIZE * iCurrentCursor.w * mix(0.35, 1.3, sizeRand) * pulse;
         float rot = (hash(seed * 5.678) - 0.5) * 0.6 + life * 0.8;
         vec2 d = fragCoord - pos;
         float c = cos(rot);
