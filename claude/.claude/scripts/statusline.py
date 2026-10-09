@@ -55,8 +55,9 @@ WEEK_SECONDS = 7 * 24 * 60 * 60
 PROGRESS_EMPTY_COLOR = OVERLAY0  # 空きの枠は暗すぎると見えないので少し明るく
 
 # 帯の背景の濃さ（暗い背景色に元の色をどれだけ混ぜるか。0 で背景色、1 で元の色）
-LINE1_PILL_STRENGTH = 0.65  # 1行目: 色で塗った帯を少し落ち着かせる
+LINE1_PILL_STRENGTH = 0.33  # 1行目: 2行目より濃いが、明るい文字が読める暗さの帯
 SOFT_PILL_STRENGTH = 0.18   # 2行目: 背景が目立たない帯
+LINE1_TEXT_LIGHTEN = 0.2   # 1行目の文字: 帯の色を白にこの割合だけ寄せる（読みやすさの比 4.7〜5.0）
 
 # ========== アイコン（Nerd Font） ==========
 ICON_FOLDER = ''
@@ -108,8 +109,9 @@ def mute(rgb, strength):
 
 
 def line1_pill(text, rgb):
-    """1行目の帯: 少し落ち着かせた色で塗り、文字は暗い色"""
-    return pill(text, mute(rgb, LINE1_PILL_STRENGTH))
+    """1行目の帯: 暗めの色で塗り、文字は同じ色味の明るいパステル"""
+    text_rgb = tuple(round(c + (255 - c) * LINE1_TEXT_LIGHTEN) for c in rgb)
+    return pill(text, mute(rgb, LINE1_PILL_STRENGTH), text_rgb)
 
 
 def soft_pill(text, rgb):
