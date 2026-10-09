@@ -14,8 +14,8 @@
 
 // ========== 設定 ==========
 const float RECEDE = 0.03;           // 奥に下がるときに縮む割合
-const float BLUR = 3.0;              // ぼかしの半径（px）
-const float DIM = 0.35;              // 画面全体を暗くする割合
+const float BLUR = 1.5;              // ぼかしの半径（px）
+const float DIM = 0.25;              // 画面全体を暗くする割合
 const float EDGE_DIM = 0.4;          // 縁でさらに暗くする割合
 const float WIDTH = 0.1;             // 縁の暗さが広がる幅（画面の短辺に対する比）
 const float DESATURATE = 0.5;        // 色を抜く割合（0 でそのまま、1 で白黒）
