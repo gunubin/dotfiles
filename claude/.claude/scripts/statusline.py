@@ -400,23 +400,46 @@ def calculate_dynamic_padding(compact_text, session_text):
     else:
         return ' '
 
+# 進捗バーのパステルグラデーション（ミント→水色→ラベンダー→ピンク）
+PROGRESS_GRADIENT = [
+    (166, 227, 161),  # Green #a6e3a1
+    (137, 220, 235),  # Sky #89dceb
+    (180, 190, 254),  # Lavender #b4befe
+    (245, 194, 231),  # Pink #f5c2e7
+]
+
+def get_gradient_color(position):
+    """Get the gradient color at position (0.0-1.0) of the progress bar"""
+    scaled = max(0.0, min(1.0, position)) * (len(PROGRESS_GRADIENT) - 1)
+    index = min(int(scaled), len(PROGRESS_GRADIENT) - 2)
+    t = scaled - index
+    start, end = PROGRESS_GRADIENT[index], PROGRESS_GRADIENT[index + 1]
+    r, g, b = (round(a + (b - a) * t) for a, b in zip(start, end))
+    return f'\033[38;2;{r};{g};{b}m'
+
+def get_filled_bar(percentage, filled, width):
+    """Filled part of the progress bar: red when 90% or more, otherwise a pastel gradient"""
+    if percentage >= 90:
+        return get_percentage_color(percentage) + '█' * filled
+    return ''.join(get_gradient_color(i / max(width - 1, 1)) + '█' for i in range(filled))
+
 def get_progress_bar(percentage, width=20, show_current_segment=False):
     """Create a visual progress bar with optional current segment highlighting"""
     filled = int(width * percentage / 100)
     empty = width - filled
     
-    color = get_percentage_color(percentage)
+    filled_bar = get_filled_bar(percentage, filled, width)
     
     if show_current_segment and filled < width:
         # 完了済みは元の色を保持、現在進行中のセグメントのみ特別表示
-        completed_bar = color + '█' * filled if filled > 0 else ''
+        completed_bar = filled_bar
         current_bar = Colors.BRIGHT_WHITE + '▓' + Colors.RESET  # 白く点滅風
         remaining_bar = Colors.LIGHT_GRAY + '▒' * (empty - 1) + Colors.RESET if empty > 1 else ''
         
         bar = completed_bar + current_bar + remaining_bar
     else:
         # 従来の表示
-        bar = color + '█' * filled + Colors.LIGHT_GRAY + '▒' * empty + Colors.RESET
+        bar = filled_bar + Colors.LIGHT_GRAY + '▒' * empty + Colors.RESET
     
     return bar
 
