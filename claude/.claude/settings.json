@@ -202,7 +202,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "~/.claude/scripts/statusline.py --show 1,2"
+    "command": "~/.claude/scripts/statusline.py"
   },
   "enabledPlugins": {
     "frontend-design@claude-plugins-official": false,
