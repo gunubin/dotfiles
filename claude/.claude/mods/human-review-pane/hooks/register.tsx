@@ -304,9 +304,9 @@ export const register: Register = on => {
 
     return (
       <Box flexDirection="column">
-        {/* PR ではタイトルにコミット範囲が付いて長くなるため、進捗とは別の行に置いて押し出さないようにする */}
+        {/* コミット範囲（「 ｜ origin/..」以降）はペインのヘッダーで見えるので、帯では外す */}
         <Text bold wrap="truncate-end">
-          📝 {current.title}
+          📝 {current.title.split(' ｜ ')[0]}
         </Text>
         <Text wrap="truncate-end">
           <Text color="success">{'■'.repeat(filled)}</Text>
