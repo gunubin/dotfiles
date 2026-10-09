@@ -1898,7 +1898,8 @@ def truncate_text(text, max_len):
 
 def build_line1_parts(ctx, max_branch_len=20, max_dir_len=None,
                       include_active_files=True, include_messages=True,
-                      include_lines=True, include_errors=True, include_cost=False):
+                      include_lines=True, include_errors=True, include_cost=False,
+                      include_model=True):
     """Line 1の各パーツを構築する
 
     Args:
@@ -1910,6 +1911,7 @@ def build_line1_parts(ctx, max_branch_len=20, max_dir_len=None,
         include_lines: 行変更数を含めるか
         include_errors: エラー数を含めるか
         include_cost: コストを含めるか（デフォルトFalse）
+        include_model: モデル名を含めるか
 
     Returns:
         list: Line 1のパーツのリスト
@@ -1934,8 +1936,9 @@ def build_line1_parts(ctx, max_branch_len=20, max_dir_len=None,
         parts.append(git_display)
 
     # Model (always shortened)
-    model_name = shorten_model_name(ctx['model'])
-    parts.append(f"{Colors.LAVENDER}[{model_name}{build_model_badge(ctx)}]{Colors.RESET}")
+    if include_model:
+        model_name = shorten_model_name(ctx['model'])
+        parts.append(f"{Colors.LAVENDER}[{model_name}{build_model_badge(ctx)}]{Colors.RESET}")
 
     # Active files
     if include_active_files and ctx['active_files'] > 0:
@@ -1974,8 +1977,8 @@ def format_output_full(ctx, terminal_width=None):
     """Full mode (>= 68 chars): 4行・全項目・装飾あり
 
     Example:
-    [Son4] |  main M2 |  statusline |  254
-    Compact: ████████▒▒▒▒▒▒▒ [58%] 91.8K/160.0K  99%
+     statusline |  main M2 |  254
+    Compact: ████▒▒▒▒▒▒ [58%] 91.8K/160.0K  99% cached | [Son4] #2a74385b
     Session: ███▒▒▒▒▒▒▒▒▒▒▒▒ [25%] 1h15m/5h (08:00-13:00)
     Burn:    ▁▂▃▄▅▆▇█▇▆▅▄▃▂▁ 14.0M tok
 
@@ -1985,7 +1988,7 @@ def format_output_full(ctx, terminal_width=None):
     """
     lines = []
 
-    # Line 1: Model/Git/Dir/Messages (with dynamic length adjustment)
+    # Line 1: Dir/Git/Messages (with dynamic length adjustment)
     # Or schedule display if --schedule is enabled (time-based swap)
     if ctx['show_line1']:
         if terminal_width is None:
@@ -2007,9 +2010,9 @@ def format_output_full(ctx, terminal_width=None):
         if show_schedule_now and schedule_line:
             lines.append(schedule_line)
         else:
-            # Normal Line 1: Model/Git/Dir/Messages
+            # Normal Line 1: Dir/Git/Messages（モデルは Line 2 の末尾）
             # Step 1: 全要素で構築
-            line1_parts = build_line1_parts(ctx)
+            line1_parts = build_line1_parts(ctx, include_model=False, max_branch_len=None)
             line1 = " | ".join(line1_parts)
 
             if get_display_width(line1) <= terminal_width:
@@ -2017,7 +2020,8 @@ def format_output_full(ctx, terminal_width=None):
             else:
                 # Step 2: 低優先度要素を削除（コスト、行変更、エラー）
                 line1_parts = build_line1_parts(ctx, include_lines=False,
-                                                include_errors=False)
+                                                include_errors=False, include_model=False,
+                                                max_branch_len=None)
                 line1 = " | ".join(line1_parts)
 
                 if get_display_width(line1) <= terminal_width:
@@ -2025,7 +2029,8 @@ def format_output_full(ctx, terminal_width=None):
                 else:
                     # Step 3: アクティブファイルも削除
                     line1_parts = build_line1_parts(ctx, include_lines=False,
-                                                    include_errors=False, include_active_files=False)
+                                                    include_errors=False, include_active_files=False,
+                                                    include_model=False, max_branch_len=None)
                     line1 = " | ".join(line1_parts)
 
                     if get_display_width(line1) <= terminal_width:
@@ -2034,7 +2039,7 @@ def format_output_full(ctx, terminal_width=None):
                         # Step 4: ディレクトリ名を短縮
                         line1_parts = build_line1_parts(ctx, include_lines=False,
                                                         include_errors=False, include_active_files=False,
-                                                        max_dir_len=12)
+                                                        max_dir_len=12, include_model=False)
                         line1 = " | ".join(line1_parts)
 
                         if get_display_width(line1) <= terminal_width:
@@ -2043,7 +2048,7 @@ def format_output_full(ctx, terminal_width=None):
                             # Step 5: ブランチ名をさらに短縮
                             line1_parts = build_line1_parts(ctx, include_lines=False,
                                                             include_errors=False, include_active_files=False,
-                                                            max_branch_len=12, max_dir_len=12)
+                                                            max_branch_len=12, max_dir_len=12, include_model=False)
                             line1 = " | ".join(line1_parts)
 
                             if get_display_width(line1) <= terminal_width:
@@ -2053,7 +2058,7 @@ def format_output_full(ctx, terminal_width=None):
                                 line1_parts = build_line1_parts(ctx, include_lines=False,
                                                                 include_errors=False, include_active_files=False,
                                                                 include_messages=False,
-                                                                max_branch_len=10, max_dir_len=10)
+                                                                max_branch_len=10, max_dir_len=10, include_model=False)
                                 lines.append(" | ".join(line1_parts))
 
     # Line 2: Compact tokens
@@ -2072,12 +2077,15 @@ def format_output_full(ctx, terminal_width=None):
             percentage_display = f"{percentage_color}{Colors.BOLD}[{percentage}%]{Colors.RESET}"
 
         line2_parts.append(compact_label)
-        line2_parts.append(get_progress_bar(percentage, width=20))
+        line2_parts.append(get_progress_bar(percentage, width=10))
         line2_parts.append(percentage_display)
         line2_parts.append(f"{Colors.BRIGHT_WHITE}{compact_display}/{format_token_count(ctx['compaction_threshold'])}{Colors.RESET}")
 
         if ctx['cache_ratio'] >= 50:
             line2_parts.append(f"{Colors.TEAL}{ICON_REFRESH} {int(ctx['cache_ratio'])}% cached{Colors.RESET}")
+
+        model_name = shorten_model_name(ctx['model'])
+        line2_parts.append(f"| {Colors.LAVENDER}[{model_name}{build_model_badge(ctx)}]{Colors.RESET}")
 
         # Session ID (先頭8桁)
         # cmd+r のセッション一覧・~/.claude/projects/**/<id>.jsonl と突き合わせるための識別子
