@@ -18,7 +18,7 @@ argument-hint: "[ためる|決める|判定] [アイデアやアプリ名]"
 
 アイデアが出たら、その場で評価しない。
 
-- 当日の daily（`~/Documents/notes/010_Daily/YYYY-MM-DD.md`）の `# △ log` に `#ネタ` で1行書く。書式は daily-log ルールに従う
+- 当日のログ（`~/Documents/notes/015_Logs/YYYY-MM-DD.md`）に `#ネタ` で1行書く。書式は daily-log ルールに従う
 - 競合調査や市場の評価はしない。「ニッチ」「競合がいる」などのコメントも付けない
 - 「探さなきゃ」と促さない。普段の生活で「面倒だな」と思ったことを書きためれば十分と伝える
 
@@ -27,7 +27,7 @@ argument-hint: "[ためる|決める|判定] [アイデアやアプリ名]"
 ### 候補を集める
 
 ```bash
-grep -rh "#ネタ" ~/Documents/notes/010_Daily/ | sort | uniq
+grep -rh "#ネタ" ~/Documents/notes/015_Logs/ | sort | uniq
 ```
 
 アプリになりそうなものを拾い、ユーザーと一緒に候補を数個に絞る。
