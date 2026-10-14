@@ -13,9 +13,9 @@
  * 切り替えは、カーソルが別の pane に移ったことで見分ける（シェーダーには前の pane の位置が
  * わからないので、暗くなる側はすぐ切り替わる）。
  *
- * アクティブな pane の位置は、tmux がステータスバー右端の3マスの色にして渡す
+ * アクティブな pane の位置は、tmux がステータスバー右端の4マスの色にして渡す
  * （~/.config/tmux/scripts/pane-marker.sh）。目印の値が読めないときは何もしない。
- * 3マスは周りの色で塗りつぶして見えなくする。余白も塗り直す（mainImage の中のコメントを参照）。
+ * 4マスは周りの色で塗りつぶして見えなくする。余白も塗り直す（mainImage の中のコメントを参照）。
  *
  * 前提:
  *   - ステータスバーは上（status-position top）
@@ -65,15 +65,17 @@ vec3 readBytes(vec2 topLeftPx) {
     return floor(c * 255.0 + 0.5);
 }
 
-// 目印の3マスを読む。読めたら true
-bool readMarker(out vec3 m1, out vec3 m2, out vec3 m3, out float padX) {
+// 目印の4マスを読む。読めたら true
+// 横方向の値（列数・pane の左・pane の幅）は 255 を超えるので、上位と下位の2つから組み立てる
+bool readMarker(out vec3 m1, out vec3 m2, out vec3 m3, out vec3 m4, out float padX) {
     m1 = readBytes(vec2(iResolution.x - 0.5, 0.5));
-    float cw = m1.r, cols = m1.b;
+    float cw = m1.r, cols = m1.g * 256.0 + m1.b;
     padX = floor((iResolution.x - cols * cw) * 0.5);
     float rightEdge = iResolution.x - padX;
     m2 = readBytes(vec2(rightEdge - 1.5 * cw, 0.5));
     m3 = readBytes(vec2(rightEdge - 2.5 * cw, 0.5));
-    return cw >= 4.0 && m1.g >= 4.0 && cols >= 3.0 && padX >= 0.0 && abs(m3.b - MAGIC) < 2.5;
+    m4 = readBytes(vec2(rightEdge - 3.5 * cw, 0.5));
+    return cw >= 4.0 && m2.r >= 4.0 && cols >= 4.0 && padX >= 0.0 && abs(m4.b - MAGIC) < 2.5;
 }
 
 // 3x3 のぼかし
@@ -120,15 +122,15 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     fragColor = texture(iChannel0, uv);
 
     // 1マス目は右上の角の余白から読む（余白はそのマスの色に塗られている）
-    // 2マス目・3マス目は、右端から 1.5 マス・2.5 マス左の、いちばん上の余白から読む
-    vec3 m1, m2, m3;
+    // 2〜4マス目は、右端から 1.5〜3.5 マス左の、いちばん上の余白から読む
+    vec3 m1, m2, m3, m4;
     float padX;
-    if (!readMarker(m1, m2, m3, padX)) {
+    if (!readMarker(m1, m2, m3, m4, padX)) {
         return;
     }
-    float cw = m1.r, ch = m1.g, cols = m1.b;
+    float cw = m1.r, ch = m2.r, cols = m1.g * 256.0 + m1.b;
     float rightEdge = iResolution.x - padX;
-    float rows = m2.r;
+    float rows = m2.g;
     float padY = findPadTop(rightEdge - 0.5 * cw, ch);
 
     // このピクセルが何列目・何行目のマスか（左上が 0, 0）
@@ -142,23 +144,23 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     //   - 上の余白: 背景の色にする（タブの色が伸びないように）。背景の色は目印の左隣（時計の後ろの空白）から取る
     //   - 左右と下の余白: 一番端の 1 ピクセルをそのまま伸ばし、線を画面の端まで届かせる
     bool inPadding = any(lessThan(px, gridMin)) || any(greaterThanEqual(px, gridMax));
-    vec2 background = vec2(rightEdge - 3.5 * cw, padY + 0.5 * ch);
+    vec2 background = vec2(rightEdge - 4.5 * cw, padY + 0.5 * ch);
     vec2 onGrid = clamp(px, gridMin, gridMax - 0.5);
     if (inPadding) {
         vec2 from = px.y < gridMin.y ? background : onGrid;
         fragColor = texture(iChannel0, from / iResolution.xy);
     }
 
-    // ステータスバーの行: 目印の3マスを、左隣のマスの色で塗りつぶす
+    // ステータスバーの行: 目印の4マスを、左隣のマスの色で塗りつぶす
     if (cell.y < 1.0) {
-        if (!inPadding && px.x >= rightEdge - 3.0 * cw) {
+        if (!inPadding && px.x >= rightEdge - 4.0 * cw) {
             fragColor = texture(iChannel0, vec2(background.x, px.y) / iResolution.xy);
         }
         return;
     }
 
     // アクティブな pane は、上の見出しの行と左右下の枠線まで含めて沈めない
-    float left = m2.g, top = m2.b, width = m3.r, height = m3.g;
+    float left = m3.r * 256.0 + m3.g, top = m2.b, width = m4.r * 256.0 + m4.g, height = m3.b;
     vec2 activeMin = gridMin + vec2(left - 1.0, top - 1.0) * vec2(cw, ch);
     vec2 activeMax = gridMin + vec2(left + width + 1.0, top + height + 1.0) * vec2(cw, ch);
 
