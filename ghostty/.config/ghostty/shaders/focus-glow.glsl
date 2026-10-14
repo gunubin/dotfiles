@@ -13,7 +13,7 @@
  */
 
 // ========== 設定 ==========
-const float RECEDE = 0.03;           // 奥に下がるときに縮む割合
+const float RECEDE = 0.00;           // 奥に下がるときに縮む割合
 const float BLUR = 1.5;              // ぼかしの半径（px）
 const float DIM = 0.25;              // 画面全体を暗くする割合
 const float EDGE_DIM = 0.4;          // 縁でさらに暗くする割合
@@ -24,7 +24,7 @@ const float GRAIN_FPS = 0.0;         // 粒が動く速さ（コマ/秒）。0 �
 const float SCANLINE = 0.3;          // 走査線で暗くする割合
 const float SCANLINE_PITCH = 6.0;    // 走査線の間隔（px。Retina では表示上の半分になる）
 const float SCANLINE_WIDTH = 2.0;    // 走査線の太さ（px）
-const float CURVE = 0.08;            // ブラウン管の膨らみ
+const float CURVE = 0.12;            // ブラウン管の膨らみ
 const float CORNER = 0.04;           // 角の丸み（画面の短辺に対する比）
 const float CHROMA = 2.0;            // 赤と青のずれ（px。画面の端ほど大きくずれる）
 const float FLICKER = 0.0;           // 明るさのちらつき（目にうるさいので止めている。戻すなら 0.03 前後）
