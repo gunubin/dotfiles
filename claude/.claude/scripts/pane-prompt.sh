@@ -1,7 +1,9 @@
 #!/bin/bash
 # pane-prompt.sh - Read last prompt text for tmux pane-border-format
-# Usage: pane-prompt.sh %76
+# Usage: pane-prompt.sh %76 [fallback]
+#   プロンプトがなければ fallback（tmux からはディレクトリ名を渡す）を出す
 PANE_ID="$1"
+FALLBACK="$2"
 [ -z "$PANE_ID" ] && exit 0
 
 STATE_FILE="$HOME/.claude/pane-state.json"
@@ -10,9 +12,7 @@ if [ -f "$STATE_FILE" ]; then
     TEXT=$(jq -r --arg id "$PANE_ID" '.[$id].prompt // ""' "$STATE_FILE" 2>/dev/null | tr '\n' ' ' | sed 's/  */ /g; s/^ //; s/ $//')
 fi
 
-if [ -n "$TEXT" ]; then
-    if [ ${#TEXT} -gt 30 ]; then
-        TEXT="${TEXT:0:30}…"
-    fi
-    echo " $TEXT "
+if [ ${#TEXT} -gt 30 ]; then
+    TEXT="${TEXT:0:30}…"
 fi
+echo "${TEXT:-$FALLBACK}"
