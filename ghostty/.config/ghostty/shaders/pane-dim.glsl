@@ -15,12 +15,20 @@
  *   - popup の外側を、pane のときより強くぼかして暗くする（モーダルの背景のように）
  *   - popup の下に影を落とし、縁をタブの色でうっすら光らせる
  *   - 開いた直後は POPUP_FADE 秒かけて背景が沈む
+ *
+ * そのほかの演出:
+ *   - コピーモード中は、アクティブな pane の内側の縁をラベンダー色でうっすら光らせる
+ *   - ズーム中は、画面の外周を黄色でうっすら光らせ続ける
+ *   - アクティブな pane で直前のコマンドが失敗したら、その pane の内側の縁を赤く光らせる
+ *   - どこかの Claude が処理中なら、画面の右上で Claude のキャラ（起動画面のロゴ）が動く。
+ *     足踏み・左右に歩く・跳ねる・きょろきょろ・手を振る、を MASCOT_ACTION 秒ごとに入れ替える
+ *   - prefix を押してから次のキーまでの間、画面の外周をタブの色で光らせる
  * 切り替えは、カーソルが別の pane に移ったことで見分ける（シェーダーには前の pane の位置が
  * わからないので、暗くなる側はすぐ切り替わる）。
  *
- * アクティブな pane と popup の位置は、tmux がステータスバー右端の11マスの色にして渡す
+ * アクティブな pane と popup の位置などは、tmux がステータスバー右端の12マスの色にして渡す
  * （~/.config/tmux/scripts/pane-marker.sh。値の入れ方もそちらに書いている）。
- * 目印の値が読めないときは何もしない。11マスは周りの色で塗りつぶして見えなくする。余白も塗り直す（mainImage の中のコメントを参照）。
+ * 目印の値が読めないときは何もしない。12マスは周りの色で塗りつぶして見えなくする。余白も塗り直す（mainImage の中のコメントを参照）。
  *
  * 前提:
  *   - ステータスバーは上（status-position top）
@@ -46,7 +54,27 @@ const float POPUP_SHADOW_OFFSET = 12.0;    // popup の影を下にずらす量�
 const float POPUP_GLOW = 0.35;             // popup の縁の光の強さ
 const float POPUP_GLOW_WIDTH = 16.0;       // popup の縁の光が広がる幅（px）
 const float POPUP_FADE = 0.2;              // popup を開いてから背景が沈みきるまでの秒数
-const float MARKER_CELLS = 11.0;           // pane-marker.sh が出す目印のマスの数
+const vec3 COPY_COLOR = vec3(0.71, 0.75, 1.0); // コピーモード中の縁の光の色（catppuccin Mocha の lavender）
+const float COPY_GLOW = 0.35;              // コピーモード中の縁の光の強さ
+const float COPY_WIDTH = 28.0;             // コピーモードの光が pane の縁から内側へ広がる幅（px）
+const vec3 ZOOM_COLOR = vec3(0.98, 0.89, 0.69); // ズーム中の外周の光の色（catppuccin Mocha の yellow）
+const float ZOOM_GLOW = 0.25;              // ズーム中の外周の光の強さ
+const vec3 FAILED_COLOR = vec3(0.95, 0.55, 0.66); // コマンド失敗の縁の光の色（catppuccin Mocha の red）
+const float FAILED_GLOW = 0.4;             // コマンド失敗の縁の光の強さ
+const vec3 MASCOT_COLOR = vec3(0.85, 0.47, 0.34); // Claude のキャラの色（Claude のオレンジ）
+const vec2 MASCOT_PIXEL = vec2(8.0, 12.0); // キャラのドット1つの大きさ（px）。端末の半角ブロックに合わせて縦長
+const float MASCOT_MARGIN = 24.0;          // キャラと画面の右端・ステータスバーとの間（px）
+const float MASCOT_STEP = 0.25;            // 足を踏みかえる間隔（秒）
+const float MASCOT_ACTION = 5.0;           // 動きを入れ替える間隔（秒）
+const float MASCOT_WALK = 160.0;           // 左右に歩くときに進む距離（px）
+const float MASCOT_JUMP = 24.0;            // 跳ねる高さ（px）
+const float MASCOT_HOP = 0.6;              // 1回跳ねる長さ（秒）
+const float MASCOT_WAVE = 0.3;             // 手を上げ下げする間隔（秒）
+const float MASCOT_BLINK_EVERY = 3.2;      // まばたきの間隔（秒）
+const float MASCOT_BLINK = 0.15;           // 目を閉じている長さ（秒）
+const float PREFIX_GLOW = 0.5;             // prefix を押したときの外周の光の強さ
+const float PREFIX_WIDTH = 24.0;           // prefix の光が外周から広がる幅（px）
+const float MARKER_CELLS = 12.0;           // pane-marker.sh が出す目印のマスの数
 const float MAGIC = 2730.0;                // pane-marker.sh の目印の値
 // ==========================
 
@@ -117,6 +145,86 @@ float findMarkerEnd(vec2 start, vec2 end) {
 // 長方形までの距離（px）。内側は 0
 float rectDistance(vec2 p, vec2 rectMin, vec2 rectMax) {
     return length(max(max(rectMin - p, p - rectMax), 0.0));
+}
+
+// 長方形の枠からの距離（内側も外側も正の値）
+float edgeDistance(vec2 p, vec2 rectMin, vec2 rectMax) {
+    float outside = rectDistance(p, rectMin, rectMax);
+    if (outside > 0.0) {
+        return outside;
+    }
+    vec2 toMin = p - rectMin;
+    vec2 toMax = rectMax - p;
+    return min(min(toMin.x, toMax.x), min(toMin.y, toMax.y));
+}
+
+// Claude のキャラのドット絵（Claude Code の起動画面のロゴ ▐▛███▜▌ を半角ブロック単位で並べたもの）。
+// 横 18 ドット × 縦 5 ドット。各行のビット i が左から i 番目のドット
+const uint MASCOT_ROW0 = 0x7ff8u;        // ...############...
+const uint MASCOT_EYES = 0x6fd8u;        // ...##.######.##...（目は穴）
+const uint MASCOT_EYES_LEFT = 0x77e8u;   // ...#.######.###...（左を見る）
+const uint MASCOT_EYES_RIGHT = 0x5fb8u;  // ...###.######.#...（右を見る）
+const uint MASCOT_ROW2 = 0x1fffeu;       // .################.（両腕）
+const uint MASCOT_ROW3 = 0x7ff8u;        // ...############...
+const uint MASCOT_LEGS_A = 0x2850u;      // ....#.#....#.#....
+const uint MASCOT_LEGS_B = 0x5028u;      // ...#.#......#.#...
+const uint MASCOT_LEGS_JUMP = 0x3030u;   // ....##......##....（跳んでいる間は足を縮める）
+const uint MASCOT_ROW0_HAND = 0x37ff8u;  // ...############.##（右手を高く上げる）
+const uint MASCOT_ROW1_ARM = 0x3efd8u;   // ...##.######.#####（右腕を上げる）
+const uint MASCOT_ROW2_WAVE = 0x7ffeu;   // .##############...（上げた右腕の元の位置が空く）
+
+float hash1(float n) {
+    return fract(sin(n * 12.9898) * 43758.5453);
+}
+
+// p がキャラのドットの上なら true。origin は足踏みしているときのキャラの左上
+bool mascotAt(vec2 p, vec2 origin) {
+    // 動きの種類。0: 足踏み / 1: 左右に歩く / 2: 跳ねる / 3: きょろきょろ / 4: 手を振る
+    float segment = floor(iTime / MASCOT_ACTION);
+    int action = int(hash1(segment) * 5.0);
+    float t = iTime - segment * MASCOT_ACTION;
+    bool stepB = mod(floor(iTime / MASCOT_STEP), 2.0) >= 1.0;
+    bool blinking = mod(iTime, MASCOT_BLINK_EVERY) < MASCOT_BLINK;
+
+    uint row0 = MASCOT_ROW0;
+    uint row1 = blinking ? MASCOT_ROW0 : MASCOT_EYES;
+    uint row2 = MASCOT_ROW2;
+    uint legs = stepB ? MASCOT_LEGS_B : MASCOT_LEGS_A;
+
+    if (action == 1) {
+        // 左へ歩いて戻ってくる
+        origin.x -= MASCOT_WALK * (0.5 - 0.5 * cos(6.2831853 * t / MASCOT_ACTION));
+    } else if (action == 2) {
+        float hop = abs(sin(3.1415927 * t / MASCOT_HOP));
+        origin.y -= MASCOT_JUMP * hop;
+        legs = hop > 0.2 ? MASCOT_LEGS_JUMP : MASCOT_LEGS_A;
+    } else if (action == 3) {
+        // 左を見る → 右を見る → 前を見る を繰り返す。足は止める
+        float look = mod(t, 2.4);
+        if (!blinking) {
+            row1 = look < 0.8 ? MASCOT_EYES_LEFT : (look < 1.6 ? MASCOT_EYES_RIGHT : MASCOT_EYES);
+        }
+        legs = MASCOT_LEGS_A;
+    } else if (action == 4) {
+        // 右手を振る。足は止める
+        bool high = mod(floor(t / MASCOT_WAVE), 2.0) >= 1.0;
+        row0 = high ? MASCOT_ROW0_HAND : MASCOT_ROW0;
+        if (!blinking) {
+            row1 = MASCOT_ROW1_ARM;
+        } else {
+            row1 = MASCOT_ROW0 | (MASCOT_ROW1_ARM & ~MASCOT_EYES);
+        }
+        row2 = MASCOT_ROW2_WAVE;
+        legs = MASCOT_LEGS_A;
+    }
+
+    vec2 spot = floor((p - origin) / MASCOT_PIXEL);
+    if (spot.x < 0.0 || spot.x >= 18.0 || spot.y < 0.0 || spot.y >= 5.0) {
+        return false;
+    }
+    int y = int(spot.y);
+    uint row = y == 0 ? row0 : (y == 1 ? row1 : (y == 2 ? row2 : (y == 3 ? MASCOT_ROW3 : legs)));
+    return ((row >> uint(spot.x)) & 1u) == 1u;
 }
 
 // 長方形の内側なら true
@@ -235,6 +343,13 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     float popupW = readValue(vec2(rightEdge - 8.5 * cw, 0.5));
     float popupH = readValue(vec2(rightEdge - 9.5 * cw, 0.5));
     vec3 glowColor = texture(iChannel0, vec2(rightEdge - 10.5 * cw, 0.5) / iResolution.xy).rgb;
+    // 12マス目は prefix・コピーモード・ズーム
+    float flags = readValue(vec2(rightEdge - 11.5 * cw, 0.5));
+    bool prefix = mod(flags, 2.0) >= 1.0;
+    bool copyMode = mod(floor(flags / 2.0), 2.0) >= 1.0;
+    bool zoomed = mod(floor(flags / 4.0), 2.0) >= 1.0;
+    bool failed = mod(floor(flags / 8.0), 2.0) >= 1.0;
+    bool claudeWorking = mod(floor(flags / 16.0), 2.0) >= 1.0;
 
     // このピクセルが何列目・何行目のマスか（左上が 0, 0）
     vec2 px = fragCoord;
@@ -261,9 +376,46 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         fragColor = texture(iChannel0, vec2(background.x, px.y) / iResolution.xy);
     }
 
+    vec2 cellSize = vec2(cw, ch);
     if (popupW > 0.0) {
-        applyPopup(fragColor, uv, px, inPadding || statusRow, gridMin, vec2(cw, ch), cols, rows, popupW, popupH, glowColor);
-    } else if (!statusRow) {
-        applyPanes(fragColor, uv, px, inPadding, onGrid, gridMin, vec2(cw, ch), left, top, width, height);
+        applyPopup(fragColor, uv, px, inPadding || statusRow, gridMin, cellSize, cols, rows, popupW, popupH, glowColor);
+    } else {
+        if (!statusRow) {
+            applyPanes(fragColor, uv, px, inPadding, onGrid, gridMin, cellSize, left, top, width, height);
+
+            // コピーモード中は、アクティブな pane の内側の縁をラベンダー色でうっすら光らせる
+            vec2 copyMin = gridMin + vec2(left, top) * cellSize;
+            vec2 copyMax = gridMin + vec2(left + width, top + height) * cellSize;
+            if (copyMode && insideRect(onGrid, copyMin, copyMax)) {
+                float dist = edgeDistance(onGrid, copyMin, copyMax);
+                fragColor.rgb += COPY_COLOR * COPY_GLOW * exp(-dist / COPY_WIDTH);
+            }
+
+            // 直前のコマンドが失敗したら、アクティブな pane の内側の縁を赤く光らせる
+            if (failed && insideRect(onGrid, copyMin, copyMax)) {
+                float dist = edgeDistance(onGrid, copyMin, copyMax);
+                fragColor.rgb += FAILED_COLOR * FAILED_GLOW * exp(-dist / COPY_WIDTH);
+            }
+        }
+
+        // ズーム中は、画面の外周を黄色でうっすら光らせ続ける
+        if (zoomed) {
+            vec2 fromEdge = min(px, iResolution.xy - px);
+            fragColor.rgb += ZOOM_COLOR * ZOOM_GLOW * exp(-min(fromEdge.x, fromEdge.y) / PREFIX_WIDTH);
+        }
+    }
+
+    // どこかの Claude が処理中なら、画面の右上（ステータスバーのすぐ下）でキャラが動く
+    if (claudeWorking) {
+        vec2 mascotOrigin = vec2(gridMax.x - MASCOT_MARGIN - 18.0 * MASCOT_PIXEL.x, gridMin.y + ch + MASCOT_MARGIN * 0.5 + MASCOT_JUMP);
+        if (mascotAt(px, mascotOrigin)) {
+            fragColor.rgb = MASCOT_COLOR;
+        }
+    }
+
+    // prefix を押している間は、画面の外周を光らせる
+    if (prefix) {
+        vec2 fromEdge = min(px, iResolution.xy - px);
+        fragColor.rgb += glowColor * PREFIX_GLOW * exp(-min(fromEdge.x, fromEdge.y) / PREFIX_WIDTH);
     }
 }

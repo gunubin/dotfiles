@@ -1,14 +1,17 @@
 #!/bin/sh
-# pane-marker.sh - アクティブな pane と popup の位置を、ステータスバー右端の11マスの色にして出す
+# pane-marker.sh - アクティブな pane と popup の位置などを、ステータスバー右端の12マスの色にして出す
 #   Ghostty のシェーダー（~/.config/ghostty/shaders/pane-dim.glsl）がこの色を読み、
 #   アクティブな pane や popup の外側に効果をかける。マスはシェーダーが周りの色で塗りつぶして隠す
 #
 # Usage: pane-marker.sh <セル幅px> <セル高さpx> <列数> <行数> <paneの左> <paneの上> <paneの幅> <paneの高さ> \
-#                       <popupの幅> <popupの高さ> <タブの色>
+#                       <popupの幅> <popupの高さ> <タブの色> <prefix> <コピーモード> <ズーム> <コマンド失敗>
 #   paneの左・上は画面の左上を0としたマス目（ステータスバーの行も含める）
 #   popupの幅・高さは枠を含めたマス数。popup が開いていなければ空か 0。位置は画面の中央なので渡さない
 #   空のときは、fzf の --tmux などが開いた popup を探す（tmux display-popup のプロセスの -w・-h を読む）
 #   タブの色（#rrggbb）は popup の縁の光に使う。値ではなく色そのものとして1マスに塗る
+#   prefix・コピーモード・ズームは 0 か 1（client_prefix・pane_in_mode・window_zoomed_flag）
+#   コマンド失敗は、アクティブな pane の @cmd_failed（fish の conf.d/tmux_cmd_failed.fish が付ける）。1 か空
+#   どこかの Claude が処理中かどうかは、~/.claude/pane-state.json から調べる
 #
 # 色は Ghostty の中で Display P3 に変換されて 8 ビットに丸められるため、シェーダーが読むと
 # 各チャンネルが 3 前後ずれる。そこで 1 チャンネルには 16 段階（4 ビット）だけを、
@@ -17,9 +20,17 @@
 #   2マス目: 列数 / 3マス目: 行数 / 4マス目: paneの左 / 5マス目: paneの上
 #   6マス目: paneの幅 / 7マス目: paneの高さ / 8マス目: 目印（2730）
 #   9マス目: popupの幅 / 10マス目: popupの高さ / 11マス目: タブの色
-# 右端から 1マス目・2マス目…の順に並ぶよう、11→1 の順で出す
+#   12マス目: prefix + コピーモード * 2 + ズーム * 4 + コマンド失敗 * 8 + Claude が処理中 * 16
+# 右端から 1マス目・2マス目…の順に並ぶよう、12→1 の順で出す
 
-[ $# -eq 11 ] || exit 0
+[ $# -eq 15 ] || exit 0
+flags=$(( ${12:-0} == 1 ? 1 : 0 ))
+[ "${13:-0}" = 1 ] && flags=$((flags + 2))
+[ "${14:-0}" = 1 ] && flags=$((flags + 4))
+[ "${15}" = 1 ] && flags=$((flags + 8))
+if jq -e 'any(.[]; .status == "working")' "$HOME/.claude/pane-state.json" >/dev/null 2>&1; then
+    flags=$((flags + 16))
+fi
 color="${11}"
 case "$color" in '#'[0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F][0-9a-fA-F]) ;; *) exit 0 ;; esac
 popup_w="${9:-0}"
@@ -61,6 +72,7 @@ cell() {
         $((($1 >> 8 & 15) * 16 + 8)) $((($1 >> 4 & 15) * 16 + 8)) $((($1 & 15) * 16 + 8))
 }
 
+cell "$flags"
 printf '#[bg=%s] ' "$color"
 cell "${10}"
 cell "$9"
