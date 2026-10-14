@@ -30,6 +30,8 @@ macos-non-native-fullscreen = true
 macos-titlebar-style = hidden
 
 window-padding-balance = true
+# 余白を端のマスの色で塗る。pane-dim.glsl が右上の角の余白から tmux の目印の色を読むのに使う（読んだあと余白は背景の色に戻す）
+window-padding-color = extend-always
 window-position-x = 0
 window-position-y = 0
 window-save-state = always
@@ -88,6 +90,8 @@ custom-shader = ~/.config/ghostty/shaders/typing-glow.glsl
 # custom-shader = ~/.config/ghostty/shaders/ripple.glsl  # 波紋（パステルの輪）
 # custom-shader = ~/.config/ghostty/shaders/sakura.glsl  # 桜吹雪
 custom-shader = ~/.config/ghostty/shaders/sparkle.glsl
+# tmux のアクティブでない pane に薄い色を重ねる（tmux のステータスバー右端の3マスから pane の位置を読む）
+custom-shader = ~/.config/ghostty/shaders/pane-dim.glsl
 # ウィンドウが非アクティブになると、画面を奥へ下げ、ぼかして暗く沈める（ブラウン管風）
 custom-shader = ~/.config/ghostty/shaders/focus-glow.glsl
 
