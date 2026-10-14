@@ -9,7 +9,10 @@ const TOOL = 'mcp__human-review-pane__show'
 const view = atom({ plugin: 'human-review-pane', key: 'view' } as const, null as ReviewView | null)
 const isBandHidden = atom({ plugin: 'human-review-pane', key: 'isBandHidden' } as const, false)
 const diffMode = atom({ plugin: 'human-review-pane', key: 'diffMode' } as const, 'unified' as DiffMode)
+const isDoneArmed = atom({ plugin: 'human-review-pane', key: 'isDoneArmed' } as const, false)
 const DIFF_MODE_STORE_KEY = 'diffMode'
+// done は1回目で確認待ちにし、この時間内にもう一度押されたときだけ送る
+const DONE_CONFIRM_MS = 4000
 // split は左右それぞれにコードが収まる幅がないと読めないので、狭いときは unified で描く
 const SPLIT_MIN_COLUMNS = 100
 
@@ -249,6 +252,7 @@ export const register: Register = on => {
     const previous = await read($, view)
     await update($, view, () => incoming)
     await update($, isBandHidden, () => false)
+    await update($, isDoneArmed, () => false)
     await $.ui.open({ id: PANE, title: TITLE })
     // チャンクや段階が変わったときだけ先頭に戻す（c でコメントを足しただけなら読んでいた位置を保つ）
     if (previous?.current !== incoming.current || previous?.phase !== incoming.phase) {
@@ -296,6 +300,8 @@ export const register: Register = on => {
 
     const { Box, Button, Text } = $.ui.resolve(e)
     const mode = await read($, diffMode)
+    const isArmed = await read($, isDoneArmed)
+    const isNavigable = current.phase === 'map' || current.phase === 'chunk'
     const total = current.chunks.length
     const done = current.chunks.filter(chunk => chunk.status === 'done').length
     const filled = total === 0 ? 0 : Math.round((done / total) * Math.min(total, BAR_WIDTH))
@@ -321,20 +327,66 @@ export const register: Register = on => {
             </Text>
           )}
         </Text>
-        <Box>
+        {/* Fragment で束ねると縦に積まれるため、ボタンは1つずつ条件を付けて横に並べる */}
+        {/* 打ったときと同じく送るので、返答中に押した分は返答が終わってから届く */}
+        <Box flexDirection="row" gap={1}>
+          {isNavigable && (
+            <Button
+              key="next"
+              label="next ▶"
+              hotkey="n"
+              variant="primary"
+              onPress={async () => {
+                await update($, isDoneArmed, () => false)
+                void $.prompt.submit({ text: 'next', asUser: true })
+              }}
+            />
+          )}
+          {isNavigable && current.current > 0 && (
+            <Button
+              key="back"
+              label="◀ back"
+              hotkey="b"
+              onPress={async () => {
+                await update($, isDoneArmed, () => false)
+                void $.prompt.submit({ text: 'back', asUser: true })
+              }}
+            />
+          )}
+          {/* done は next / back から離して押し間違いを減らす */}
+          {isNavigable && <Text dimColor>│</Text>}
+          {isNavigable && (
+            <Button
+              key="done"
+              label={isArmed ? '⚠ もう一度で終了' : '■ done'}
+              hotkey="d"
+              dimColor={!isArmed}
+              onPress={async () => {
+                if (await read($, isDoneArmed)) {
+                  await update($, isDoneArmed, () => false)
+                  void $.prompt.submit({ text: 'done', asUser: true })
+                  return
+                }
+                await update($, isDoneArmed, () => true)
+                $.clock.after(DONE_CONFIRM_MS, () => void update($, isDoneArmed, () => false))
+              }}
+            />
+          )}
+          {isNavigable && <Text dimColor>│</Text>}
           <Button
             key="diff-mode"
             label={mode === 'split' ? '⇆ split' : '☰ unified'}
             onPress={async () => {
+              await update($, isDoneArmed, () => false)
               const toggled: DiffMode = mode === 'split' ? 'unified' : 'split'
               await update($, diffMode, () => toggled)
               await $.store.set(DIFF_MODE_STORE_KEY, toggled)
             }}
           />
-          <Text dimColor wrap="truncate-end">
-            {'  '}n:次へ  b:戻る  skip N:ジャンプ  c 内容:コメント  map:一覧  comments:コメント一覧  done:終了
-          </Text>
         </Box>
+        <Text dimColor wrap="truncate-end">
+          skip N:ジャンプ  c 内容:コメント  map:一覧  comments:コメント一覧
+        </Text>
       </Box>
     )
   })

@@ -23,6 +23,6 @@ export type ReviewView = {
 
 declare module 'claude-code' {
   interface PluginState {
-    'human-review-pane': { view: ReviewView | null; isBandHidden: boolean; diffMode: DiffMode }
+    'human-review-pane': { view: ReviewView | null; isBandHidden: boolean; isDoneArmed: boolean; diffMode: DiffMode }
   }
 }
