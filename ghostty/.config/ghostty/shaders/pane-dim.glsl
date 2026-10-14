@@ -20,15 +20,19 @@
  *   - コピーモード中は、アクティブな pane の内側の縁をラベンダー色でうっすら光らせる
  *   - ズーム中は、画面の外周を黄色でうっすら光らせ続ける
  *   - アクティブな pane で直前のコマンドが失敗したら、その pane の内側の縁を赤く光らせる
- *   - どこかの Claude が処理中なら、画面の右上で Claude のキャラ（起動画面のロゴ）が動く。
- *     足踏み・左右に歩く・跳ねる・きょろきょろ・手を振る、を MASCOT_ACTION 秒ごとに入れ替える
+ *   - Claude が処理中なら、アクティブな pane の左上で Claude のキャラ（起動画面のロゴ）が処理中の数だけ（最大3匹）動く。
+ *     足踏み・左右に歩く・跳ねる・きょろきょろ・手を振る、を MASCOT_ACTION 秒ごとに入れ替える。
+ *     キー入力などでカーソルが動いている間は、速く足踏みする（走る）
+ *   - 入力待ちの Claude がいると、キャラが跳ねて右隣に「！」を出す
+ *   - Claude が終わった直後は、キャラがバンザイして周りに紙吹雪が舞う
+ *   - git push が成功した直後は、画面の上のほうに花火が上がる（ロケットが上がって弾ける）
  *   - prefix を押してから次のキーまでの間、画面の外周をタブの色で光らせる
  * 切り替えは、カーソルが別の pane に移ったことで見分ける（シェーダーには前の pane の位置が
  * わからないので、暗くなる側はすぐ切り替わる）。
  *
- * アクティブな pane と popup の位置などは、tmux がステータスバー右端の12マスの色にして渡す
+ * アクティブな pane と popup の位置などは、tmux がステータスバー右端の13マスの色にして渡す
  * （~/.config/tmux/scripts/pane-marker.sh。値の入れ方もそちらに書いている）。
- * 目印の値が読めないときは何もしない。12マスは周りの色で塗りつぶして見えなくする。余白も塗り直す（mainImage の中のコメントを参照）。
+ * 目印の値が読めないときは何もしない。13マスは周りの色で塗りつぶして見えなくする。余白も塗り直す（mainImage の中のコメントを参照）。
  *
  * 前提:
  *   - ステータスバーは上（status-position top）
@@ -63,10 +67,10 @@ const vec3 FAILED_COLOR = vec3(0.95, 0.55, 0.66); // コマンド失敗の縁の
 const float FAILED_GLOW = 0.4;             // コマンド失敗の縁の光の強さ
 const vec3 MASCOT_COLOR = vec3(0.85, 0.47, 0.34); // Claude のキャラの色（Claude のオレンジ）
 const vec2 MASCOT_PIXEL = vec2(8.0, 12.0); // キャラのドット1つの大きさ（px）。端末の半角ブロックに合わせて縦長
-const float MASCOT_MARGIN = 24.0;          // キャラと画面の右端・ステータスバーとの間（px）
+const float MASCOT_MARGIN = 40.0;          // キャラと pane の左端・上端との間（px）。上下左右でそろえる
 const float MASCOT_STEP = 0.25;            // 足を踏みかえる間隔（秒）
 const float MASCOT_ACTION = 5.0;           // 動きを入れ替える間隔（秒）
-const float MASCOT_WALK = 160.0;           // 左右に歩くときに進む距離（px）
+const float MASCOT_WALK = 160.0;           // 歩くときに右へ進む距離（px）
 const float MASCOT_JUMP = 24.0;            // 跳ねる高さ（px）
 const float MASCOT_HOP = 0.6;              // 1回跳ねる長さ（秒）
 const float MASCOT_WAVE = 0.3;             // 手を上げ下げする間隔（秒）
@@ -74,7 +78,18 @@ const float MASCOT_BLINK_EVERY = 3.2;      // まばたきの間隔（秒）
 const float MASCOT_BLINK = 0.15;           // 目を閉じている長さ（秒）
 const float PREFIX_GLOW = 0.5;             // prefix を押したときの外周の光の強さ
 const float PREFIX_WIDTH = 24.0;           // prefix の光が外周から広がる幅（px）
-const float MARKER_CELLS = 12.0;           // pane-marker.sh が出す目印のマスの数
+const float MASCOT_GAP = 24.0;             // キャラを並べるときの間（px）
+const float MASCOT_RUN_STEP = 0.08;        // 走るときに足を踏みかえる間隔（秒）
+const float MASCOT_RUN_AFTER = 0.3;        // カーソルが動いてから、走り続ける秒数
+const vec3 MASCOT_ALERT = vec3(0.98, 0.89, 0.69); // 入力待ちの「！」の色（catppuccin Mocha の yellow）
+const float MASCOT_ALERT_COL = 19.0;       // 「！」を出す列（キャラの右端から1ドットあける）
+const float CONFETTI_HEIGHT = 360.0;       // 紙吹雪が舞う範囲の高さ（px）
+const float CONFETTI_SIZE = 6.0;           // 紙吹雪の1枚の大きさ（px）
+const float FIREWORK_PERIOD = 1.8;         // 花火が1つ上がって消えるまでの秒数
+const float FIREWORK_RISE = 0.22;          // そのうちロケットが上がっている割合
+const float FIREWORK_RADIUS = 320.0;       // 花火が広がる半径（px）
+const float FIREWORK_BRIGHT = 1.6;         // 火花の明るさ
+const float MARKER_CELLS = 13.0;           // pane-marker.sh が出す目印のマスの数
 const float MAGIC = 2730.0;                // pane-marker.sh の目印の値
 // ==========================
 
@@ -158,6 +173,11 @@ float edgeDistance(vec2 p, vec2 rectMin, vec2 rectMax) {
     return min(min(toMin.x, toMax.x), min(toMin.y, toMax.y));
 }
 
+// 長方形の内側なら true
+bool insideRect(vec2 p, vec2 rectMin, vec2 rectMax) {
+    return all(greaterThanEqual(p, rectMin)) && all(lessThan(p, rectMax));
+}
+
 // Claude のキャラのドット絵（Claude Code の起動画面のロゴ ▐▛███▜▌ を半角ブロック単位で並べたもの）。
 // 横 18 ドット × 縦 5 ドット。各行のビット i が左から i 番目のドット
 const uint MASCOT_ROW0 = 0x7ff8u;        // ...############...
@@ -172,19 +192,32 @@ const uint MASCOT_LEGS_JUMP = 0x3030u;   // ....##......##....（跳んでいる
 const uint MASCOT_ROW0_HAND = 0x37ff8u;  // ...############.##（右手を高く上げる）
 const uint MASCOT_ROW1_ARM = 0x3efd8u;   // ...##.######.#####（右腕を上げる）
 const uint MASCOT_ROW2_WAVE = 0x7ffeu;   // .##############...（上げた右腕の元の位置が空く）
+const uint MASCOT_BANZAI_ROW0 = 0x17ffau; // .#.############.#.（両手を上げる）
+const uint MASCOT_BANZAI_ROW1 = 0x16fdau; // .#.##.######.##.#.
+const uint MASCOT_ROW2_NOARMS = 0x7ff8u;  // ...############...（腕を上げたので横の腕がない）
 
 float hash1(float n) {
     return fract(sin(n * 12.9898) * 43758.5453);
 }
 
-// p がキャラのドットの上なら true。origin は足踏みしているときのキャラの左上
-bool mascotAt(vec2 p, vec2 origin) {
-    // 動きの種類。0: 足踏み / 1: 左右に歩く / 2: 跳ねる / 3: きょろきょろ / 4: 手を振る
-    float segment = floor(iTime / MASCOT_ACTION);
+// p がキャラのどこにあたるか。0: 何もない / 1: 体 / 2: 右隣の「！」。
+// origin は足踏みしているときのキャラの左上、time はキャラごとにずらした時刻
+int mascotAt(vec2 p, vec2 origin, float time, bool waiting, bool celebrating, bool running) {
+    // 動きの種類。0: 足踏み / 1: 左右に歩く / 2: 跳ねる / 3: きょろきょろ / 4: 手を振る / 5: バンザイ
+    float segment = floor(time / MASCOT_ACTION);
     int action = int(hash1(segment) * 5.0);
-    float t = iTime - segment * MASCOT_ACTION;
-    bool stepB = mod(floor(iTime / MASCOT_STEP), 2.0) >= 1.0;
-    bool blinking = mod(iTime, MASCOT_BLINK_EVERY) < MASCOT_BLINK;
+    float t = time - segment * MASCOT_ACTION;
+    float stepTime = MASCOT_STEP;
+    if (celebrating) {
+        action = 5;
+    } else if (waiting) {
+        action = 2;
+    } else if (running) {
+        action = 0;
+        stepTime = MASCOT_RUN_STEP;
+    }
+    bool stepB = mod(floor(time / stepTime), 2.0) >= 1.0;
+    bool blinking = mod(time, MASCOT_BLINK_EVERY) < MASCOT_BLINK;
 
     uint row0 = MASCOT_ROW0;
     uint row1 = blinking ? MASCOT_ROW0 : MASCOT_EYES;
@@ -192,10 +225,10 @@ bool mascotAt(vec2 p, vec2 origin) {
     uint legs = stepB ? MASCOT_LEGS_B : MASCOT_LEGS_A;
 
     if (action == 1) {
-        // 左へ歩いて戻ってくる
-        origin.x -= MASCOT_WALK * (0.5 - 0.5 * cos(6.2831853 * t / MASCOT_ACTION));
+        // 右へ歩いて戻ってくる（pane の左上にいるので、左へは行かない）
+        origin.x += MASCOT_WALK * (0.5 - 0.5 * cos(6.2831853 * t / MASCOT_ACTION));
     } else if (action == 2) {
-        float hop = abs(sin(3.1415927 * t / MASCOT_HOP));
+        float hop = abs(sin(3.1415927 * time / MASCOT_HOP));
         origin.y -= MASCOT_JUMP * hop;
         legs = hop > 0.2 ? MASCOT_LEGS_JUMP : MASCOT_LEGS_A;
     } else if (action == 3) {
@@ -209,28 +242,118 @@ bool mascotAt(vec2 p, vec2 origin) {
         // 右手を振る。足は止める
         bool high = mod(floor(t / MASCOT_WAVE), 2.0) >= 1.0;
         row0 = high ? MASCOT_ROW0_HAND : MASCOT_ROW0;
-        if (!blinking) {
-            row1 = MASCOT_ROW1_ARM;
-        } else {
-            row1 = MASCOT_ROW0 | (MASCOT_ROW1_ARM & ~MASCOT_EYES);
-        }
+        row1 = blinking ? (MASCOT_ROW0 | (MASCOT_ROW1_ARM & ~MASCOT_EYES)) : MASCOT_ROW1_ARM;
         row2 = MASCOT_ROW2_WAVE;
+        legs = MASCOT_LEGS_A;
+    } else if (action == 5) {
+        // バンザイしながら小さく跳ねる
+        float hop = abs(sin(3.1415927 * time / MASCOT_HOP));
+        origin.y -= MASCOT_JUMP * 0.5 * hop;
+        row0 = MASCOT_BANZAI_ROW0;
+        row1 = blinking ? MASCOT_BANZAI_ROW0 : MASCOT_BANZAI_ROW1;
+        row2 = MASCOT_ROW2_NOARMS;
         legs = MASCOT_LEGS_A;
     }
 
     vec2 spot = floor((p - origin) / MASCOT_PIXEL);
+    // 右隣の「！」（入力待ちのとき）。2 ドット幅で、体と同じ高さに棒が 3 ドット、1 ドットあけて点
+    if (waiting && spot.x >= MASCOT_ALERT_COL && spot.x <= MASCOT_ALERT_COL + 1.0
+        && spot.y >= 0.0 && spot.y <= 4.0 && spot.y != 3.0) {
+        return 2;
+    }
     if (spot.x < 0.0 || spot.x >= 18.0 || spot.y < 0.0 || spot.y >= 5.0) {
-        return false;
+        return 0;
     }
     int y = int(spot.y);
     uint row = y == 0 ? row0 : (y == 1 ? row1 : (y == 2 ? row2 : (y == 3 ? MASCOT_ROW3 : legs)));
-    return ((row >> uint(spot.x)) & 1u) == 1u;
+    return ((row >> uint(spot.x)) & 1u) == 1u ? 1 : 0;
 }
 
-// 長方形の内側なら true
-bool insideRect(vec2 p, vec2 rectMin, vec2 rectMax) {
-    return all(greaterThanEqual(p, rectMin)) && all(lessThan(p, rectMax));
+// 紙吹雪のパステル5色
+vec3 confettiColor(float h) {
+    int i = int(h * 5.0);
+    return i == 0 ? vec3(0.96, 0.76, 0.91) : (i == 1 ? vec3(0.98, 0.89, 0.69) : (i == 2 ? vec3(0.54, 0.86, 0.92)
+        : (i == 3 ? vec3(0.65, 0.89, 0.63) : vec3(0.80, 0.65, 0.97))));
 }
+
+// 紙吹雪。region の範囲を、列ごとに数枚ずつ揺れながら落ちる。当たった色と濃さ（0〜1）を返す
+vec4 confetti(vec2 p, vec2 regionMin, vec2 regionMax) {
+    if (!insideRect(p, regionMin, regionMax)) {
+        return vec4(0.0);
+    }
+    float columnWidth = CONFETTI_SIZE * 4.0;
+    float column = floor(p.x / columnWidth);
+    float height = regionMax.y - regionMin.y;
+    for (int k = 0; k < 3; k++) {
+        float h = hash1(column * 3.0 + float(k));
+        float y = regionMin.y + mod(h * height + iTime * (120.0 + 80.0 * h), height);
+        float x = (column + 0.5) * columnWidth + sin(iTime * 3.0 + h * 6.2831853) * CONFETTI_SIZE;
+        if (abs(p.x - x) < CONFETTI_SIZE * 0.5 && abs(p.y - y) < CONFETTI_SIZE * 0.35) {
+            // 落ちる範囲の下のほうでは薄くする
+            float fade = 1.0 - smoothstep(0.6, 1.0, (y - regionMin.y) / height);
+            return vec4(confettiColor(hash1(column * 7.0 + float(k) * 13.0)), fade);
+        }
+    }
+    return vec4(0.0);
+}
+
+// 点 p から線分 a-b までの距離
+float segmentDistance(vec2 p, vec2 a, vec2 b) {
+    vec2 ab = b - a;
+    float t = clamp(dot(p - a, ab) / max(dot(ab, ab), 0.0001), 0.0, 1.0);
+    return length(p - a - ab * t);
+}
+
+// 花火。area の下からロケットが上がり、上のほうで弾ける。時間をずらして5つ上がる。足す光を返す
+vec3 fireworks(vec2 p, vec2 areaMin, vec2 areaMax) {
+    vec3 light = vec3(0.0);
+    for (int b = 0; b < 5; b++) {
+        float offset = float(b) * FIREWORK_PERIOD / 5.0;
+        float burst = floor((iTime + offset) / FIREWORK_PERIOD);
+        float t = fract((iTime + offset) / FIREWORK_PERIOD);
+        float seed = burst * 5.0 + float(b);
+        vec2 center = mix(areaMin, areaMax, vec2(0.1 + 0.8 * hash1(seed), 0.15 + 0.35 * hash1(seed + 0.5)));
+        vec3 color = confettiColor(hash1(seed + 0.25));
+        vec3 color2 = confettiColor(hash1(seed + 0.75));
+
+        if (t < FIREWORK_RISE) {
+            // ロケット: 下から弾ける位置まで、減速しながら上がる。光の尾を引く
+            vec2 start = vec2(center.x + (hash1(seed + 0.1) - 0.5) * 80.0, areaMax.y);
+            float rise = t / FIREWORK_RISE;
+            vec2 head = mix(start, center, 1.0 - (1.0 - rise) * (1.0 - rise));
+            vec2 tail = mix(start, center, 1.0 - (1.0 - max(rise - 0.15, 0.0)) * (1.0 - max(rise - 0.15, 0.0)));
+            float d = segmentDistance(p, tail, head);
+            light += vec3(1.0, 0.9, 0.75) * (exp(-d * d / 6.0) * 0.8 + exp(-length(p - head) / 10.0) * 0.6);
+            continue;
+        }
+
+        float bt = (t - FIREWORK_RISE) / (1.0 - FIREWORK_RISE);
+        if (length(p - center) > FIREWORK_RADIUS * 1.2 + 120.0) {
+            continue;
+        }
+        // 弾けた瞬間に、周りをぱっと明るくする
+        light += mix(color, vec3(1.0), 0.5) * 0.25 * exp(-length(p - center) / 140.0) * max(0.0, 1.0 - bt / 0.12);
+
+        float spread = 1.0 - (1.0 - bt) * (1.0 - bt);  // 速く広がって、だんだん止まる
+        float fade = pow(1.0 - bt, 1.5);
+        for (int k = 0; k < 40; k++) {
+            float h = hash1(seed * 1.7 + float(k));
+            float angle = 6.2831853 * (float(k) + h) / 40.0;
+            float speed = 0.55 + 0.45 * hash1(seed + float(k) * 3.1);
+            vec2 dir = vec2(cos(angle), sin(angle)) * FIREWORK_RADIUS * speed;
+            vec2 head = center + dir * spread + vec2(0.0, 90.0 * bt * bt);  // 少しずつ落ちる
+            float tailSpread = 1.0 - (1.0 - max(bt - 0.08, 0.0)) * (1.0 - max(bt - 0.08, 0.0));
+            vec2 tail = center + dir * tailSpread + vec2(0.0, 90.0 * max(bt - 0.08, 0.0) * max(bt - 0.08, 0.0));
+            float d = segmentDistance(p, tail, head);
+            // 消えぎわは瞬かせる
+            float twinkle = bt > 0.6 ? 0.5 + 0.5 * sin(iTime * 40.0 + float(k) * 2.3) : 1.0;
+            vec3 sparkColor = mod(float(k), 2.0) < 1.0 ? color : color2;
+            light += sparkColor * FIREWORK_BRIGHT * fade * twinkle * (exp(-d * d / 5.0) + 0.15 * exp(-d / 8.0));
+        }
+    }
+    return light;
+}
+
 
 // 非アクティブな pane を沈める
 void applyPanes(inout vec4 fragColor, vec2 uv, vec2 px, bool inPadding, vec2 onGrid, vec2 gridMin, vec2 cellSize,
@@ -349,7 +472,13 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     bool copyMode = mod(floor(flags / 2.0), 2.0) >= 1.0;
     bool zoomed = mod(floor(flags / 4.0), 2.0) >= 1.0;
     bool failed = mod(floor(flags / 8.0), 2.0) >= 1.0;
-    bool claudeWorking = mod(floor(flags / 16.0), 2.0) >= 1.0;
+    // 13マス目は Claude の状態と git push
+    float claude = readValue(vec2(rightEdge - 12.5 * cw, 0.5));
+    float workingCount = mod(claude, 4.0);
+    bool waiting = mod(floor(claude / 4.0), 2.0) >= 1.0;
+    bool celebrating = mod(floor(claude / 8.0), 2.0) >= 1.0;
+    bool pushed = mod(floor(claude / 16.0), 2.0) >= 1.0;
+    float sinceCursor = iTime - iTimeCursorChange;
 
     // このピクセルが何列目・何行目のマスか（左上が 0, 0）
     vec2 px = fragCoord;
@@ -405,12 +534,39 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         }
     }
 
-    // どこかの Claude が処理中なら、画面の右上（ステータスバーのすぐ下）でキャラが動く
-    if (claudeWorking) {
-        vec2 mascotOrigin = vec2(gridMax.x - MASCOT_MARGIN - 18.0 * MASCOT_PIXEL.x, gridMin.y + ch + MASCOT_MARGIN * 0.5 + MASCOT_JUMP);
-        if (mascotAt(px, mascotOrigin)) {
-            fragColor.rgb = MASCOT_COLOR;
+    // Claude が処理中・入力待ち・終わった直後なら、アクティブな pane の左上でキャラが動く。
+    // 処理中の数だけ右へ並べ、キャラごとに時刻をずらして動きをばらばらにする
+    float mascotCount = max(workingCount, 1.0);
+    if (workingCount > 0.0 || waiting || celebrating) {
+        // pane の左上から、上と左に同じだけあけて置く（跳ねると、上の間が一時的に縮む）
+        vec2 firstOrigin = gridMin + vec2(left, top) * cellSize + vec2(MASCOT_MARGIN);
+        bool running = sinceCursor < MASCOT_RUN_AFTER;
+        for (int i = 0; i < 3; i++) {
+            if (float(i) >= mascotCount) {
+                break;
+            }
+            // 「！」の分（3ドット）も含めて間をあける
+            vec2 origin = firstOrigin + vec2(float(i) * (21.0 * MASCOT_PIXEL.x + MASCOT_GAP), 0.0);
+            int hit = mascotAt(px, origin, iTime + float(i) * 1.7, waiting, celebrating, running);
+            if (hit == 1) {
+                fragColor.rgb = MASCOT_COLOR;
+            } else if (hit == 2) {
+                fragColor.rgb = MASCOT_ALERT;
+            }
         }
+
+        // 終わった直後は、キャラの周りに紙吹雪を舞わせる
+        if (celebrating) {
+            float mascotsRight = firstOrigin.x + mascotCount * (21.0 * MASCOT_PIXEL.x + MASCOT_GAP) + MASCOT_WALK;
+            float paneTop = gridMin.y + (top - 1.0) * ch;
+            vec4 paper = confetti(px, vec2(firstOrigin.x - 80.0, paneTop), vec2(mascotsRight, paneTop + CONFETTI_HEIGHT));
+            fragColor.rgb = mix(fragColor.rgb, paper.rgb, paper.a);
+        }
+    }
+
+    // git push が成功した直後は、画面の上のほうに花火を上げる
+    if (pushed) {
+        fragColor.rgb += fireworks(px, vec2(gridMin.x, gridMin.y + ch), vec2(gridMax.x, gridMin.y + (gridMax.y - gridMin.y) * 0.6));
     }
 
     // prefix を押している間は、画面の外周を光らせる
