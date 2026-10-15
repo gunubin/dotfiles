@@ -20,19 +20,20 @@
  *   - コピーモード中は、アクティブな pane の内側の縁をラベンダー色でうっすら光らせる
  *   - ズーム中は、画面の外周を黄色でうっすら光らせ続ける
  *   - アクティブな pane で直前のコマンドが失敗したら、その pane の内側の縁を赤く光らせる
- *   - Claude が処理中なら、アクティブな pane の左上で Claude のキャラ（起動画面のロゴ）が処理中の数だけ（最大3匹）動く。
+ *   - Claude が処理中の pane では、その pane の左上で Claude のキャラ（起動画面のロゴ）が動く（見えている pane の最大4つ）。
+ *     非アクティブな pane でも、キャラは暗くせずに描く。
  *     足踏み・左右に歩く・跳ねる・きょろきょろ・手を振る、を MASCOT_ACTION 秒ごとに入れ替える。
- *     キー入力などでカーソルが動いている間は、速く足踏みする（走る）
- *   - 入力待ちの Claude がいると、キャラが跳ねて右隣に「！」を出す
- *   - Claude が終わった直後は、キャラがバンザイして周りに紙吹雪が舞う
+ *     キー入力などでカーソルが動いている間は、アクティブな pane のキャラが速く足踏みする（走る）
+ *   - Claude が入力待ちの pane では、キャラが跳ねて右隣に「！」を出す
+ *   - Claude が終わった直後の pane では、キャラがバンザイして周りに紙吹雪が舞う
  *   - git push が成功した直後は、画面の上のほうに花火が上がる（ロケットが上がって弾ける）
  *   - prefix を押してから次のキーまでの間、画面の外周をタブの色で光らせる
  * 切り替えは、カーソルが別の pane に移ったことで見分ける（シェーダーには前の pane の位置が
  * わからないので、暗くなる側はすぐ切り替わる）。
  *
- * アクティブな pane と popup の位置などは、tmux がステータスバー右端の13マスの色にして渡す
+ * アクティブな pane と popup の位置などは、tmux がステータスバー右端の21マスの色にして渡す
  * （~/.config/tmux/scripts/pane-marker.sh。値の入れ方もそちらに書いている）。
- * 目印の値が読めないときは何もしない。13マスは周りの色で塗りつぶして見えなくする。余白も塗り直す（mainImage の中のコメントを参照）。
+ * 目印の値が読めないときは何もしない。21マスは周りの色で塗りつぶして見えなくする。余白も塗り直す（mainImage の中のコメントを参照）。
  *
  * 前提:
  *   - ステータスバーは上（status-position top）
@@ -78,7 +79,6 @@ const float MASCOT_BLINK_EVERY = 3.2;      // まばたきの間隔（秒）
 const float MASCOT_BLINK = 0.15;           // 目を閉じている長さ（秒）
 const float PREFIX_GLOW = 0.5;             // prefix を押したときの外周の光の強さ
 const float PREFIX_WIDTH = 24.0;           // prefix の光が外周から広がる幅（px）
-const float MASCOT_GAP = 24.0;             // キャラを並べるときの間（px）
 const float MASCOT_RUN_STEP = 0.08;        // 走るときに足を踏みかえる間隔（秒）
 const float MASCOT_RUN_AFTER = 0.3;        // カーソルが動いてから、走り続ける秒数
 const vec3 MASCOT_ALERT = vec3(0.98, 0.89, 0.69); // 入力待ちの「！」の色（catppuccin Mocha の yellow）
@@ -89,7 +89,7 @@ const float FIREWORK_PERIOD = 1.8;         // 花火が1つ上がって消える
 const float FIREWORK_RISE = 0.22;          // そのうちロケットが上がっている割合
 const float FIREWORK_RADIUS = 320.0;       // 花火が広がる半径（px）
 const float FIREWORK_BRIGHT = 1.6;         // 火花の明るさ
-const float MARKER_CELLS = 13.0;           // pane-marker.sh が出す目印のマスの数
+const float MARKER_CELLS = 21.0;           // pane-marker.sh が出す目印のマスの数
 const float MAGIC = 2730.0;                // pane-marker.sh の目印の値
 // ==========================
 
@@ -472,12 +472,8 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     bool copyMode = mod(floor(flags / 2.0), 2.0) >= 1.0;
     bool zoomed = mod(floor(flags / 4.0), 2.0) >= 1.0;
     bool failed = mod(floor(flags / 8.0), 2.0) >= 1.0;
-    // 13マス目は Claude の状態と git push
-    float claude = readValue(vec2(rightEdge - 12.5 * cw, 0.5));
-    float workingCount = mod(claude, 4.0);
-    bool waiting = mod(floor(claude / 4.0), 2.0) >= 1.0;
-    bool celebrating = mod(floor(claude / 8.0), 2.0) >= 1.0;
-    bool pushed = mod(floor(claude / 16.0), 2.0) >= 1.0;
+    // 13マス目は git push
+    bool pushed = mod(floor(readValue(vec2(rightEdge - 12.5 * cw, 0.5)) / 16.0), 2.0) >= 1.0;
     float sinceCursor = iTime - iTimeCursorChange;
 
     // このピクセルが何列目・何行目のマスか（左上が 0, 0）
@@ -534,32 +530,36 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         }
     }
 
-    // Claude が処理中・入力待ち・終わった直後なら、アクティブな pane の左上でキャラが動く。
-    // 処理中の数だけ右へ並べ、キャラごとに時刻をずらして動きをばらばらにする
-    float mascotCount = max(workingCount, 1.0);
-    if (workingCount > 0.0 || waiting || celebrating) {
+    // Claude が処理中・入力待ち・終わった直後の pane では、その pane の左上でキャラが動く（非アクティブな pane でも明るいまま）。
+    // 14〜21マス目に、pane ごとに「左」と「上 + 状態 * 1024」が入っている。pane ごとに時刻をずらして動きをばらばらにする
+    for (int i = 0; i < 4; i++) {
+        float paneLeft = readValue(vec2(rightEdge - (13.5 + 2.0 * float(i)) * cw, 0.5));
+        float topState = readValue(vec2(rightEdge - (14.5 + 2.0 * float(i)) * cw, 0.5));
+        float state = floor(topState / 1024.0);
+        if (state < 1.0) {
+            continue;
+        }
+        float paneTop = mod(topState, 1024.0);
+        bool waiting = state == 2.0;
+        bool celebrating = state == 3.0;
+        // キー入力などでカーソルが動いている間は、アクティブな pane のキャラだけ走る
+        bool running = sinceCursor < MASCOT_RUN_AFTER && paneLeft == left && paneTop == top;
         // pane の左上から、上と左に同じだけあけて置く（跳ねると、上の間が一時的に縮む）
-        vec2 firstOrigin = gridMin + vec2(left, top) * cellSize + vec2(MASCOT_MARGIN);
-        bool running = sinceCursor < MASCOT_RUN_AFTER;
-        for (int i = 0; i < 3; i++) {
-            if (float(i) >= mascotCount) {
-                break;
-            }
-            // 「！」の分（3ドット）も含めて間をあける
-            vec2 origin = firstOrigin + vec2(float(i) * (21.0 * MASCOT_PIXEL.x + MASCOT_GAP), 0.0);
-            int hit = mascotAt(px, origin, iTime + float(i) * 1.7, waiting, celebrating, running);
-            if (hit == 1) {
-                fragColor.rgb = MASCOT_COLOR;
-            } else if (hit == 2) {
-                fragColor.rgb = MASCOT_ALERT;
-            }
+        vec2 origin = gridMin + vec2(paneLeft, paneTop) * cellSize + vec2(MASCOT_MARGIN);
+        int hit = mascotAt(px, origin, iTime + float(i) * 1.7, waiting, celebrating, running);
+        if (hit == 1) {
+            fragColor.rgb = MASCOT_COLOR;
+        } else if (hit == 2) {
+            fragColor.rgb = MASCOT_ALERT;
         }
 
-        // 終わった直後は、キャラの周りに紙吹雪を舞わせる
+        // 終わった直後は、キャラの周りに紙吹雪を舞わせる（左隣の pane にははみ出さない）
         if (celebrating) {
-            float mascotsRight = firstOrigin.x + mascotCount * (21.0 * MASCOT_PIXEL.x + MASCOT_GAP) + MASCOT_WALK;
-            float paneTop = gridMin.y + (top - 1.0) * ch;
-            vec4 paper = confetti(px, vec2(firstOrigin.x - 80.0, paneTop), vec2(mascotsRight, paneTop + CONFETTI_HEIGHT));
+            float paneLeftPx = gridMin.x + paneLeft * cw;
+            float confettiLeft = paneLeft > 0.0 ? max(paneLeftPx, origin.x - 80.0) : origin.x - 80.0;
+            float confettiRight = origin.x + 21.0 * MASCOT_PIXEL.x + MASCOT_WALK;
+            float headerTop = gridMin.y + (paneTop - 1.0) * ch;
+            vec4 paper = confetti(px, vec2(confettiLeft, headerTop), vec2(confettiRight, headerTop + CONFETTI_HEIGHT));
             fragColor.rgb = mix(fragColor.rgb, paper.rgb, paper.a);
         }
     }

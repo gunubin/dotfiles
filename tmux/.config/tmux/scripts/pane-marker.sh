@@ -1,18 +1,19 @@
 #!/bin/sh
-# pane-marker.sh - アクティブな pane と popup の位置などを、ステータスバー右端の13マスの色にして出す
+# pane-marker.sh - アクティブな pane と popup の位置などを、ステータスバー右端の21マスの色にして出す
 #   Ghostty のシェーダー（~/.config/ghostty/shaders/pane-dim.glsl）がこの色を読み、
 #   アクティブな pane や popup の外側に効果をかける。マスはシェーダーが周りの色で塗りつぶして隠す
 #
 # Usage: pane-marker.sh <セル幅px> <セル高さpx> <列数> <行数> <paneの左> <paneの上> <paneの幅> <paneの高さ> \
 #                       <popupの幅> <popupの高さ> <タブの色> <prefix> <コピーモード> <ズーム> <コマンド失敗> \
-#                       <git push の時刻>
+#                       <git push の時刻> <window の ID>
 #   paneの左・上は画面の左上を0としたマス目（ステータスバーの行も含める）
 #   popupの幅・高さは枠を含めたマス数。popup が開いていなければ空か 0。位置は画面の中央なので渡さない
 #   空のときは、fzf の --tmux などが開いた popup を探す（tmux display-popup のプロセスの -w・-h を読む）
 #   タブの色（#rrggbb）は popup の縁の光に使う。値ではなく色そのものとして1マスに塗る
 #   prefix・コピーモード・ズームは 0 か 1（client_prefix・pane_in_mode・window_zoomed_flag）
 #   コマンド失敗は、アクティブな pane の @cmd_failed（fish の conf.d/tmux_cmd_failed.fish が付ける）。1 か空
-#   Claude の状態（処理中の数・入力待ち・終わった直後）は、~/.claude/pane-state.json から調べる
+#   Claude の状態（処理中・入力待ち・終わった直後）は、~/.claude/pane-state.json から pane ごとに調べ、
+#   window の ID の window で見えている pane のうち、Claude が動いている pane（最大4つ）の位置を載せる
 #   git push の時刻は、成功したときに fish（conf.d/tmux_cmd_failed.fish）が tmux の @git_push_at に入れる UNIX 時刻
 #
 # 色は Ghostty の中で Display P3 に変換されて 8 ビットに丸められるため、シェーダーが読むと
@@ -23,11 +24,12 @@
 #   6マス目: paneの幅 / 7マス目: paneの高さ / 8マス目: 目印（2730）
 #   9マス目: popupの幅 / 10マス目: popupの高さ / 11マス目: タブの色
 #   12マス目: prefix + コピーモード * 2 + ズーム * 4 + コマンド失敗 * 8
-#   13マス目: 処理中の Claude の数（最大3） + 入力待ちの Claude がいる * 4 + Claude が終わって3秒以内 * 8
-#             + git push が成功して5秒以内 * 16
-# 右端から 1マス目・2マス目…の順に並ぶよう、13→1 の順で出す
+#   13マス目: git push が成功して5秒以内 * 16
+#   14〜21マス目: Claude が動いている pane ごとに2マス。1マス目は paneの左、2マス目は paneの上 + 状態 * 1024
+#                 （状態は 0: なし / 1: 処理中 / 2: 入力待ち / 3: 終わって3秒以内）
+# 右端から 1マス目・2マス目…の順に並ぶよう、21→1 の順で出す
 
-[ $# -eq 16 ] || exit 0
+[ $# -eq 17 ] || exit 0
 flags=$(( ${12:-0} == 1 ? 1 : 0 ))
 [ "${13:-0}" = 1 ] && flags=$((flags + 2))
 [ "${14:-0}" = 1 ] && flags=$((flags + 4))
@@ -35,22 +37,20 @@ flags=$(( ${12:-0} == 1 ? 1 : 0 ))
 push_at="${16}"
 now=$(date +%s)
 
-# Claude の状態: 処理中の数・入力待ちがいるか・最後に終わった時刻
+# Claude が動いている pane: 「paneの左 paneの上 状態」を1行ずつ（最大4つ）。
+# ズーム中は、ズームした pane だけが見えている
+claude_panes=$(tmux list-panes -t "${17}" -F '#{pane_id} #{pane_left} #{e|+:#{pane_top},1} #{pane_active} #{window_zoomed_flag}' 2>/dev/null |
+    jq -R -r --slurpfile state "$HOME/.claude/pane-state.json" --argjson now "$now" '
+        split(" ") as [$id, $left, $top, $active, $zoomed]
+        | select($zoomed == "0" or $active == "1")
+        | ($state[0][$id] // {}) as $s
+        | (if $s.status == "working" then 1
+           elif $s.status == "waiting" then 2
+           elif $s.status == "done" and $now - ($s.ts // 0) <= 3 then 3
+           else 0 end) as $code
+        | select($code > 0)
+        | "\($left) \($top) \($code)"' 2>/dev/null | head -n 4)
 claude=0
-summary=$(jq -r '[
-    ([.[] | select(.status == "working")] | length),
-    (any(.[]; .status == "waiting") | if . then 1 else 0 end),
-    ([.[] | select(.status == "done") | .ts] | max // 0)
-] | @tsv' "$HOME/.claude/pane-state.json" 2>/dev/null)
-if [ -n "$summary" ]; then
-    tab=$(printf '\t')
-    IFS="$tab" read -r working waiting done_at <<EOF2
-$summary
-EOF2
-    [ "$working" -gt 3 ] && working=3
-    claude=$((working + waiting * 4))
-    [ $((now - done_at)) -le 3 ] && claude=$((claude + 8))
-fi
 case "$push_at" in '' | *[!0-9]*) ;; *) [ $((now - push_at)) -le 5 ] && claude=$((claude + 16)) ;; esac
 
 color="${11}"
@@ -94,6 +94,16 @@ cell() {
         $((($1 >> 8 & 15) * 16 + 8)) $((($1 >> 4 & 15) * 16 + 8)) $((($1 & 15) * 16 + 8))
 }
 
+# Claude の pane は、右端から遠い順（4つ目→1つ目）に出す。空きは 0 で埋める
+slots=$(printf '%s\n0 0 0\n0 0 0\n0 0 0\n0 0 0\n' "$claude_panes" | sed '/^$/d' | head -n 4 | tail -r)
+while read -r pane_left pane_top code; do
+    case "$pane_left$pane_top$code" in '' | *[!0-9]*) exit 0 ;; esac
+    [ "$pane_left" -le 4095 ] && [ "$pane_top" -le 1023 ] || exit 0
+    cell $((pane_top + code * 1024))
+    cell "$pane_left"
+done <<EOF2
+$slots
+EOF2
 cell "$claude"
 cell "$flags"
 printf '#[bg=%s] ' "$color"
