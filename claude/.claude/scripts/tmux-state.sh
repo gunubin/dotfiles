@@ -99,10 +99,11 @@ case "$event" in
         set_window_status "$STATUS_IDLE"
         ;;
     UserPromptSubmit)
+        # since は処理を始めた時刻（ts はツールを使うたびに更新される）。pane-marker.sh が、処理が長引いたかを見る
         prompt=$(echo "$input" | jq -r '.prompt // ""' 2>/dev/null)
         acquire_lock || exit 0
         jq_update --arg id "$PANE_ID" --arg status "$STATUS_WORKING" --arg dir "$DIR_NAME" --arg prompt "$prompt" --arg sid "$SESSION_ID" \
-            '.[$id] = {"status": $status, "dir": $dir, "prompt": $prompt, "session_id": $sid, "ts": (now | floor)}'
+            '.[$id] = {"status": $status, "dir": $dir, "prompt": $prompt, "session_id": $sid, "ts": (now | floor), "since": (now | floor)}'
         release_lock
         set_window_status "$STATUS_WORKING"
         ;;
