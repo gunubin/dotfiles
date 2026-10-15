@@ -1,0 +1,6 @@
+{
+  "name": "user-todos",
+  "version": "0.1.0",
+  "description": "Claude がユーザーに頼んだこと（今やる・あとで）をプロンプト上の帯に常に表示する",
+  "types": "./types/index.d.ts"
+}
