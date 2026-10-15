@@ -2,11 +2,11 @@
  * focus-glow.glsl - ウィンドウが非アクティブのとき画面を暗く沈めるシェーダー
  *
  * 機能（フォーカスが外れると、すぐ次の状態に切り替わる）:
- *   - 画面がわずかに縮んで奥へ下がる
+ *   - （止めている）画面がわずかに縮んで奥へ下がる
  *   - すりガラス越しのようにぼける
  *   - 色が少し抜けて、縁ほど暗く紺色に沈む
  *   - フィルムの粒と、モニターの走査線がうっすら乗る
- *   - ブラウン管のように、画面が丸く膨らみ、角が丸くなり、色が赤と青にずれる
+ *   - 色が赤と青にずれる（ブラウン管の膨らみと角の丸みは止めている）
  *   フォーカスが戻ると、すぐ元に戻る。切り替えのアニメーションは付けていない
  *
  * 各演出の強さを 0 にすると、その演出だけ止められる（ぼかしを止めるときは BLUR = 0.0）
@@ -14,19 +14,19 @@
 
 // ========== 設定 ==========
 const float RECEDE = 0.00;           // 奥に下がるときに縮む割合
-const float BLUR = 1.5;              // ぼかしの半径（px）
-const float DIM = 0.25;              // 画面全体を暗くする割合
+const float BLUR = 0.7;              // ぼかしの半径（px）
+const float DIM = 0.15;              // 画面全体を暗くする割合
 const float EDGE_DIM = 0.4;          // 縁でさらに暗くする割合
 const float WIDTH = 0.1;             // 縁の暗さが広がる幅（画面の短辺に対する比）
 const float DESATURATE = 0.5;        // 色を抜く割合（0 でそのまま、1 で白黒）
 const float GRAIN = 0.04;            // フィルムの粒の強さ
 const float GRAIN_FPS = 0.0;         // 粒が動く速さ（コマ/秒）。0 で動かない模様にする
-const float SCANLINE = 0.3;          // 走査線で暗くする割合
+const float SCANLINE = 0.15;         // 走査線で暗くする割合
 const float SCANLINE_PITCH = 6.0;    // 走査線の間隔（px。Retina では表示上の半分になる）
 const float SCANLINE_WIDTH = 2.0;    // 走査線の太さ（px）
-const float CURVE = 0.12;            // ブラウン管の膨らみ
-const float CORNER = 0.04;           // 角の丸み（画面の短辺に対する比）
-const float CHROMA = 2.0;            // 赤と青のずれ（px。画面の端ほど大きくずれる）
+const float CURVE = 0.0;             // ブラウン管の膨らみ（止めている。戻すなら 0.12）
+const float CORNER = 0.0;            // 角の丸み（止めている。戻すなら 0.04）
+const float CHROMA = 1.0;            // 赤と青のずれ（px。画面の端ほど大きくずれる）
 const float FLICKER = 0.0;           // 明るさのちらつき（目にうるさいので止めている。戻すなら 0.03 前後）
 const vec3 SHADE = vec3(0.07, 0.07, 0.11); // 沈める先の色（catppuccin Mocha の crust 付近の紺）
 // ==========================
