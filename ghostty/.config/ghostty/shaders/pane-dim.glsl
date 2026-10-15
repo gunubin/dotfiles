@@ -428,18 +428,18 @@ float legDistance(vec2 p, vec2 a, vec2 b) {
 }
 
 // 化け物を color に描く。p は画面の位置、origin はキャラの左上、t は化け物になってからの秒数、time はキャラの時刻。
-//   0〜2 秒: 震えながら少し大きくなる / 1〜3 秒: 体の下から足がたくさん生え、体を持ち上げて歩く
-//   2〜5 秒: ドット絵から、陰影と肌の質感のある描写に変わっていく / 3.5〜5.5 秒: 目が赤く光る縦長の瞳になる
+//   0〜1.2 秒: 震えながら少し大きくなる / 0.5〜1.8 秒: 体の下から足がたくさん生え、体を持ち上げて歩く
+//   1〜2.6 秒: ドット絵から、陰影と肌の質感のある描写に変わっていく / 1.8〜3 秒: 目が赤く光る縦長の瞳になる
 //   7.5〜9 秒: 足を引っ込めて、元のキャラに戻る
 void applyMonster(inout vec3 color, vec2 p, vec2 origin, float t, float time) {
     float back = 1.0 - smoothstep(7.5, 8.8, t);
-    float grow = smoothstep(0.0, 2.0, t) * back;
-    float legs = smoothstep(1.0, 3.0, t) * (1.0 - smoothstep(7.4, 8.4, t));
-    float real = smoothstep(2.0, 5.0, t) * back;
-    float eyes = smoothstep(3.5, 5.5, t) * back;
+    float grow = smoothstep(0.0, 1.2, t) * back;
+    float legs = smoothstep(0.5, 1.8, t) * (1.0 - smoothstep(7.4, 8.4, t));
+    float real = smoothstep(1.0, 2.6, t) * back;
+    float eyes = smoothstep(1.8, 3.0, t) * back;
 
     // 足の付け根（胴の下の真ん中）を中心に大きくする。化け物になるときと戻るときは小刻みに震える
-    float shake = (smoothstep(0.0, 0.3, t) * (1.0 - smoothstep(1.2, 2.0, t)) + smoothstep(7.4, 7.8, t) * back) * 2.5;
+    float shake = (smoothstep(0.0, 0.2, t) * (1.0 - smoothstep(0.8, 1.3, t)) + smoothstep(7.4, 7.8, t) * back) * 2.5;
     vec2 jitter = shake * vec2(hash1(floor(time * 30.0)) - 0.5, hash1(floor(time * 30.0) + 9.1) - 0.5);
     vec2 anchor = origin + vec2(9.0, 4.0) * MASCOT_PIXEL + jitter;
     float scale = 1.0 + 0.6 * grow;
