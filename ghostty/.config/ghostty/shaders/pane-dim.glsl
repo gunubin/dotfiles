@@ -24,7 +24,8 @@
  *     非アクティブな pane でも、キャラは暗くせずに描く。
  *     MASCOT_ACTION 秒ごとに動きを入れ替える。足踏み・左右に歩く・跳ねる・きょろきょろ・手を振る、と
  *     Claude Code の起動画面にある公式の 15 種類（落ちてくる・のぞく・歩いてくる・一回転・ウインクなど）。
- *     処理が長引くと、鍋をかき混ぜるシーン（これも公式）に変わる
+ *     処理が長引くと、鍋をかき混ぜるシーン（これも公式）に変わる。
+ *     ごくまれに、少し大きくなって足がたくさん生え、リアルな描写になって目が赤く光る化け物になる
  *     キー入力などでカーソルが動いている間は、アクティブな pane のキャラが速く足踏みする（走る）
  *   - Claude が入力待ちの pane では、キャラが公式の jump をくり返し、右隣に「！」を出す
  *   - Claude が終わった直後の pane では、キャラが公式の celebrate をくり返し、周りに紙吹雪が舞う
@@ -80,7 +81,10 @@ const float MASCOT_WAVE = 0.3;             // 手を上げ下げする間隔（�
 const float MASCOT_BLINK_EVERY = 3.2;      // まばたきの間隔（秒）
 const float MASCOT_BLINK = 0.15;           // 目を閉じている長さ（秒）
 const float CLAWD_FRAME = 0.09;            // 公式の動きの 1 コマの長さ（秒）。公式（0.06 秒）の 1.5 倍
-const vec3 MASCOT_DUST = vec3(0.42, 0.44, 0.53); // 着地の土ぼこりと影の色（catppuccin Mocha の overlay0）
+const vec3 MASCOT_DUST = vec3(0.73, 0.76, 0.87); // 着地の土ぼこりの色（catppuccin Mocha の subtext1）
+const vec3 MASCOT_SHADOW = vec3(0.42, 0.44, 0.53); // 回るときの影の色（catppuccin Mocha の overlay0）
+const float MONSTER_SLOT = 9.0;            // 化け物になるかを決める間隔（秒）。なったときは、この秒数のあいだ化け物でいる
+const float MONSTER_CHANCE = 0.03;         // 間隔ごとに化け物になる確率（処理中に 5 分に 1 回くらい）
 const vec2 COOK_PIXEL = vec2(8.0);         // 料理のシーンのドット1つの大きさ（px）
 const float COOK_FRAME = 0.24;             // 料理のシーンの 1 コマの長さ（秒）。公式（0.16 秒）の 1.5 倍
 const float PREFIX_GLOW = 0.5;             // prefix を押したときの外周の光の強さ
@@ -259,7 +263,7 @@ ClawdPose officialPose(int seq, int frame) {
     return pose;
 }
 
-// p がキャラのどこにあたるか。0: 何もない / 1: 体 / 2: 右隣の「！」 / 3: 土ぼこりと影。
+// p がキャラのどこにあたるか。0: 何もない / 1: 体 / 2: 右隣の「！」 / 3: 土ぼこり / 4: 影。
 // origin はキャラの左上、time はキャラごとにずらした時刻
 int mascotAt(vec2 p, vec2 origin, float time, bool waiting, bool celebrating, bool running) {
     int frame = int(time / CLAWD_FRAME);
@@ -309,28 +313,42 @@ int mascotAt(vec2 p, vec2 origin, float time, bool waiting, bool celebrating, bo
         && home.y >= 0.0 && home.y <= 4.0 && home.y != 3.0) {
         return 2;
     }
+    // 着地の土ぼこり。足元の左右から、外へ向かってもくもくと広がる（枠の外にもはみ出して描く）
+    vec2 cellSize = 2.0 * MASCOT_PIXEL;
+    if (pose.poof > 0) {
+        float groundY = origin.y + 2.6 * cellSize.y;
+        for (int side = 0; side < 2; side++) {
+            // 左右の端のマスの真ん中から、外向きに
+            float dir = side == 0 ? -1.0 : 1.0;
+            float rootX = origin.x + (side == 0 ? 0.5 : 8.5) * cellSize.x;
+            if (pose.poof == 1) {
+                // 1コマ目: 足元に丸い煙がひとつ
+                if (length(p - vec2(rootX + dir * 4.0, groundY)) < 7.0) {
+                    return 3;
+                }
+            } else {
+                // 2コマ目: 外へ流れて、小さな煙が3つに分かれる
+                for (int k = 0; k < 3; k++) {
+                    float fk = float(k);
+                    vec2 puff = vec2(rootX + dir * (8.0 + 9.0 * fk), groundY - 3.0 * fk);
+                    if (length(p - puff) < 6.0 - 1.2 * fk) {
+                        return 3;
+                    }
+                }
+            }
+        }
+    }
     // 公式の動きは、元の位置の 9 × 3 マスの中だけに描く（上から落ちてくる・下からのぞく・左から歩いてくる）
     if (pose.clip && (home.x < 0.0 || home.x >= 18.0 || home.y < 0.0 || home.y >= 6.0)) {
         return 0;
     }
 
-    // 土ぼこり（左右の端のマス）と影（真ん中のマス）は、いちばん下のマスの行に描く
-    vec2 cellSize = 2.0 * MASCOT_PIXEL;
+    // 回るときの影（真ん中のマスの、いちばん下の行の下端）
     vec2 cell = (p - origin) / cellSize;
-    vec2 inCell = fract(cell);
-    if (floor(cell.y) == 2.0) {
+    if (floor(cell.y) == 2.0 && fract(cell.y) > 0.875) {
         float col = floor(cell.x);
-        if (pose.poof == 1 && (col == 0.0 || col == 8.0)
-            && abs(inCell.x - 0.5) < 0.14 && abs(inCell.y - 0.55) < 0.09) {
-            return 3;
-        }
-        if (pose.poof == 2 && (col == 0.0 || col == 8.0) && abs(inCell.x - 0.5) < 0.35
-            && abs(inCell.y - 0.55 - 0.08 * sin(6.2831853 * (inCell.x - 0.15) / 0.7)) < 0.05) {
-            return 3;
-        }
-        bool underBody = pose.shadow == 1 ? (col >= 3.0 && col <= 5.0) : (pose.shadow == 2 && col == 4.0);
-        if (underBody && inCell.y > 0.875) {
-            return 3;
+        if (pose.shadow == 1 ? (col >= 3.0 && col <= 5.0) : (pose.shadow == 2 && col == 4.0)) {
+            return 4;
         }
     }
 
@@ -371,6 +389,164 @@ int cookingAt(vec2 p, vec2 origin, float time) {
     int x = int(spot.x);
     uint word = COOK_PIXELS[(frame * 18 + int(spot.y)) * 6 + x / 8];
     return int((word >> uint((x % 8) * 4)) & 15u);
+}
+
+// 化け物になる特別演出。time はキャラごとの時刻で、MONSTER_SLOT 秒ごとに MONSTER_CHANCE の確率で選ばれる。
+// 選ばれた間隔のあいだの経過秒数を返す（化け物でなければ負）
+float monsterTime(float time) {
+    float slot = floor(time / MONSTER_SLOT);
+    return hash1(slot * 7.31 + 3.7) < MONSTER_CHANCE ? time - slot * MONSTER_SLOT : -1.0;
+}
+
+// なめらかに変わる乱れ（0〜1）
+float valueNoise(vec2 q) {
+    vec2 i = floor(q);
+    vec2 f = fract(q);
+    f = f * f * (3.0 - 2.0 * f);
+    float a = hash1(i.x + i.y * 57.0);
+    float b = hash1(i.x + 1.0 + i.y * 57.0);
+    float c = hash1(i.x + (i.y + 1.0) * 57.0);
+    float d = hash1(i.x + 1.0 + (i.y + 1.0) * 57.0);
+    return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
+}
+
+// 化け物の胴（腕と体。目の穴と足はない）の、ドット q での有無
+float monsterBodyAt(vec2 q) {
+    if (q.x < 0.0 || q.x >= 18.0 || q.y < 0.0 || q.y >= 4.0) {
+        return 0.0;
+    }
+    int y = int(q.y);
+    uint row = CLAWD_ARMS[y] | (y < 2 ? CLAWD_EYES[6] : 0u);
+    return float((row >> uint(q.x)) & 1u);
+}
+
+// 点 p から線分 a-b までの距離（化け物の足に使う）
+float legDistance(vec2 p, vec2 a, vec2 b) {
+    vec2 ab = b - a;
+    float h = clamp(dot(p - a, ab) / dot(ab, ab), 0.0, 1.0);
+    return length(p - a - ab * h);
+}
+
+// 化け物を color に描く。p は画面の位置、origin はキャラの左上、t は化け物になってからの秒数、time はキャラの時刻。
+//   0〜2 秒: 震えながら少し大きくなる / 1〜3 秒: 体の下から足がたくさん生え、体を持ち上げて歩く
+//   2〜5 秒: ドット絵から、陰影と肌の質感のある描写に変わっていく / 3.5〜5.5 秒: 目が赤く光る縦長の瞳になる
+//   7.5〜9 秒: 足を引っ込めて、元のキャラに戻る
+void applyMonster(inout vec3 color, vec2 p, vec2 origin, float t, float time) {
+    float back = 1.0 - smoothstep(7.5, 8.8, t);
+    float grow = smoothstep(0.0, 2.0, t) * back;
+    float legs = smoothstep(1.0, 3.0, t) * (1.0 - smoothstep(7.4, 8.4, t));
+    float real = smoothstep(2.0, 5.0, t) * back;
+    float eyes = smoothstep(3.5, 5.5, t) * back;
+
+    // 足の付け根（胴の下の真ん中）を中心に大きくする。化け物になるときと戻るときは小刻みに震える
+    float shake = (smoothstep(0.0, 0.3, t) * (1.0 - smoothstep(1.2, 2.0, t)) + smoothstep(7.4, 7.8, t) * back) * 2.5;
+    vec2 jitter = shake * vec2(hash1(floor(time * 30.0)) - 0.5, hash1(floor(time * 30.0) + 9.1) - 0.5);
+    vec2 anchor = origin + vec2(9.0, 4.0) * MASCOT_PIXEL + jitter;
+    float scale = 1.0 + 0.6 * grow;
+    vec2 unit = MASCOT_PIXEL * scale;
+    vec2 q = (p - anchor) / unit + vec2(9.0, 4.0);
+    // 体と足から遠いところは何もしない
+    if (q.x < -14.0 || q.x > 32.0 || q.y < -8.0 || q.y > 14.0) {
+        return;
+    }
+    float aa = 1.2 / unit.x;   // 輪郭のぼかし（1 px ほど）
+
+    // まわりを暗く沈める（化け物の気配）
+    float aura = exp(-length((q - vec2(9.0, 3.0)) * vec2(1.0, 1.4)) / 9.0);
+    color = mix(color, SHADE, 0.55 * real * aura);
+
+    // 足が伸びるにつれて、体が少し持ち上がる
+    float raise = 0.5 * legs;
+    vec2 qb = q + vec2(0.0, raise);
+
+    // 足。左右に 8 本ずつ、クモのように膝を外側へ持ち上げて地面を踏み、付け根から順に波打って歩く。
+    // 外側の足ほど大きく広がる。ドット絵のうちは足もドットにする
+    vec2 lq = mix(floor(q) + 0.5, q, real);
+    float groundY = 6.8;
+    float legHit = 0.0;
+    float legShade = 0.0;
+    for (int i = 0; i < 16; i++) {
+        float fi = float(i);
+        float dir = i < 8 ? -1.0 : 1.0;
+        float spread = (mod(fi, 8.0) + 0.5) / 8.0;   // 0（内側）〜 1（外側）
+        vec2 root = vec2(9.0 + dir * (1.5 + 4.5 * spread), 2.8 - raise);
+        float phase = time * 9.0 - fi * 0.8;
+        float lift = max(0.0, sin(phase));
+        vec2 knee = root + legs * vec2(dir * (1.0 + 3.0 * spread) + 0.4 * cos(phase), -1.4 - 1.0 * spread - 0.5 * lift);
+        vec2 foot = vec2(knee.x + legs * (dir * (0.5 + 1.0 * spread) - 0.3 * cos(phase)),
+                         mix(root.y, groundY - 0.9 * lift, legs));
+        float thick = mix(0.5, 0.32, real);
+        float d1 = legDistance(lq, root, knee) - thick * legs;
+        float d2 = legDistance(lq, knee, foot) - thick * 0.6 * legs;
+        float d = min(d1, d2);
+        float hit = legs > 0.01 ? 1.0 - smoothstep(-aa, aa, d) : 0.0;
+        if (hit > legHit) {
+            legHit = hit;
+            // 付け根ほど明るく、先ほど暗い。関節は少し明るい
+            legShade = mix(1.0, 0.4, clamp(length(lq - root) / 5.0, 0.0, 1.0))
+                + 0.3 * exp(-length(lq - knee) * 3.0);
+        }
+    }
+    vec3 legColor = mix(MASCOT_COLOR * 0.8, vec3(0.62, 0.24, 0.18), real) * legShade;
+    color = mix(color, legColor, legHit);
+
+    // 胴。ドット絵のうちはドットのまま、リアルになるにつれて輪郭が丸くなる（まわりの有無を平均してなめらかにする）
+    float pixelBody = monsterBodyAt(qb);
+    float coverage = 0.0;
+    for (int dy = -2; dy <= 2; dy++) {
+        for (int dx = -2; dx <= 2; dx++) {
+            coverage += monsterBodyAt(qb + vec2(float(dx), float(dy)) * 0.3);
+        }
+    }
+    coverage /= 25.0;
+    float smoothBody = smoothstep(0.3, 0.5, coverage);
+    float body = mix(pixelBody, smoothBody, real);
+    if (body > 0.0) {
+        // 体を楕円体に見立てた陰影（左上から光が当たる）と、ぬめりのあるハイライト
+        vec2 n2 = (qb - vec2(9.0, 2.0)) / vec2(8.0, 2.8);
+        float z = sqrt(max(0.0, 1.0 - dot(n2, n2)));
+        vec3 normal = normalize(vec3(n2 * 0.9, z + 0.15));
+        vec3 light = normalize(vec3(-0.5, -0.8, 0.7));
+        float diffuse = clamp(dot(normal, light), 0.0, 1.0);
+        float specular = pow(max(dot(reflect(-light, normal), vec3(0.0, 0.0, 1.0)), 0.0), 18.0);
+        // 肌のでこぼこと、浮き出た血管
+        float bumps = valueNoise(qb * 3.0 + 4.0);
+        float veins = 1.0 - smoothstep(0.0, 0.06, abs(valueNoise(qb * 1.6 + 11.0) - 0.5));
+        vec3 flesh = mix(vec3(0.42, 0.13, 0.10), MASCOT_COLOR * 1.1, 0.35 + 0.5 * diffuse);
+        flesh *= 0.75 + 0.35 * bumps;
+        flesh = mix(flesh, vec3(0.30, 0.04, 0.06), 0.55 * veins);
+        flesh *= mix(0.55, 1.0, smoothstep(0.3, 0.8, coverage));   // 輪郭の近くは暗く
+        flesh += vec3(1.0, 0.85, 0.75) * specular * 0.45;
+        color = mix(color, mix(MASCOT_COLOR, flesh, real), body);
+    }
+
+    // 目。ドット絵のうちは元の穴、怖くなると赤く光る縦長の瞳になって大きくなる。あとから小さな目が 2 つ増える
+    vec3 eyeCenters[4] = vec3[4](vec3(5.5, 1.5, 1.0), vec3(13.5, 1.5, 1.0), vec3(8.0, 0.8, 0.5), vec3(10.6, 2.6, 0.45));
+    float pulse = 0.8 + 0.2 * sin(time * 7.0);
+    for (int i = 0; i < 4; i++) {
+        float size = eyeCenters[i].z * (i < 2 ? 1.0 : smoothstep(0.6, 1.0, eyes));
+        if (size <= 0.0) {
+            continue;
+        }
+        vec2 e = (qb - eyeCenters[i].xy) / size;
+        if (i < 2) {
+            // 元の穴（1 ドット）。目が怖くなるまでは、背景の色で抜く
+            float hole = (abs(e.x) < 0.5 && abs(e.y) < 0.5) ? 1.0 : 0.0;
+            color = mix(color, vec3(0.08, 0.06, 0.07), hole * (1.0 - eyes) * body);
+        }
+        // 瞳が獲物を探すように、ときどき左右へ動く
+        vec2 look = vec2(0.25 * sin(time * 1.3 + float(i)), 0.0);
+        float r = length(e * vec2(1.0, 1.25)) / mix(0.5, 0.95, eyes);
+        float iris = 1.0 - smoothstep(0.9, 1.0, r);
+        vec3 eyeColor = mix(vec3(1.0, 0.85, 0.3), vec3(0.75, 0.02, 0.02), smoothstep(0.0, 0.9, r)) * pulse;
+        // 縦長の瞳孔
+        vec2 pupil = e - look;
+        float slit = 1.0 - smoothstep(0.08, 0.14, abs(pupil.x) / max(0.2, 1.0 - pupil.y * pupil.y));
+        eyeColor = mix(eyeColor, vec3(0.02), slit * step(abs(pupil.y), 0.8));
+        color = mix(color, eyeColor, iris * eyes);
+        // 赤い光のにじみ
+        color += vec3(0.9, 0.08, 0.05) * eyes * pulse * 0.6 * exp(-max(0.0, r - 0.8) * 2.2) * (1.0 - iris);
+    }
 }
 
 // 紙吹雪のパステル5色
@@ -660,6 +836,12 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
             }
             continue;
         }
+        // 処理中にまれに、足がたくさん生えた化け物になる（キー入力中は出さない）
+        float monsterT = state == 1.0 && !running ? monsterTime(time) : -1.0;
+        if (monsterT >= 0.0) {
+            applyMonster(fragColor.rgb, px, origin, monsterT, time);
+            continue;
+        }
         int hit = mascotAt(px, origin, time, waiting, celebrating, running);
         if (hit == 1) {
             fragColor.rgb = MASCOT_COLOR;
@@ -667,6 +849,8 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
             fragColor.rgb = MASCOT_ALERT;
         } else if (hit == 3) {
             fragColor.rgb = MASCOT_DUST;
+        } else if (hit == 4) {
+            fragColor.rgb = MASCOT_SHADOW;
         }
 
         // 終わった直後は、キャラの周りに紙吹雪を舞わせる（バンザイ中は歩かないので、体の中心から左右に同じ幅）
