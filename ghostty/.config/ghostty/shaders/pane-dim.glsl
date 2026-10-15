@@ -84,6 +84,7 @@ const float MASCOT_RUN_AFTER = 0.3;        // カーソルが動いてから、�
 const vec3 MASCOT_ALERT = vec3(0.98, 0.89, 0.69); // 入力待ちの「！」の色（catppuccin Mocha の yellow）
 const float MASCOT_ALERT_COL = 19.0;       // 「！」を出す列（キャラの右端から1ドットあける）
 const float CONFETTI_HEIGHT = 360.0;       // 紙吹雪が舞う範囲の高さ（px）
+const float CONFETTI_WIDTH = 320.0;        // 紙吹雪が舞う範囲の幅（px）。キャラの中心から左右に半分ずつ
 const float CONFETTI_SIZE = 6.0;           // 紙吹雪の1枚の大きさ（px）
 const float FIREWORK_PERIOD = 1.8;         // 花火が1つ上がって消えるまでの秒数
 const float FIREWORK_RISE = 0.22;          // そのうちロケットが上がっている割合
@@ -553,11 +554,11 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
             fragColor.rgb = MASCOT_ALERT;
         }
 
-        // 終わった直後は、キャラの周りに紙吹雪を舞わせる（左隣の pane にははみ出さない）
+        // 終わった直後は、キャラの周りに紙吹雪を舞わせる（バンザイ中は歩かないので、体の中心から左右に同じ幅）
         if (celebrating) {
-            float paneLeftPx = gridMin.x + paneLeft * cw;
-            float confettiLeft = paneLeft > 0.0 ? max(paneLeftPx, origin.x - 80.0) : origin.x - 80.0;
-            float confettiRight = origin.x + 21.0 * MASCOT_PIXEL.x + MASCOT_WALK;
+            float center = origin.x + 9.0 * MASCOT_PIXEL.x;
+            float confettiLeft = center - CONFETTI_WIDTH * 0.5;
+            float confettiRight = center + CONFETTI_WIDTH * 0.5;
             float headerTop = gridMin.y + (paneTop - 1.0) * ch;
             vec4 paper = confetti(px, vec2(confettiLeft, headerTop), vec2(confettiRight, headerTop + CONFETTI_HEIGHT));
             fragColor.rgb = mix(fragColor.rgb, paper.rgb, paper.a);
