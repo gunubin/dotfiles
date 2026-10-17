@@ -6,7 +6,7 @@
   "respectGitignore": true,
   "env": {
     "ENABLE_EXPERIMENTAL_MCP_CLI": "true",
-    "CLAUDE_CODE_PLUGIN_DIRS": "~/dotfiles/claude/.claude/mods/human-review-pane:~/dotfiles/claude/.claude/mods/user-todos",
+    "CLAUDE_CODE_PLUGIN_DIRS": "~/dotfiles/claude/.claude/mods/human-review-pane:~/dotfiles/claude/.claude/mods/user-todos:~/dotfiles/claude/.claude/mods/image-inline",
     "CLAUDE_CODE_TMUX_TRUECOLOR": "1"
   },
   "permissions": {

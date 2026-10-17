@@ -1,0 +1,5 @@
+{
+  "name": "image-inline",
+  "version": "0.1.0",
+  "description": "Claude の返答に出た画像パスの画像を、その返答の下にインラインで描く（Ghostty の画像プロトコル）"
+}
