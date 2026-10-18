@@ -18,6 +18,10 @@ const later = atom({ plugin: 'user-todos', key: 'later' } as const, [] as Todo[]
 // ターミナルの配色（Catppuccin Mocha）に揃えたパステルの黄色
 const NOW_COLOR = '#f9e2af'
 const isLaterOpen = atom({ plugin: 'user-todos', key: 'isLaterOpen' } as const, false)
+// 「あとで」のうち別リポジトリで登録した分は、帯を開いても畳んでおく
+const isOthersOpen = atom({ plugin: 'user-todos', key: 'isOthersOpen' } as const, false)
+// このセッションのリポジトリ名（起動時に一度だけ調べる）
+const repo = atom({ plugin: 'user-todos', key: 'repo' } as const, '')
 
 const WHEN_SCHEMA = {
   type: 'string',
@@ -85,6 +89,8 @@ const newId = async ($: EngineInterface) => {
 
 export const register: Register = on => {
   on('session.start', async ($, e, next) => {
+    const name = await repoName($)
+    await update($, repo, () => name)
     await syncLater($)
     $.clock.every(SYNC_MS, () => void syncLater($))
 
@@ -202,11 +208,15 @@ export const register: Register = on => {
 
     const { Box, Button, Text } = $.ui.resolve(e)
     const isOpen = await read($, isLaterOpen)
-    const row = (todo: Todo, actions: 'now' | 'later') => (
+    const isOthersShown = await read($, isOthersOpen)
+    const currentRepo = await read($, repo)
+    const mine = laterList.filter(todo => todo.repo === currentRepo)
+    const others = laterList.filter(todo => todo.repo !== currentRepo)
+    const row = (todo: Todo, actions: 'now' | 'later' | 'other') => (
       <Box key={`row-${todo.id}`} flexDirection="row">
         <Button key={`done-${todo.id}`} label="✓" onPress={() => remove($, todo.id)} />
         <Text> </Text>
-        {actions === 'later' && (
+        {actions !== 'now' && (
           <Button
             key={`up-${todo.id}`}
             label="今やる"
@@ -217,9 +227,9 @@ export const register: Register = on => {
           />
         )}
         <Text wrap="truncate-end">
-          {actions === 'later' ? ' ' : ''}
+          {actions !== 'now' ? ' ' : ''}
+          {actions === 'other' && <Text dimColor>{todo.repo} </Text>}
           {todo.text}
-          {actions === 'later' && <Text dimColor> {todo.repo}</Text>}
         </Text>
       </Box>
     )
@@ -245,7 +255,18 @@ export const register: Register = on => {
             </Button>
           </Box>
         )}
-        {isOpen && laterList.map(todo => row(todo, 'later'))}
+        {isOpen && mine.map(todo => row(todo, 'later'))}
+        {isOpen && others.length > 0 && (
+          <Box flexDirection="row">
+            <Button key="toggle-others" plain onPress={() => update($, isOthersOpen, open => !open)}>
+              <Text dimColor>
+                {'  '}
+                {isOthersShown ? '▼' : '▶'} 他のリポジトリ ({others.length})
+              </Text>
+            </Button>
+          </Box>
+        )}
+        {isOpen && isOthersShown && others.map(todo => row(todo, 'other'))}
       </Box>
     )
   })

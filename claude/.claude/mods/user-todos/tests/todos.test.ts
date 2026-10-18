@@ -68,3 +68,24 @@ test('他のセッションが書いたあとでを起動時に読み込む', as
   })
   expect(String((await call($, 'list', {})).result)).toContain('x1: 別リポジトリの作業')
 })
+
+test('別リポジトリで登録したあとでは、Later を開いても畳まれていて、押すとリポジトリ名付きで出る', async ($, on) => {
+  await setup($, on, {
+    later: [
+      { id: 'a1', text: 'このリポジトリの作業', repo: 'repo-a', createdAt: '2026-10-01T00:00:00.000Z' },
+      { id: 'b1', text: '別リポジトリの作業', repo: 'repo-b', createdAt: '2026-10-01T00:00:00.000Z' },
+      { id: 'b2', text: '別リポジトリのもう一つ', repo: 'repo-b', createdAt: '2026-10-01T00:00:00.000Z' },
+    ],
+  })
+  const band = await $.ui.mount({ plugin: 'user-todos', surface: 'terminal', component: 'AbovePrompt', props: BAND as never })
+  expect(await band.find({ text: /Later \(3\)/ })).toBeDefined()
+
+  await band.press({ key: 'toggle-later' })
+  expect(await band.find({ text: /このリポジトリの作業/ })).toBeDefined()
+  expect(await band.find({ text: /他のリポジトリ \(2\)/ })).toBeDefined()
+  expect(await band.findAll({ text: /別リポジトリ/ })).toHaveLength(0)
+
+  await band.press({ key: 'toggle-others' })
+  expect(await band.find({ text: /repo-b 別リポジトリの作業/ })).toBeDefined()
+  expect(await band.find({ text: /repo-b 別リポジトリのもう一つ/ })).toBeDefined()
+})

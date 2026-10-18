@@ -4,6 +4,6 @@ export type Todo = { id: string; text: string; repo: string; createdAt: string }
 
 declare module 'claude-code' {
   interface PluginState {
-    'user-todos': { now: Todo[]; later: Todo[]; isLaterOpen: boolean }
+    'user-todos': { now: Todo[]; later: Todo[]; isLaterOpen: boolean; isOthersOpen: boolean; repo: string }
   }
 }
