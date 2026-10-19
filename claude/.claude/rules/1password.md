@@ -29,4 +29,5 @@ API キーやトークンは 1Password の `dev` 保管庫に置き、Claude と
 | my-health の Google auth platform | `op://dev/my-health-google-auth-platform/credential` | - | |
 | Cloudflare API Token（fren-admin 検証環境） | `op://dev/cloudflare-api-token-fren-admin-staging/credential` | - | |
 | Apple Sandbox Tester 02（NoPace） | `op://dev/Apple Sandbox Tester 02 (NoPace)/password` | - | Login 項目 |
+| NoPace の Google Play サービスアカウントの鍵（JSON。Play API・release-status.js・play-release.js 用） | `op://dev/google-play-service-account-nopace/credential` | `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` | `eas-submit-service@nopace-469609`。同じ鍵を EAS と GitHub のシークレットにも登録（#140、2026-10-19） |
 | test-api-key / test-note | - | - | テスト用。使わない |
