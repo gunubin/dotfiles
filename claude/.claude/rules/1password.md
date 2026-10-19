@@ -30,4 +30,6 @@ API キーやトークンは 1Password の `dev` 保管庫に置き、Claude と
 | Cloudflare API Token（fren-admin 検証環境） | `op://dev/cloudflare-api-token-fren-admin-staging/credential` | - | |
 | Apple Sandbox Tester 02（NoPace） | `op://dev/Apple Sandbox Tester 02 (NoPace)/password` | - | Login 項目 |
 | NoPace の Google Play サービスアカウントの鍵（JSON。Play API・release-status.js・play-release.js 用） | `op://dev/google-play-service-account-nopace/credential` | `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` | `eas-submit-service@nopace-469609`。同じ鍵を EAS と GitHub のシークレットにも登録（#140、2026-10-19） |
+| YouTube Data API v3 キー（keyword-analysis MCP の get_youtube_trending 用） | `op://dev/youtube-data-api-key/credential` | `YOUTUBE_API_KEY` | クエリ `?key=`。mono-and.blog の git 履歴から移した（2026-10-19） |
+| Hugging Face アクセストークン（keyword-analysis MCP の analyze_sentiment 用） | `op://dev/huggingface-api-key/credential` | `HUGGINGFACE_API_KEY` | ヘッダー `Authorization: Bearer`。mono-and.blog の git 履歴から移した（2026-10-19） |
 | test-api-key / test-note | - | - | テスト用。使わない |
