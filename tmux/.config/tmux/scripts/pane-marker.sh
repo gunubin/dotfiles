@@ -26,7 +26,7 @@
 #   12マス目: prefix + コピーモード * 2 + ズーム * 4 + コマンド失敗 * 8
 #   13マス目: git push が成功して5秒以内 * 16
 #   14〜21マス目: Claude が動いている pane ごとに2マス。1マス目は paneの左、2マス目は paneの上 + 状態 * 512
-#                 （状態は 0: なし / 1: 処理中 / 2: 入力待ち / 3: 終わって3秒以内 / 4: 処理を始めて60秒以上）
+#                 （状態は 0: なし / 1: 処理中 / 2: 入力待ち / 3: 終わって3秒以内 / 4: 処理を始めて60秒以上 / 5: アクティブな pane で待機中）
 # 右端から 1マス目・2マス目…の順に並ぶよう、21→1 の順で出す
 
 [ $# -eq 17 ] || exit 0
@@ -48,6 +48,7 @@ claude_panes=$(tmux list-panes -t "${17}" -F '#{pane_id} #{pane_left} #{e|+:#{pa
            elif $s.status == "working" then 1
            elif $s.status == "waiting" then 2
            elif $s.status == "done" and $now - ($s.ts // 0) <= 3 then 3
+           elif $s.status != null and $active == "1" then 5
            else 0 end) as $code
         | select($code > 0)
         | "\($left) \($top) \($code)"' 2>/dev/null | head -n 4)

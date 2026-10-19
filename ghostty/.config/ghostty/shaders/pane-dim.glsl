@@ -102,6 +102,15 @@ const float FIREWORK_RADIUS = 320.0;       // 花火が広がる半径（px）
 const float FIREWORK_BRIGHT = 1.6;         // 火花の明るさ
 const float MARKER_CELLS = 21.0;           // pane-marker.sh が出す目印のマスの数
 const float MAGIC = 2730.0;                // pane-marker.sh の目印の値
+const vec2 NESS_PIXEL = vec2(3.0);         // ネスのドット1つの大きさ（px）。16 × 24 ドットで、キャラと同じ高さになる
+const float NESS_STEP = 0.1;               // ネスが走るときに足を踏みかえる間隔（秒）
+const float NESS_AFTER = 1.0;              // 最後にカーソルが動いてから、ネスが出続ける秒数
+const float NESS_GAP = 48.0;               // 渡すときの、キャラの右端とネスの間（px）
+const float NESS_TOSS = 0.9;               // プレゼントを1つ渡す間隔（秒）
+const float NESS_ACTION = 3.0;             // 入力中のネスが動きを入れ替える間隔（秒）
+const float NESS_RUN = 120.0;             // 入力中のネスが右へ走る距離（px）
+// 並びは 0: なし / 1: 黒（輪郭・髪） / 2: 赤 / 3: ピンク / 4: 青 / 5: 白 / 6: 灰 / 7: 橙 / 8: 肌 / 9: 黄 / 10: 明るい灰 / 11: 水色 / 12: 暗い赤
+const vec3 NESS_COLORS[13] = vec3[13](vec3(0.0), vec3(0.086, 0.094, 0.106), vec3(0.831, 0.224, 0.192), vec3(0.898, 0.663, 0.659), vec3(0.220, 0.325, 0.678), vec3(0.969), vec3(0.392, 0.400, 0.408), vec3(0.871, 0.631, 0.400), vec3(0.910, 0.769, 0.620), vec3(0.902, 0.847, 0.388), vec3(0.627, 0.635, 0.643), vec3(0.42, 0.62, 0.86), vec3(0.55, 0.16, 0.16));
 // ==========================
 
 // 画面の色は、Ghostty が sRGB から Display P3 に変換して渡してくる（macOS の既定）。
@@ -265,7 +274,7 @@ ClawdPose officialPose(int seq, int frame) {
 
 // p がキャラのどこにあたるか。0: 何もない / 1: 体 / 2: 右隣の「！」 / 3: 土ぼこり / 4: 影。
 // origin はキャラの左上、time はキャラごとにずらした時刻
-int mascotAt(vec2 p, vec2 origin, float time, bool waiting, bool celebrating, bool running) {
+int mascotAt(vec2 p, vec2 origin, float time, bool waiting, bool celebrating, bool running, bool catching) {
     int frame = int(time / CLAWD_FRAME);
     ClawdPose pose = ClawdPose(0, 0, 0, -1, vec2(0.0), 0, 0, false);
     if (celebrating) {
@@ -301,6 +310,10 @@ int mascotAt(vec2 p, vec2 origin, float time, bool waiting, bool celebrating, bo
             // 右手を振る
             pose.arms = mod(floor(t / MASCOT_WAVE), 2.0) >= 1.0 ? 2 : 0;
         }
+    }
+    // ネスからプレゼントを受け取ったら、バンザイする
+    if (catching) {
+        pose.arms = 1;
     }
     // 目を開けているときは、ときどきまばたきする
     if (pose.facing < 0 && pose.eyes == 0 && mod(time, MASCOT_BLINK_EVERY) < MASCOT_BLINK) {
@@ -396,6 +409,234 @@ int cookingAt(vec2 p, vec2 origin, float time) {
 float monsterTime(float time) {
     float slot = floor(time / MONSTER_SLOT);
     return hash1(slot * 7.31 + 3.7) < MONSTER_CHANCE ? time - slot * MONSTER_SLOT : -1.0;
+}
+
+// ---------- MOTHER2 のネス（Claude が待機中の pane で入力している間に動く。処理中に入力すると、キャラにプレゼントを渡す） ----------
+const uint NESS_SPRITES[96] = uint[96](0x11110000u, 0x111u, 0x31321000u, 0x11311u, 0x23121111u, 0x122122u, 0x22144451u, 0x1221222u, 0x44444610u, 0x1221222u, 0x11171110u, 0x111771u, 0x11777111u, 0x1111777u, 0x88188171u, 0x1888818u, 0x88188871u, 0x1888818u, 0x88833710u, 0x173388u, 0x88833100u, 0x13388u, 0x11831000u, 0x1381u, 0x88710000u, 0x178u, 0x71141000u, 0x1411u, 0x44499100u, 0x19944u, 0x99944410u, 0x144499u, 0x44441851u, 0x1844444u, 0x99991881u, 0x181999u, 0x44444110u, 0x11144u, 0x14444100u, 0x16aa14u, 0x14411000u, 0x1666a1u, 0x11221000u, 0x1666a1u, 0x165100u, 0x16661u, 0x11000u, 0x1110u, 0x11110000u, 0x111u, 0x31321000u, 0x11311u, 0x23121111u, 0x122122u, 0x22144451u, 0x1221222u, 0x44444610u, 0x1221222u, 0x11171110u, 0x111771u, 0x11777111u, 0x1111777u, 0x88188171u, 0x1888818u, 0x88188871u, 0x1888818u, 0x88833710u, 0x173388u, 0x88833100u, 0x13388u, 0x11831000u, 0x1381u, 0x88710000u, 0x178u, 0x71141000u, 0x1411u, 0x44499100u, 0x19944u, 0x99944410u, 0x144499u, 0x44441851u, 0x1844444u, 0x99991881u, 0x181999u, 0x44444110u, 0x11144u, 0x141aa610u, 0x14444u, 0x11a66610u, 0x1144u, 0x11a66610u, 0x1221u, 0x1666100u, 0x15610u, 0x111000u, 0x1100u);
+const uint NESS_SIDE[100] = uint[100](0x11110000u, 0x11u, 0x13311100u, 0x133u, 0x22222210u, 0x111522u, 0x22222221u, 0x1542222u, 0x22222221u, 0x144422u, 0x11111111u, 0x11181u, 0x88111111u, 0x18888u, 0x88181111u, 0x18188u, 0x88881111u, 0x188188u, 0x33811110u, 0x18833u, 0x33888100u, 0x18883u, 0x88881000u, 0x1818u, 0x88811110u, 0x188u, 0xb1199100u, 0x111u, 0x44199910u, 0x114u, 0x99419910u, 0x1111u, 0x44111910u, 0x155u, 0x99441100u, 0x1199u, 0x11bbb100u, 0x1411u, 0x44441811u, 0x1522314u, 0x11113251u, 0x1522311u, 0x1251u, 0x122800u, 0x1110u, 0x15100u, 0x1510u, 0x11100u, 0x1100u, 0x1000u, 0x11110000u, 0x11u, 0x13311100u, 0x133u, 0x22222210u, 0x111522u, 0x22222221u, 0x1542222u, 0x22222221u, 0x144422u, 0x11111111u, 0x11181u, 0x88111111u, 0x18888u, 0x88181111u, 0x18188u, 0x88881111u, 0x188188u, 0x33811110u, 0x18833u, 0x33888100u, 0x18883u, 0x88881000u, 0x1818u, 0x88811110u, 0x188u, 0xb1199100u, 0x111u, 0x44199910u, 0x114u, 0x99419910u, 0x1111u, 0x44111910u, 0x155u, 0x99441100u, 0x1199u, 0x11bbb100u, 0x1411u, 0x44441100u, 0x14u, 0x44441000u, 0x14u, 0x11110000u, 0x11u, 0x22210000u, 0x15u, 0x52210000u, 0x15u, 0x11100000u, 0x1u);
+const uint NESS_QUARTER[96] = uint[96](0x11111110u, 0x11u, 0x13113111u, 0x123u, 0x32222221u, 0x1222u, 0x22222221u, 0x154442u, 0x44222221u, 0x14444u, 0x11181111u, 0x1181u, 0x11881111u, 0x11888u, 0x88188180u, 0x18818u, 0x88188880u, 0x18818u, 0x88883310u, 0x11888u, 0x88888810u, 0x1888u, 0x11888100u, 0x188u, 0x88881100u, 0x18u, 0xb1111910u, 0x11u, 0x44444191u, 0x1114u, 0x99919991u, 0x1919u, 0x44414411u, 0x18114u, 0x99991851u, 0x18119u, 0x44444110u, 0x1114u, 0x14444110u, 0x14u, 0x41441100u, 0x14u, 0x21222100u, 0x12u, 0x15555110u, 0x155u, 0x1111100u, 0x11u, 0x11111110u, 0x11u, 0x13113111u, 0x123u, 0x32222221u, 0x1222u, 0x22222221u, 0x154442u, 0x44222221u, 0x14444u, 0x11181111u, 0x1181u, 0x11881111u, 0x11888u, 0x88188180u, 0x18818u, 0x88188880u, 0x18818u, 0x88883310u, 0x11888u, 0x88888810u, 0x1888u, 0x11888100u, 0x188u, 0x88881100u, 0x18u, 0xb1111910u, 0x11u, 0x44444191u, 0x1114u, 0x99919991u, 0x1919u, 0x44414411u, 0x18114u, 0x99991851u, 0x18119u, 0x44444110u, 0x1114u, 0x14444110u, 0x144u, 0x144410u, 0x1441u, 0x12221u, 0x12210u, 0x15551u, 0x15510u, 0x1110u, 0x11100u);
+const uint NESS_BACK[192] = uint[192](0x11110000u, 0x1111u, 0x32131100u, 0x11131u, 0x22212210u, 0x1522213u, 0x22222220u, 0x1422222u, 0x22221220u, 0x121222u, 0x22222110u, 0x112222u, 0x11111110u, 0x111111u, 0x11111180u, 0x1811111u, 0x11111180u, 0x1811111u, 0x11111818u, 0x181111u, 0x11118111u, 0x118111u, 0x11881810u, 0x11881u, 0x11118881u, 0x18111u, 0x99141110u, 0x11419u, 0x11148110u, 0x18411u, 0x19914410u, 0x184199u, 0x99918880u, 0x1588199u, 0x19911880u, 0x1881199u, 0x99141110u, 0x111199u, 0x44441100u, 0x1144u, 0x11441000u, 0x144u, 0x1221000u, 0x1221u, 0x1251000u, 0x1521u, 0x110000u, 0x110u, 0x11110000u, 0x1111u, 0x32131100u, 0x11131u, 0x22212210u, 0x1522213u, 0x22222220u, 0x1422222u, 0x22221220u, 0x121222u, 0x22222110u, 0x112222u, 0x11111110u, 0x111111u, 0x11111180u, 0x1811111u, 0x11111180u, 0x1811111u, 0x11111818u, 0x181111u, 0x11118111u, 0x118111u, 0x11881810u, 0x11881u, 0x11118881u, 0x18111u, 0x99141110u, 0x11419u, 0x11148110u, 0x18411u, 0x19914410u, 0x184199u, 0x99918880u, 0x1588199u, 0x19911880u, 0x1881199u, 0x99141110u, 0x111199u, 0x44441100u, 0x1144u, 0x11441000u, 0x144u, 0x1221000u, 0x1441u, 0x110000u, 0x1221u, 0x0u, 0x111u, 0x0u, 0x0u, 0x11110000u, 0x1111u, 0x13222111u, 0x11323u, 0x31222144u, 0x122222u, 0x22122144u, 0x1222222u, 0x22222211u, 0x1122222u, 0x22221110u, 0x111222u, 0x11111181u, 0x111111u, 0x11111881u, 0x111111u, 0x11111881u, 0x11111u, 0x11111811u, 0x11111u, 0x11118110u, 0x11111u, 0x11881110u, 0x1811u, 0x88111110u, 0x111u, 0x14449100u, 0x1999u, 0x14994411u, 0x11111u, 0x91414888u, 0x19199u, 0x91911488u, 0x19999u, 0x91444111u, 0x19199u, 0x14441000u, 0x1999u, 0x11441000u, 0x111u, 0x12221000u, 0x122u, 0x12551000u, 0x155u, 0x11111000u, 0x11u, 0x0u, 0x0u, 0x11110000u, 0x1111u, 0x13222111u, 0x11323u, 0x31222144u, 0x122222u, 0x22122144u, 0x1222222u, 0x22222211u, 0x1122222u, 0x22221110u, 0x111222u, 0x11111181u, 0x111111u, 0x11111881u, 0x111111u, 0x11111881u, 0x11111u, 0x11111811u, 0x11111u, 0x11118110u, 0x11111u, 0x11881110u, 0x1811u, 0x88111110u, 0x111u, 0x14449100u, 0x1999u, 0x14994411u, 0x11111u, 0x91414888u, 0x19199u, 0x91911488u, 0x19999u, 0x91444111u, 0x19199u, 0x14441000u, 0x1999u, 0x1441000u, 0x141u, 0x1221000u, 0x1221u, 0x1551000u, 0x1510u, 0x110000u, 0x110u);
+
+// ネスの絵 frame の、ドット spot の色の番号（NESS_COLORS の並び。0 は何もない）。flip で左向きにする
+int nessPixel(int frame, vec2 spot, bool flip) {
+    if (spot.x < 0.0 || spot.x >= 16.0 || spot.y < 0.0 || spot.y >= 24.0) {
+        return 0;
+    }
+    int x = flip ? 15 - int(spot.x) : int(spot.x);
+    uint word = NESS_SPRITES[(frame * 24 + int(spot.y)) * 2 + x / 8];
+    return int((word >> uint((x % 8) * 4)) & 15u);
+}
+
+// 横向きのネスの絵 frame の、ドット spot の色の番号。元の絵は右向きで、flip で左向きにする
+int nessSidePixel(int frame, vec2 spot, bool flip) {
+    if (spot.x < 0.0 || spot.x >= 16.0 || spot.y < 0.0 || spot.y >= 25.0) {
+        return 0;
+    }
+    int x = flip ? 15 - int(spot.x) : int(spot.x);
+    uint word = NESS_SIDE[(frame * 25 + int(spot.y)) * 2 + x / 8];
+    return int((word >> uint((x % 8) * 4)) & 15u);
+}
+
+// 斜め向きのネスの絵 frame の、ドット spot の色の番号。元の絵は右斜め前を向いていて、flip で左斜め前にする
+int nessQuarterPixel(int frame, vec2 spot, bool flip) {
+    if (spot.x < 0.0 || spot.x >= 13.0 || spot.y < 0.0 || spot.y >= 24.0) {
+        return 0;
+    }
+    int x = flip ? 12 - int(spot.x) : int(spot.x);
+    uint word = NESS_QUARTER[(frame * 24 + int(spot.y)) * 2 + x / 8];
+    return int((word >> uint((x % 8) * 4)) & 15u);
+}
+
+// 後ろ向きのネスの絵の、ドット spot の色の番号。frame は 0〜1 が真後ろ、2〜3 が左斜め後ろ（flip で右斜め後ろ）
+int nessBackPixel(int frame, vec2 spot, bool flip) {
+    if (spot.x < 0.0 || spot.x >= 15.0 || spot.y < 0.0 || spot.y >= 24.0) {
+        return 0;
+    }
+    int x = flip ? 14 - int(spot.x) : int(spot.x);
+    uint word = NESS_BACK[(frame * 24 + int(spot.y)) * 2 + x / 8];
+    return int((word >> uint((x % 8) * 4)) & 15u);
+}
+
+// 8 方向の向きで立つネス。dir は 0: 正面 / 1: 右斜め前 / 2: 右 / 3: 右斜め後ろ / 4: 後ろ / 5: 左斜め後ろ / 6: 左 / 7: 左斜め前
+int nessFacing(int dir, vec2 spot) {
+    if (dir == 0) {
+        return nessPixel(0, spot, false);
+    } else if (dir == 1 || dir == 7) {
+        return nessQuarterPixel(0, spot, dir == 7);
+    } else if (dir == 2 || dir == 6) {
+        return nessSidePixel(0, spot + vec2(0.0, 1.0), dir == 6);
+    } else if (dir == 4) {
+        return nessBackPixel(0, spot, false);
+    }
+    return nessBackPixel(2, spot, dir == 3);
+}
+
+vec4 nessColor(int c) {
+    return c > 0 ? vec4(NESS_COLORS[c], 1.0) : vec4(0.0);
+}
+
+float nessSegment(vec2 p, vec2 a, vec2 b) {
+    vec2 ab = b - a;
+    return length(p - a - ab * clamp(dot(p - a, ab) / dot(ab, ab), 0.0, 1.0));
+}
+
+// 4 本のとげの星（バットが当たったときの光）。center から半径 r
+float nessStar(vec2 p, vec2 center, float r) {
+    vec2 d = abs(p - center);
+    return step(d.x * d.y * 6.0 + max(d.x, d.y) * 0.35, r * 0.35) * step(max(d.x, d.y), r);
+}
+
+// ハンバーガー（7 × 5 ドット。パン・レタス・肉・パン）。width は食べて残った割合
+vec4 hamburgerAt(vec2 p, vec2 center, float width) {
+    vec2 q = (p - center) / NESS_PIXEL;
+    if (abs(q.y) >= 2.5 || q.x < -3.5 || q.x >= -3.5 + 7.0 * width) {
+        return vec4(0.0);
+    }
+    int y = int(floor(q.y + 2.5));
+    bool corner = abs(q.x) >= 2.5 && (y == 0 || y == 4);
+    if (corner) {
+        return vec4(0.0);
+    }
+    vec3 c = y == 0 ? vec3(0.87, 0.60, 0.30) : y == 1 ? vec3(0.45, 0.78, 0.35) : y == 2 ? vec3(0.45, 0.26, 0.15) : vec3(0.87, 0.60, 0.30);
+    return vec4(c, 1.0);
+}
+
+// 小さなハート（7 × 6 ドット）
+bool heartAt(vec2 p, vec2 center) {
+    vec2 q = floor((p - center) / 3.0 + vec2(3.5, 3.0));
+    if (q.x < 0.0 || q.x >= 7.0 || q.y < 0.0 || q.y >= 6.0) {
+        return false;
+    }
+    const uint HEART[6] = uint[6](0x36u, 0x7fu, 0x7fu, 0x3eu, 0x1cu, 0x08u);
+    return (HEART[int(q.y)] >> uint(q.x) & 1u) != 0u;
+}
+
+// Claude が待機中の pane で入力している間のネス。NESS_ACTION 秒ごとに、走る・バット・PK キアイ・ヨーヨー・ハンバーガー・
+// 斜め向きで歩く・見回す・くるっと回るから選ぶ。
+// origin はネスの左上。描く色（a が 0 なら何もない）を返す
+vec4 nessTypingAt(vec2 p, vec2 origin, float time) {
+    float segment = floor(time / NESS_ACTION);
+    int action = int(hash1(segment * 3.1 + 0.7) * 8.0);
+    float t = time - segment * NESS_ACTION;
+    int foot = int(mod(floor(time / NESS_STEP), 2.0));
+
+    if (action == 0) {
+        // 横向きで、右へ走って戻ってくる。走るときは 1 ドット跳ねる
+        float phase = t / NESS_ACTION;
+        float x = NESS_RUN * (0.5 - 0.5 * cos(6.2831853 * phase));
+        float bob = foot == 0 ? 0.0 : -NESS_PIXEL.y;
+        vec2 spot = floor((p - origin - vec2(x, bob - NESS_PIXEL.y)) / NESS_PIXEL);
+        return nessColor(nessSidePixel(foot, spot, phase >= 0.5));
+    }
+    if (action == 5) {
+        // 斜め向きで、のんびり右へ歩いて戻ってくる
+        float phase = t / NESS_ACTION;
+        float x = NESS_RUN * 0.6 * (0.5 - 0.5 * cos(6.2831853 * phase));
+        int slow = int(mod(floor(time / (NESS_STEP * 2.5)), 2.0));
+        return nessColor(nessQuarterPixel(slow, floor((p - origin - vec2(x, 0.0)) / NESS_PIXEL), phase >= 0.5));
+    }
+    if (action == 6) {
+        // 見回す: 右斜め → 正面 → 左斜め → 後ろ
+        const int LOOK[4] = int[4](1, 0, 7, 4);
+        return nessColor(nessFacing(LOOK[int(mod(t, 2.4) / 0.6)], floor((p - origin) / NESS_PIXEL)));
+    }
+    if (action == 7) {
+        // くるっと回る: 8 方向を 0.1 秒ずつ回り、正面で少し止まる
+        float s = mod(t, 1.5);
+        int dir = s < 0.8 ? int(s / 0.1) : 0;
+        return nessColor(nessFacing(dir, floor((p - origin) / NESS_PIXEL)));
+    }
+
+    vec2 center = origin + vec2(7.5, 12.0) * NESS_PIXEL;
+    vec2 rightHand = origin + vec2(13.5, 16.5) * NESS_PIXEL;
+    vec4 front = nessColor(nessPixel(action == 1 ? 0 : foot, floor((p - origin) / NESS_PIXEL), false));
+    vec4 behind = vec4(0.0);
+    vec4 over = vec4(0.0);
+
+    if (action == 1) {
+        // バットを振る: 肩にかついだ構えから、1 秒ごとに振り下ろす。当たった瞬間に星が光る
+        float s = mod(t, 1.0);
+        float swing = s < 0.12 ? s / 0.12 : (s < 0.45 ? 1.0 : 1.0 - (s - 0.45) / 0.55);
+        float angle = mix(1.9, -0.5, swing);
+        vec2 tip = rightHand + vec2(cos(angle), -sin(angle)) * 34.0;
+        float d = nessSegment(p, rightHand, tip);
+        float thick = mix(1.5, 3.0, clamp(dot(p - rightHand, tip - rightHand) / (34.0 * 34.0), 0.0, 1.0));
+        if (d < thick) {
+            over = vec4(0.62, 0.43, 0.24, 1.0);
+        }
+        if (s >= 0.1 && s < 0.35 && nessStar(p, tip + vec2(8.0, 0.0), 10.0 * (1.0 - (s - 0.1) / 0.35)) > 0.0) {
+            over = vec4(0.98, 0.92, 0.45, 1.0);
+        }
+    } else if (action == 2) {
+        // PK キアイ: 体の中心から、虹色の輪が 1.2 秒ごとに広がる
+        for (int k = 0; k < 2; k++) {
+            float r = fract(t / 1.2 + float(k) * 0.5);
+            float radius = 10.0 + 70.0 * r;
+            float d = abs(length(p - center) - radius);
+            if (d < 2.5) {
+                float hue = atan(p.y - center.y, p.x - center.x) / 6.2831853 + time * 0.5;
+                vec3 rainbow = 0.55 + 0.45 * cos(6.2831853 * (hue + vec3(0.0, 0.33, 0.67)));
+                behind = vec4(rainbow, 1.0 - r);
+            }
+        }
+    } else if (action == 3) {
+        // ヨーヨー: 右手から下へ、上下させる
+        float drop = 6.0 + 34.0 * (0.5 - 0.5 * cos(6.2831853 * t / 0.8));
+        vec2 yoyo = rightHand + vec2(2.0, drop);
+        if (length(p - yoyo) < 4.5) {
+            over = vec4(0.88, 0.25, 0.25, 1.0);
+        } else if (abs(p.x - yoyo.x) < 0.75 && p.y > rightHand.y && p.y < yoyo.y) {
+            over = vec4(0.9, 0.9, 0.9, 1.0);
+        }
+    } else {
+        // ハンバーガー: 手から口へ運んで、3 口で食べる。食べ終わるとハートが出る
+        float s = mod(t, 2.5);
+        vec2 mouth = origin + vec2(7.5, 12.5) * NESS_PIXEL;
+        if (s < 0.5) {
+            over = hamburgerAt(p, mix(rightHand, mouth, s / 0.5), 1.0);
+        } else if (s < 1.8) {
+            float bites = floor((s - 0.5) / 0.43) + 1.0;
+            over = hamburgerAt(p, mouth + vec2(0.0, mod(s, 0.43) < 0.12 ? 1.5 : 0.0), 1.0 - bites / 3.0 + 0.001);
+        } else if (heartAt(p, origin + vec2(7.5 * NESS_PIXEL.x, -8.0 - 24.0 * (s - 1.8)))) {
+            over = vec4(0.95, 0.45, 0.6, 1.0);
+        }
+    }
+    return over.a > 0.0 ? over : (front.a > 0.0 ? front : behind);
+}
+
+// プレゼントの箱（5 × 6 ドット。赤い箱に黄色いリボン）。p にあれば色の番号を返す
+int presentAt(vec2 p, vec2 center) {
+    vec2 spot = floor((p - center) / 4.0 + vec2(2.5, 3.0));
+    if (spot.x < 0.0 || spot.x >= 5.0 || spot.y < 0.0 || spot.y >= 6.0) {
+        return 0;
+    }
+    if (spot.y == 0.0) {
+        return spot.x == 1.0 || spot.x == 3.0 ? 9 : 0;
+    }
+    return spot.x == 2.0 || spot.y == 3.0 ? 9 : 2;
+}
+
+// 処理中に入力したときの、ネスがキャラにプレゼントを投げ渡す場面。origin はキャラの左上。
+// 色の番号（0 は何もない）を返し、キャラが受け取ってバンザイしているかを catching に入れる
+int nessTossAt(vec2 p, vec2 origin, float time, out bool catching) {
+    float t = mod(time, NESS_TOSS);
+    catching = t >= 0.55 && t < 0.8;
+    // ネスはキャラの右で足踏みしながら、左手で投げる
+    vec2 nessOrigin = origin + vec2(18.0 * MASCOT_PIXEL.x + NESS_GAP, 0.0);
+    int frame = int(mod(floor(time / NESS_STEP), 2.0));
+    int color = nessPixel(frame, floor((p - nessOrigin) / NESS_PIXEL), false);
+    if (color > 0) {
+        return color;
+    }
+    // ネスの手からキャラの頭へ、山なりに飛ぶ
+    if (t >= 0.1 && t < 0.55) {
+        float k = (t - 0.1) / 0.45;
+        vec2 from = nessOrigin + vec2(1.5, 16.5) * NESS_PIXEL;
+        vec2 to = origin + vec2(9.0 * MASCOT_PIXEL.x, 0.5 * MASCOT_PIXEL.y);
+        vec2 at = mix(from, to, k) - vec2(0.0, 60.0 * 4.0 * k * (1.0 - k));
+        return presentAt(p, at);
+    }
+    return 0;
 }
 
 // なめらかに変わる乱れ（0〜1）
@@ -812,7 +1053,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
 
     // Claude が処理中・入力待ち・終わった直後の pane では、その pane の左上でキャラが動く（非アクティブな pane でも明るいまま）。
     // 14〜21マス目に、pane ごとに「左」と「上 + 状態 * 512」が入っている。pane ごとに時刻をずらして動きをばらばらにする
-    // 状態は 1: 処理中 / 2: 入力待ち / 3: 終わった直後 / 4: 処理が長引いている（鍋をかき混ぜる）
+    // 状態は 1: 処理中 / 2: 入力待ち / 3: 終わった直後 / 4: 処理が長引いている（鍋をかき混ぜる） / 5: アクティブな pane で待機中
     for (int i = 0; i < 4; i++) {
         float paneLeft = readValue(vec2(rightEdge - (13.5 + 2.0 * float(i)) * cw, 0.5));
         float topState = readValue(vec2(rightEdge - (14.5 + 2.0 * float(i)) * cw, 0.5));
@@ -825,9 +1066,25 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
         bool celebrating = state == 3.0;
         // キー入力などでカーソルが動いている間は、アクティブな pane のキャラだけ走る
         bool running = sinceCursor < MASCOT_RUN_AFTER && paneLeft == left && paneTop == top;
+        bool typing = sinceCursor < NESS_AFTER && paneLeft == left && paneTop == top;
         // pane の左上から、上と左に同じだけあけて置く（跳ねると、上の間が一時的に縮む）
         vec2 origin = gridMin + vec2(paneLeft, paneTop) * cellSize + vec2(MASCOT_MARGIN);
         float time = iTime + float(i) * 1.7;
+        // Claude が待機中の pane で入力している間は、キャラの代わりにネスが動く
+        if (state == 5.0) {
+            vec4 ness = typing ? nessTypingAt(px, origin, time) : vec4(0.0);
+            fragColor.rgb = mix(fragColor.rgb, ness.rgb, ness.a);
+            continue;
+        }
+        // 処理中に入力している間は、ネスがキャラにプレゼントを投げ渡す（料理のシーンや化け物は出さない）
+        bool catching = false;
+        if ((state == 1.0 || state == 4.0) && typing) {
+            int color = nessTossAt(px, origin, time, catching);
+            if (color > 0) {
+                fragColor.rgb = NESS_COLORS[color];
+            }
+            state = 1.0;
+        }
         if (state == 4.0) {
             // 鍋をかき混ぜるシーンは、キャラの体がいつもの位置に来るように置く（上は湯気の分だけ pane の上端に寄せる）
             int color = cookingAt(px, origin - vec2(COOK_PIXEL.x, MASCOT_MARGIN - COOK_PIXEL.y), time);
@@ -837,12 +1094,12 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
             continue;
         }
         // 処理中にまれに、足がたくさん生えた化け物になる（キー入力中は出さない）
-        float monsterT = state == 1.0 && !running ? monsterTime(time) : -1.0;
+        float monsterT = state == 1.0 && !typing ? monsterTime(time) : -1.0;
         if (monsterT >= 0.0) {
             applyMonster(fragColor.rgb, px, origin, monsterT, time);
             continue;
         }
-        int hit = mascotAt(px, origin, time, waiting, celebrating, running);
+        int hit = mascotAt(px, origin, time, waiting, celebrating, running, catching);
         if (hit == 1) {
             fragColor.rgb = MASCOT_COLOR;
         } else if (hit == 2) {
