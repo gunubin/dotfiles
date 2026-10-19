@@ -82,6 +82,18 @@ jq_update() {
     fi
 }
 
+# transcript の先頭から、ユーザーが実際に打った最初のプロンプトを返す（ツール結果・system-reminder などは除く）
+first_prompt_from_transcript() {
+    local file="$1"
+    [ -n "$file" ] && [ -f "$file" ] || return 0
+    head -n 200 "$file" | jq -rs '
+        [ .[] | select(.type == "user" and (.isMeta | not)) | .message.content
+          | if type == "string" then . elif type == "array" then (map(select(.type == "text") | .text) | join(" ")) else "" end
+          | gsub("\\s+"; " ") | ltrimstr(" ")
+          | select(length > 0 and (startswith("<") | not)) ] | first // ""
+    ' 2>/dev/null
+}
+
 case "$event" in
     SessionStart)
         mkdir -p "$(dirname "$STATE_FILE")"
@@ -89,11 +101,14 @@ case "$event" in
         rm -rf "$HOME/.claude/pane-state" 2>/dev/null
         # Cleanup stale + add new entry in one lock
         active=$(tmux list-panes -a -F '#{pane_id}' 2>/dev/null | tr '\n' ' ')
+        # resume したセッションは、transcript から最初のプロンプトを拾う（新規・/clear なら空）
+        transcript=$(echo "$input" | jq -r '.transcript_path // ""' 2>/dev/null)
+        first_prompt=$(first_prompt_from_transcript "$transcript")
         acquire_lock || exit 0
-        jq_update --arg id "$PANE_ID" --arg status "$STATUS_IDLE" --arg dir "$DIR_NAME" --arg active "$active" --arg sid "$SESSION_ID" '
+        jq_update --arg id "$PANE_ID" --arg status "$STATUS_IDLE" --arg dir "$DIR_NAME" --arg active "$active" --arg sid "$SESSION_ID" --arg first "$first_prompt" '
             ($active | split(" ") | map(select(length > 0))) as $valid |
             with_entries(select(.key | IN($valid[]))) |
-            .[$id] = {"status": $status, "dir": $dir, "prompt": "", "session_id": $sid, "ts": (now | floor)}
+            .[$id] = {"status": $status, "dir": $dir, "prompt": "", "first_prompt": $first, "session_id": $sid, "ts": (now | floor)}
         '
         release_lock
         set_window_status "$STATUS_IDLE"
@@ -102,8 +117,10 @@ case "$event" in
         # since は処理を始めた時刻（ts はツールを使うたびに更新される）。pane-marker.sh が、処理が長引いたかを見る
         prompt=$(echo "$input" | jq -r '.prompt // ""' 2>/dev/null)
         acquire_lock || exit 0
+        # first_prompt は同じセッションの間は最初の値を保つ（pane-prompt.sh が pane 枠に出す）
         jq_update --arg id "$PANE_ID" --arg status "$STATUS_WORKING" --arg dir "$DIR_NAME" --arg prompt "$prompt" --arg sid "$SESSION_ID" \
-            '.[$id] = {"status": $status, "dir": $dir, "prompt": $prompt, "session_id": $sid, "ts": (now | floor), "since": (now | floor)}'
+            '(if .[$id].session_id == $sid and (.[$id].first_prompt // "") != "" then .[$id].first_prompt else $prompt end) as $first |
+             .[$id] = {"status": $status, "dir": $dir, "prompt": $prompt, "first_prompt": $first, "session_id": $sid, "ts": (now | floor), "since": (now | floor)}'
         release_lock
         set_window_status "$STATUS_WORKING"
         ;;
