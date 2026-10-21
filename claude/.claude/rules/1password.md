@@ -32,4 +32,6 @@ API キーやトークンは 1Password の `dev` 保管庫に置き、Claude と
 | NoPace の Google Play サービスアカウントの鍵（JSON。Play API・release-status.js・play-release.js 用） | `op://dev/google-play-service-account-nopace/credential` | `GOOGLE_PLAY_SERVICE_ACCOUNT_JSON` | `eas-submit-service@nopace-469609`。同じ鍵を EAS と GitHub のシークレットにも登録（#140、2026-10-19） |
 | YouTube Data API v3 キー（keyword-analysis MCP の get_youtube_trending 用） | `op://dev/youtube-data-api-key/credential` | `YOUTUBE_API_KEY` | クエリ `?key=`。mono-and.blog の git 履歴から移した（2026-10-19） |
 | Hugging Face アクセストークン（keyword-analysis MCP の analyze_sentiment 用） | `op://dev/huggingface-api-key/credential` | `HUGGINGFACE_API_KEY` | ヘッダー `Authorization: Bearer`。mono-and.blog の git 履歴から移した（2026-10-19） |
+| Google Photos Picker API の OAuth クライアント（JSON。photo-memories スキル用） | `op://dev/google-photos-picker-oauth-client/credential` | `GOOGLE_PHOTOS_PICKER_CLIENT_JSON` | デスクトップアプリ型。スコープ `photospicker.mediaitems.readonly`。トークンは `~/.config/photo-memories/token.json` |
+| NoPace の OTA の配信を Slack の ota チャンネルに知らせる Incoming Webhook の URL（mobile/scripts/deploy-ota.js 用） | `op://dev/nopace-slack-ota-webhook/credential` | `NOPACE_OTA_SLACK_WEBHOOK_URL` | 手元から配ったときの通知。Actions は GitHub の Secrets の SLACK_WEBHOOK_URL（2026-10-21） |
 | test-api-key / test-note | - | - | テスト用。使わない |
