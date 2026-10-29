@@ -56,6 +56,7 @@ My personal development environment managed with [GNU Stow](https://www.gnu.org/
 |---------|-------------|
 | [Git](https://git-scm.com/) | Version control configuration |
 | [Karabiner-Elements](https://karabiner-elements.pqrs.org/) | macOS keyboard customizer (config generated via [karabiner.ts](https://github.com/evan-liu/karabiner.ts) in `karabiner-config/`) |
+| maintenance | `disk-cleanup` (weekly: removes rebuildable caches and idle `node_modules`) and `disk-check` (hourly: notifies when free space drops below 30GB), scheduled by launchd plists in `launchd/` |
 
 ## Prerequisites
 
@@ -81,6 +82,7 @@ make install
 | `make brew-bundle` | Install Homebrew dependencies from Brewfile |
 | `make update` | Re-sync all symlinks (clean + install) |
 | `make clean` | Remove all symlinks |
+| `make launchd-init` | Register the launchd jobs in `launchd/` |
 
 ## Git Configuration
 

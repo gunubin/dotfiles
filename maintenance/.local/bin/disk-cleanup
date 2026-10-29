@@ -1,0 +1,65 @@
+#!/bin/bash
+# 作り直せるビルドのキャッシュを消す（launchd から週1回）
+# Usage: disk-cleanup [--dry-run]
+#
+# ビルド中に消すと失敗するので、Xcode・Gradle・EAS のビルドが動いていれば何もしない
+
+set -u
+
+DRY_RUN=0
+[ "${1:-}" = "--dry-run" ] && DRY_RUN=1
+
+LOG="$HOME/Library/Logs/disk-cleanup.log"
+WORKS="$HOME/works"
+DERIVED_DAYS=14   # この日数より前の DerivedData を消す
+IDLE_DAYS=60      # この日数、コミットもファイルの変更もないプロジェクトの node_modules を消す
+
+log() { echo "$(date '+%Y-%m-%d %H:%M') $*" >> "$LOG"; }
+avail_gb() { df -g /System/Volumes/Data | awk 'NR==2 {print $4}'; }
+
+remove() {
+  if [ "$DRY_RUN" = 1 ]; then
+    echo "削除予定: $1 ($(du -sh "$1" 2>/dev/null | cut -f1))"
+  else
+    rm -rf "$1" && log "削除: $1"
+  fi
+}
+
+if pgrep -f 'xcodebuild|GradleDaemon|gradlew|eas-build-local' > /dev/null; then
+  if [ "$DRY_RUN" = 0 ]; then
+    log "ビルド中のため見送り"
+    exit 0
+  fi
+  echo "（ビルド中。本番の実行なら見送る）"
+fi
+
+before=$(avail_gb)
+
+# Xcode のビルドの中間ファイル
+find "$HOME/Library/Developer/Xcode/DerivedData" -mindepth 1 -maxdepth 1 -type d \
+  -mtime +"$DERIVED_DAYS" 2>/dev/null | while read -r d; do remove "$d"; done
+
+# 消えたランタイムに紐づいて使えなくなったシミュレーター
+[ "$DRY_RUN" = 0 ] && xcrun simctl delete unavailable 2>/dev/null
+
+# パッケージのキャッシュ（npm cache clean と同じ中身）
+for d in "$HOME/.npm/_cacache" "$HOME/Library/Caches/CocoaPods" "$HOME/Library/Caches/pip" "$HOME/Library/Caches/Yarn"; do
+  [ -d "$d" ] && remove "$d"
+done
+
+# 休んでいるプロジェクトの node_modules
+now=$(date +%s)
+find "$WORKS" -maxdepth 4 -type d -name node_modules -prune 2>/dev/null | while read -r nm; do
+  project=$(dirname "$nm")
+  # MCP サーバーは更新しなくても常に使っている
+  case "$project" in *mcp*) continue ;; esac
+  last_commit=$(git -C "$project" log -1 --format=%ct 2>/dev/null) || continue
+  [ -n "$last_commit" ] || continue
+  [ $(( (now - last_commit) / 86400 )) -ge "$IDLE_DAYS" ] || continue
+  # コミットしていない変更があれば使っているとみなす
+  recent=$(find "$project" -maxdepth 3 -path "*/node_modules" -prune -o -type f -mtime -"$IDLE_DAYS" -print 2>/dev/null | head -1)
+  [ -z "$recent" ] && remove "$nm"
+done
+
+[ "$DRY_RUN" = 0 ] && log "完了: 空き ${before}GB → $(avail_gb)GB"
+exit 0

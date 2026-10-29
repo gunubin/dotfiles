@@ -4,7 +4,7 @@
 DOTFILES := $(shell pwd)
 HOME_DIR := $(HOME)
 STOW := $(shell command -v stow 2>/dev/null)
-PACKAGES := bat claude eza fish git ghostty idea iterm2 karabiner nvim starship tmux workmux yazi
+PACKAGES := bat claude eza fish git ghostty idea iterm2 karabiner maintenance nvim starship tmux workmux yazi
 
 # stowコマンド用の共通オプション
 STOW_VERBOSE := -v
@@ -53,7 +53,7 @@ clean: check-stow
 
 # インストール処理
 .PHONY: install
-install: stow-packages gitignore-init hooks-init
+install: stow-packages gitignore-init hooks-init launchd-init
 	@echo "dotfilesのインストールが完了しました！"
 
 # グローバルgitignoreの初回セットアップ
@@ -110,3 +110,15 @@ brew-dump: check-brew
 hooks-init:
 	@git -C $(DOTFILES) config core.hooksPath .githooks
 	@echo "core.hooksPath を .githooks に設定しました"
+
+# launchd のジョブ（ディスクの掃除・空き容量の通知）を登録
+# launchd はシンボリックリンクの plist を嫌うのでコピーして読み込み直す
+.PHONY: launchd-init
+launchd-init:
+	@for plist in $(DOTFILES)/launchd/*.plist; do \
+		name=$$(basename $$plist .plist); \
+		cp $$plist $(HOME_DIR)/Library/LaunchAgents/; \
+		launchctl bootout gui/$$(id -u)/$$name 2>/dev/null; \
+		launchctl bootstrap gui/$$(id -u) $(HOME_DIR)/Library/LaunchAgents/$$name.plist; \
+		echo "launchd に登録: $$name"; \
+	done

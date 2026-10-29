@@ -1,0 +1,15 @@
+#!/bin/bash
+# 空き容量が少なくなったら macOS の通知を出す（launchd から1時間ごと）
+# 同じ日に何度も出さないよう、通知した日を覚えておく
+
+THRESHOLD_GB=${DISK_CHECK_THRESHOLD_GB:-30}
+STAMP="$HOME/Library/Caches/disk-check.last"
+
+avail=$(df -g /System/Volumes/Data | awk 'NR==2 {print $4}')
+[ "$avail" -lt "$THRESHOLD_GB" ] || exit 0
+
+today=$(date +%Y-%m-%d)
+[ "$(cat "$STAMP" 2>/dev/null)" = "$today" ] && exit 0
+echo "$today" > "$STAMP"
+
+osascript -e "display notification \"空きが ${avail}GB です。disk-cleanup や不要なファイルの整理を\" with title \"ディスクの空きが少なくなっています\" sound name \"Funk\""
