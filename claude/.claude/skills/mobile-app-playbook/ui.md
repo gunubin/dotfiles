@@ -18,8 +18,9 @@ RestCall で「基本ができてないよ！！」と言われて全画面を�
 - 片方の OS 向けの直しは Platform で絞る。iOS 向けにキーボード中の余白を消したら Android で保存ボタンが隠れ、「測って伸ばす」直しを入れて「無理やり」と言われた。ライブラリの作りと直前の変更を先に疑う
 - **iOS のヘッダーは最初からこの形にする**（NoPace・RestCall で戻る・× のボタンを何度も指摘された。「全部のアプリで指摘必要？だるいよ」）
   - ルートの Stack の screenOptions で `headerUserInterfaceStyle: isDark ? 'dark' : 'light'`。アプリ内でテーマを切り替えるなら `Appearance.setColorScheme` でも OS に伝える。伝えないとダークでもガラスのボタンやキーボードが白く出る
-  - iOS は `headerTransparent: true`・背景 `transparent` にし、中身を見出しの下まで流してガラスのぼかしで重ねる（iOS 26 の標準の見え方）。スクロールの中身の上は `useHeaderHeight()` の分だけ空ける（iOS だけ。RestCall の `useHeaderInset`）
+  - iOS は `headerTransparent: true`・背景 `transparent` にし、中身を見出しの下まで流してガラスのぼかしで重ねる（iOS 26 の標準の見え方）。スクロールの中身の上は `useHeaderHeight()` の分だけ空ける（iOS だけ。RestCall の `useHeaderInset`）。画面の上の余白に足す。`paddingTop` を見出しの高さで上書きすると、見出しのすぐ下に文字が付く。`scrollEdgeEffects` は `{ top: 'soft' }` にそろえる（自動だと実機のモーダルで区切り線つきの帯になった）
   - 見出しに背景色を付けない。白いガラスのボタンだけが帯の上に浮き、中身が帯で切れて「ヘッダーで隠れる」と言われた。`scrollEdgeEffects` を hidden にするのも同じ見え方になるのでしない
+  - 同じ種類の設定は同じ出し方にする。3つから選ぶだけの外観と言語で、片方がモーダル、片方がシートだった（「なんで違うの？」）
   - 見出しの文字は、画面の中に大きく出す（title は ''）か、ヘッダーの title に出す。どちらもスクロールするとガラスの下を通るのが自然
   - 最新の iOS は実機で、ライトとダークの両方を見る
 - iOS 26 のヘッダーのガラスの枠（44pt）より大きいボタンははみ出す。単独のアイコンが左に寄る、ボタンが横長に伸びる
