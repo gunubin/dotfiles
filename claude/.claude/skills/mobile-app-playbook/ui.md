@@ -21,6 +21,7 @@ RestCall で「基本ができてないよ！！」と言われて全画面を�
 - トーストやダイアログが iOS のネイティブモーダルの裏に隠れる。確認は OS の Alert、選ぶ・書くはネイティブの formSheet にする
 - RN の Modal を続けて開くと透明な膜が残って押せなくなる
 - formSheet の中の一覧: iOS は最初の ScrollView をシート全体に広げる。Android は `nestedScrollEnabled` が要る
+- formSheet の入力欄に `autoFocus` を付けない。Android で、シートが開ききる前にキーボードが出て、キーボードだけ出てシートが出てこなかった（Harebi、2026-10-31）。シートはキーボードの上に乗るので、中は KeyboardAwareScrollView でなくふつうの ScrollView にする
 - Android の FlatList で `removeClippedSubviews` と sticky header を組み合わせると、スクロール後に押せなくなる
 - 数百個の要素は一度に描かず FlatList にする
 - Android の `headerTitleAlign` は既定が中央ではない。ロゴを左に置くなら headerLeft か画面の中に置く
