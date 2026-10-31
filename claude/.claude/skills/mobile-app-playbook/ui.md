@@ -16,7 +16,12 @@ RestCall で「基本ができてないよ！！」と言われて全画面を�
 ## OS ごとの落とし穴
 
 - 片方の OS 向けの直しは Platform で絞る。iOS 向けにキーボード中の余白を消したら Android で保存ボタンが隠れ、「測って伸ばす」直しを入れて「無理やり」と言われた。ライブラリの作りと直前の変更を先に疑う
-- アプリ内でテーマを切り替えるなら `Appearance.setColorScheme` で OS に伝え、ヘッダーに `headerUserInterfaceStyle` を指定する。伝えないと iOS のガラスのボタンやキーボードが白く出る。最新の iOS は実機で見る
+- **iOS のヘッダーは最初からこの形にする**（NoPace・RestCall で戻る・× のボタンを何度も指摘された。「全部のアプリで指摘必要？だるいよ」）
+  - ルートの Stack の screenOptions で `headerUserInterfaceStyle: isDark ? 'dark' : 'light'`。アプリ内でテーマを切り替えるなら `Appearance.setColorScheme` でも OS に伝える。伝えないとダークでもガラスのボタンやキーボードが白く出る
+  - iOS は `headerTransparent: true`・背景 `transparent` にし、中身を見出しの下まで流してガラスのぼかしで重ねる（iOS 26 の標準の見え方）。スクロールの中身の上は `useHeaderHeight()` の分だけ空ける（iOS だけ。RestCall の `useHeaderInset`）
+  - 見出しに背景色を付けない。白いガラスのボタンだけが帯の上に浮き、中身が帯で切れて「ヘッダーで隠れる」と言われた。`scrollEdgeEffects` を hidden にするのも同じ見え方になるのでしない
+  - 見出しの文字は、画面の中に大きく出す（title は ''）か、ヘッダーの title に出す。どちらもスクロールするとガラスの下を通るのが自然
+  - 最新の iOS は実機で、ライトとダークの両方を見る
 - iOS 26 のヘッダーのガラスの枠（44pt）より大きいボタンははみ出す。単独のアイコンが左に寄る、ボタンが横長に伸びる
 - トーストやダイアログが iOS のネイティブモーダルの裏に隠れる。確認は OS の Alert、選ぶ・書くはネイティブの formSheet にする
 - RN の Modal を続けて開くと透明な膜が残って押せなくなる
