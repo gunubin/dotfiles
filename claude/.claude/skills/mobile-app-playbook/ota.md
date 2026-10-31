@@ -9,6 +9,7 @@ OTA は EAS Update ではなく Revopush（CodePush 系）。expo-updates は iO
 - 配信サービスに2段階認証を付け、鍵は本番と開発で分ける
 - CI 用のキーは既定で60日で切れる。`--ttl 1y` で作る
 - 本番は「5分以上離れて戻ったとき（ON_NEXT_RESUME）」に当てる。すぐ当てると使っている途中で再読み込みされる
+  - ただし Skia の Canvas を Reanimated の共有の値で描くアプリは、その場の読み直し（IMMEDIATE・ON_NEXT_RESUME）のあと Canvas が空のままになることがある（Harebi、2026-10-31。画面を移って戻るか開き直すと直る）。その場合は本番を ON_NEXT_RESTART にする
 - 自動配信は release ブランチだけにする。機能ブランチの push ごとに配って GitHub Actions の月の枠を使い切り、PR の CI と審査提出まで止まった。それ以外は手元から配る
 
 ## 手元ビルドの Android で OTA が当たらない
